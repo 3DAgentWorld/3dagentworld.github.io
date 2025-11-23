@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="S3PO-GS">
+  <meta name="keywords" content="3DGS, SLAM">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="twitter:card" content="summary">
+  <!-- <meta name="twitter:image:src" content="http://marigoldmonodepth.github.io/images/marigold_logo_square.jpg"> -->
+  <!-- <meta name="twitter:title" content="Marigold Depth"> -->
+  <!-- <meta name="twitter:description" content="Repurposing Diffusion-Based Image Generators for Monocular Depth Estimation"> -->
+  <!-- <meta name="twitter:creator" content="@AntonObukhov1">
+
+  <title>OpenGS-SLAM</title>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1FWSVCGZTG"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-1FWSVCGZTG');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+  <link rel="stylesheet" href="./css/bulma.min.css">
+  <link rel="stylesheet" href="./css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./css/twentytwenty.css">
+  <link rel="stylesheet" href="./css/index.css">
+  <link rel="icon" href="./images/gvkf-logo.svg">
+
+  <script src="./js/jquery-3.2.1.min.js"></script>
+  <script src="./js/jquery.event.move.js"></script>
+  <script src="./js/jquery.twentytwenty.js"></script>
+  <script src="./js/bulma-carousel.min.js"></script>
+  <script src="./js/bulma-slider.min.js"></script>
+  <script src="./js/fontawesome.all.min.js"></script>
+
+  <!--MathJax-->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script>
+  <script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <!-- 标题 -->
+            <h1 class="title is-1 publication-title">RegGS: Unposed Sparse Views Gaussian Splatting with 3DGS
+              Registration</h1>
+
+            <!-- 会议信息 -->
+            <h3 class="title has-text-centered">ICCV 2025</h3>
+
+            <!-- 作者信息 -->
+            <h3 class="title has-text-centered" style="font-size: 1.2em;">
+              Chong Cheng*,
+              Yu Hu*,
+              Sicheng Yu,
+              Beizhen Zhao,
+              Zijian Wang,
+              <a href="https://wanghao.tech/" style="color: inherit;">Hao Wang</a><sup>✉️</sup>
+            </h3>
+
+            <!-- 学校名称 -->
+            <div class="is-size-5 publication-authors">
+              <span class="author-block">The Hong Kong University of Science and Technology (GuangZhou)</span>
+            </div>
+
+            <!-- arXiv 和 Code 超链接 -->
+            <div class="column has-text-centered">
+              <div class="publication-links">
+                <!-- arXiv 链接 -->
+                <span class="link-block">
+                  <a href="https://3dagentworld.github.io/RegGS/" target="_blank" rel="noopener noreferrer"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fas fa-file-pdf" style="color: orangered"></i>
+                    </span>
+                    <span>arXiv</span>
+                  </a>
+                </span>
+
+                <!-- Code 链接 -->
+                <span class="link-block">
+                  <a href="https://github.com/3DAgentWorld/RegGS" target="_blank" rel="noopener noreferrer"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fab fa-github"></i>
+                    </span>
+                    <span>Code</span>
+                  </a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top: 2rem; padding-bottom: 2rem;">
+    <div class="container is-max-desktop">
+      <!-- Abstract. -->
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Abstract</h2>
+          <div class="content has-text-justified">
+            <p>
+              3D Gaussian Splatting (3DGS) has demonstrated its potential in reconstructing scenes from unposed images.
+              However, optimization-based 3DGS methods struggle with sparse views due to limited prior knowledge.
+              Meanwhile, feed-forward Gaussian approaches are constrained by input formats, making it challenging to
+              incorporate more input views. To address these challenges, we propose RegGS, a 3D Gaussian
+              registration-based framework for reconstructing unposed sparse views. RegGS aligns local 3D Gaussians
+              generated by a feed-forward network into a globally consistent 3D Gaussian representation. Technically, we
+              implement an entropy-regularized Sinkhorn algorithm to efficiently solve the optimal transport Mixture
+              2-Wasserstein $(\text{MW}_2)$ distance, which serves as an alignment metric for Gaussian mixture models
+              (GMMs) in $\mathrm{Sim}(3)$ space. Furthermore, we design a joint 3DGS registration module that integrates
+              the $\text{MW}_2$ distance, photometric consistency, and depth geometry. This enables a coarse-to-fine
+              registration process while accurately estimating camera poses and aligning the scene. Experiments on the
+              \textit{RE10K} and \textit{ACID} datasets demonstrate that RegGS effectively registers local Gaussians
+              with high fidelity, achieving precise pose estimation and high-quality novel-view synthesis.
+            </p>
+          </div>
+        </div>
+      </div>
+      <!--/ Abstract. -->
+    </div>
+  </section>
+
+  <section class="section" style="padding-top: 2rem; padding-bottom: 2rem;">
+    <div class="container is-max-desktop">
+      <!-- Method. -->
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-five">
+          <!--<h2 class="title is-3">How it works</h2> -->
+          <div class="content has-text-justified">
+
+            <img id="method_train" width="100%" src="./image/teaser.png" alt="Marigold training scheme" />
+
+            <p>
+              Overview of our pipeline for 3D Gaussian Splatting from multiple unposed sparse views. A pre-trained
+              feed-forward GS model extracts sub 3D Gaussians from each input, while two initial images yield the main
+              3D Gaussians.
+              We measure the structural closeness of Gaussian sets using the entropy-regularized $\text{MW}_2$ distance
+              and align them in $\mathrm{Sim}(3)$ space with our joint 3DGS registration module. Our method outperforms
+              others in reconstruction quality and novel view synthesis.
+            </p>
+
+            <h2 class="title has-text-centered">
+              Pipeline of RegGS
+            </h2>
+
+            <p>
+              First, we use a pre-trained feed-forward Gaussian model to construct a main Gaussians from two initial
+              images. Then, for each new input, a sub Gaussians is generated and aligned with the main Gaussians.
+              Specifically, by solving the optimal transport $MW2$ distance with an entropy-regularized Sinkhorn
+              approximation, our differentiable 3DGS joint registration module estimates the $\mathrm{Sim}(3)$
+              transformation and merges the sub Gaussians into the main Gaussians. Finally, we perform refinement of the
+              global Gaussians, yielding a high-fidelity 3D reconstruction.
+            </p>
+
+            <img id="method_train" width="100%" src="./image/framework1.png" alt="Marigold training scheme" />
+
+            <h2 class="title has-text-centered">
+              Comparison with other methods
+            </h2>
+
+            <p>
+              To evaluate the effectiveness of our method, we conducted experiments on the RE10K and ACID datasets. The
+              RE10K dataset includes indoor and outdoor scene videos, while ACID consists mainly of aerial shots of
+              natural landscapes captured by drones. Both provide camera poses and intrinsic parameters. Following the
+              setup in NoPoSplat, we use the test sets of each dataset for evaluation.
+            </p>
+            <p></p>
+            For unposed sparse views reconstruction task, the number of views we reconstructed are 2, 8, 16, and 32. To
+            simulate sparse input, both training and testing views are equidistantly sampled from the videos. For 2-view
+            scenarios, we sample every 40 frames for videos with significant motion and every 60 frames for scenes with
+            less motion. For scenarios with 8, 16, and 32 views, training views are equidistantly sampled throughout the
+            entire video. The test set includes all frames not used for training.
+            </p>
+
+            <img id="method_inference" width="100%" src="./image/table1.png" alt="Marigold inference scheme"
+              style="display: block; margin: 0 auto;" />
+            <figcaption class="has-text-centered has-text-weight-semibold" style="margin-top: 12px; font-size: 1.0rem;">
+              Novel View Synthesis Results on the RE10K</figcaption>
+
+
+            <img id="method_inference" width="100%" src="./image/table2.png" alt="Marigold inference scheme"
+              style="display: block; margin: 0 auto;" />
+            <figcaption class="has-text-centered has-text-weight-semibold" style="margin-top: 12px; font-size: 1.0rem;">
+              Novel View Synthesis Results on the ACID</figcaption>
+
+          </div>
+        </div>
+      </div>
+      <!--/ Method. -->
+    </div>
+  </section>
+
+
+  <section class="section" style="padding-top: 2rem; padding-bottom: 2rem;">
+    <div class="container">
+      <h2 class="title has-text-centered">Novel View Rendering</h2>
+      <div style="width: 100%; margin: 0 auto; text-align: left;">
+        <p>
+          Our method not only registers the 3D Gaussians but also enhances novel view synthesis through global
+          refinement.
+        </p>
+      </div>
+
+      <img id="method_inference" width="100%" src="./image/re10k_comp.png" alt="Marigold inference scheme"
+        style="display: block; margin: 0 auto;" />
+      <img id="method_inference" width="100%" src="./image/acid_comp.png" alt="Marigold inference scheme"
+        style="display: block; margin: 0 auto;" />
+    </div>
+  </section>
+
+  <section class="section" style="padding-top: 2rem; padding-bottom: 2rem;">
+    <div class="container">
+      <h2 class="title has-text-centered">Comparison of tracking trajectories</h2>
+      <div style="width: 80%; margin: 0 auto; text-align: left;">
+        <p>
+          Our method and the baseline are under 16-view input. Our method achieves higher pose estimation accuracy than
+          other unposed methods and is applicable to various scenes and camera motions.
+        </p>
+      </div>
+
+      <img src="./image/traj.png" alt="Trajectory Image 1"
+        style="width: 80%; height: auto; display: block; margin: 0 auto;" />
+      <!-- 并排图片区域 -->
+    </div>
+  </section>
+
+  <!--
+<section class="section" id="BibTeX">
+  <div class="container">
+    <div style="width: 80%; margin: 0 auto;">
+      <h2 class="title">Citation</h2>
+      <pre class="selectable"><code>@InProceedings{ke2023repurposing,
+    title={Repurposing Diffusion-Based Image Generators for Monocular Depth Estimation},
+    author={Bingxin Ke and Anton Obukhov and Shengyu Huang and Nando Metzger and Rodrigo Caye Daudt and Konrad Schindler},
+    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+    year={2024}
+}</code></pre>
+    </div>
+  </div>
+</section>
+-->
+
+  <footer class="footer pt-4 pb-0">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content">
+            <p>
+              Website template based on
+              <a href="https://marigoldmonodepth.github.io">
+                marigold
+              </a>
+              and licensed under
+              <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+                CC-BY-SA-4.0
+              </a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 添加的样式 -->
+  <style>
+    .carousel {
+      display: flex;
+      justify-content: center;
+      /* 水平居中 */
+      align-items: center;
+      /* 垂直居中 */
+      overflow: hidden;
+      /* 隐藏不在当前显示区域的图片 */
+      width: 100%;
+      text-align: center;
+      position: relative;
+    }
+
+    .carousel .carousel-item {
+      display: none;
+      /* 默认隐藏所有图片 */
+      width: 100%;
+    }
+
+    .carousel .carousel-item.is-active {
+      display: block;
+      /* 只显示激活的图片 */
+    }
+
+    .carousel img,
+    .image img {
+      display: block;
+      margin: 0 auto;
+      width: 80%;
+      max-width: 80%;
+      height: auto;
+    }
+
+    /* 导航按钮样式 */
+    .carousel-navigation {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: rgba(0, 0, 0, 0.5);
+      /* 半透明背景 */
+      color: white;
+      border: none;
+      padding: 15px;
+      cursor: pointer;
+      font-size: 24px;
+      border-radius: 50%;
+      /* 圆形按钮 */
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+      /* 添加阴影 */
+      transition: background-color 0.3s ease;
+      /* 添加平滑过渡效果 */
+    }
+
+    .carousel-navigation:hover {
+      background-color: rgba(0, 0, 0, 0.8);
+      /* 鼠标悬停时变暗 */
+    }
+
+    .carousel-navigation.left {
+      left: 10px;
+    }
+
+    .carousel-navigation.right {
+      right: 10px;
+    }
+
+    /* 导航按钮中的箭头样式 */
+    .carousel-navigation i {
+      font-size: 24px;
+      /* 箭头图标大小 */
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let currentIndex = 0;
+      const items = document.querySelectorAll('.carousel .carousel-item');
+      const totalItems = items.length;
+
+      function showImage(index) {
+        items[currentIndex].classList.remove('is-active');
+        currentIndex = (index + totalItems) % totalItems;
+        items[currentIndex].classList.add('is-active');
+      }
+
+      function showNextImage() {
+        showImage(currentIndex + 1);
+      }
+
+      function showPreviousImage() {
+        showImage(currentIndex - 1);
+      }
+
+      // 添加导航按钮的点击事件
+      document.querySelector('.carousel-navigation.left').addEventListener('click', showPreviousImage);
+      document.querySelector('.carousel-navigation.right').addEventListener('click', showNextImage);
+    });
+  </script>
+
+  <!--<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">Citation</h2>
+    <pre class="selectable"><code>@InProceedings{ke2023repurposing,
+        title={Repurposing Diffusion-Based Image Generators for Monocular Depth Estimation},
+        author={Bingxin Ke and Anton Obukhov and Shengyu Huang and Nando Metzger and Rodrigo Caye Daudt and Konrad Schindler},
+        booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+        year={2024}
+}</code></pre>
+  </div>
+</section>
+-->
+
+</body>
+
+</html>

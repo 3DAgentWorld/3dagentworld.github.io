@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="graphgs">
+  <meta name="keywords" content="3dgs">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="twitter:card" content="summary">
+  <!-- <meta name="twitter:image:src" content="http://marigoldmonodepth.github.io/images/marigold_logo_square.jpg"> -->
+  <!-- <meta name="twitter:title" content="Marigold Depth"> -->
+  <!-- <meta name="twitter:description" content="Repurposing Diffusion-Based Image Generators for Monocular Depth Estimation"> -->
+  <!-- <meta name="twitter:creator" content="@AntonObukhov1"> -->
+
+  <title>GraphGS</title>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1FWSVCGZTG"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-1FWSVCGZTG');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./css/bulma.min.css">
+  <link rel="stylesheet" href="./css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./css/twentytwenty.css">
+  <link rel="stylesheet" href="./css/index.css">
+  <link rel="icon" href="./images/gvkf-logo.svg">
+
+  <script src="./js/jquery-3.2.1.min.js"></script>
+  <script src="./js/jquery.event.move.js"></script>
+  <script src="./js/jquery.twentytwenty.js"></script>
+  <script src="./js/bulma-carousel.min.js"></script>
+  <script src="./js/bulma-slider.min.js"></script>
+  <script src="./js/fontawesome.all.min.js"></script>
+
+  <!--MathJax-->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script>
+  <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-2 publication-title">GRAPH-GUIDED SCENE RECONSTRUCTION FROM IMAGES WITH 3D GAUSSIAN SPLATTING</h1>
+          <h1 class="title is-4 publication-title">[ICLR 2025]</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              Chong Cheng<sup>*</sup><sup>1</sup></span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="author-block">
+              Gaochao Song<sup>*</sup><sup>2</sup></span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="author-block">
+              Yiyang Yao<sup>3</sup></span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="author-block">
+              Qinzheng Zhou<sup>4</sup></span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="author-block">
+              Gangjian Zhang<sup>1</sup></span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="author-block">
+              <a href="https://wanghao.tech/">Hao Wang</a><sup>&#9993;</sup><sup>1</sup>
+            </span>
+          </div>
+          <br>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">1. HKUST (GZ)</span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="author-block">2. HKU</span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="author-block">3. SCUT</span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="author-block">4. UC Berkeley</span>
+          </div>
+
+          
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+            
+
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2502.17377"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+          
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://github.com/3DAgentWorld/GraphGS.git"
+                   class="external-link button is-normal is-rounded is-dark disabled">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Construction Notice -->
+<section class="section has-text-centered">
+  <div class="container is-max-desktop">
+    <h2 class="title is-4">🚧 Website Under Construction 🚧</h2>
+    <p class="subtitle">Code and additional resources coming soon! Stay tuned.</p>
+  </div>
+</section>
+
+<section class="section pt-0">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            This paper investigates an open research challenge of reconstructing high-quality, large 3D open scenes from images.
+            It is observed existing methods have various limitations, such as requiring precise camera poses for input
+            and dense viewpoints for supervision. 
+            To perform effective and efficient 3D scene reconstruction, we propose a novel graph-guided 3D scene reconstruction framework, GraphGS. Specifically, given a set of images captured by RGB cameras on a scene, we first design a spatial prior-based scene structure estimation method. This is then used to create a camera graph that includes information about the camera topology.
+            Further, we propose to apply the graph-guided multi-view consistency constraint and adaptive sampling strategy to the 3D Gaussian Splatting optimization process. This greatly alleviates the issue of Gaussian points overfitting to specific sparse viewpoints and expedites the 3D reconstruction process.
+            We demonstrate GraphGS achieves high-fidelity 3D reconstruction from images, which presents 
+            state-of-the-art performance through quantitative and qualitative evaluation across multiple datasets. 
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+  </div>
+</section>
+
+<!-- <br> -->
+<!-- <section class="section">
+  <div class="container is-max-desktop">
+
+    Results.
+    <div class="columns is-centered ">
+      <div class="column is-full-width">
+        <h2 class="title is-2 has-text-centered" style="margin-top: -30px">Framework</h2>
+        <br>
+        <div class="content has-text-centered">  
+          <img class="video" width="70%" id="xyalias1" src="images/mainmain.drawio_00.png" alt="pipe" style="height: auto;">  
+          <canvas height=0 class="videoMerge" id="xyalias1Merge"></canvas>  
+        </div>
+        <div class="content has-text-justified">
+          <p>
+            Framework of Gaussian Voxel Kernel Functions (GVKF) for scene representation. In this framework, discrete Gaussian primitives $\mathcal{G}$ represent continuous opacity density $\rho(t)$ on the ray via kernel regression. After slightly modifying the rasterization pipeline, the kernel function can be integrated into alpha blending rasterization without introducing dense points sampling. Additionally, we directly define the mapping relationship between the neural opacity field and the implicit surface.
+          </p>
+        </div>
+        
+        <div class="content has-text-centered">
+          <video class="video" width="100%" id="xyalias1" loop playsinline autoplay muted src="resources/compare_2DGS_bicyle_down.mp4" onplay="resizeAndPlay(this)" style="height: 0px;"></video>
+          <canvas height=0 class="videoMerge" id="xyalias1Merge"></canvas>
+        </div>
+
+        
+        
+
+      </div>
+    </div>
+
+  </div>
+</section> -->
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@misc{cheng2025graphguidedscenereconstructionimages,
+      title={Graph-Guided Scene Reconstruction from Images with 3D Gaussian Splatting}, 
+      author={Chong Cheng and Gaochao Song and Yiyang Yao and Qinzheng Zhou and Gangjian Zhang and Hao Wang},
+      year={2025},
+      eprint={2502.17377},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2502.17377}, 
+}</code></pre>
+  </div>
+</section>
+
+
+<!-- <section class="section" id="References">
+  <div class="container is-max-desktop content">
+
+        <h3 class="title is-4">Acknowledgements</h3>
+        <div class="content has-text-justified">
+          <ul>
+            <li>
+              <a href="https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/" target="_blank">3D Gaussian Splatting for Real-Time Radiance Field Rendering</a>
+            </li>
+            <li>
+              <a href="https://surfsplatting.github.io/" target="_blank">2DGS: 2D Gaussian Splatting for Geometrically Accurate Radiance Fields</a>
+            </li>
+            <li>
+              <a href="https://niujinshuchong.github.io/gaussian-opacity-fields/" target="_blank">
+                Gaussian Opacity Fields: Efficient Adaptive Surface Reconstruction in Unbounded Scenes</a>
+            </li>
+            <li>
+              <a href="https://city-super.github.io/scaffold-gs/" target="_blank">Scaffold-GS: Structured 3D Gaussians for View-Adaptive Rendering</a>
+            </li>
+            <li>
+              <a href="https://city-super.github.io/octree-gs/" target="_blank">Octree-GS: Towards Consistent Real-time Rendering with LOD-Structured 3D Gaussians</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+</section> -->
+<!-- 
+<script>
+  $(window).on('load', function() {
+    bulmaCarousel.attach('#results-carousel-horizontal', {
+      slidesToScroll: 1,
+      slidesToShow: 3,
+      loop: true,
+      autoplay: true,
+    });
+
+    bulmaCarousel.attach('#results-carousel-vertical', {
+      slidesToScroll: 1,
+      slidesToShow: 5,
+      loop: true,
+      autoplay: true,
+    });
+
+    $(".twentytwenty-container-top").twentytwenty({
+      before_label: '2DGS',
+      after_label: 'Ours',
+      default_offset_pct: 0.75,
+    });
+    $(".twentytwenty-container-bottom").twentytwenty({
+      before_label: 'StreetSurf',
+      after_label: 'Ours',
+      default_offset_pct: 0.5,
+    });
+    $(".twentytwenty-container-2dgs").twentytwenty({
+      before_label: '2DGS',
+      after_label: 'Ours',
+      default_offset_pct: 0.5,
+    });
+    $(".twentytwenty-container-meshnorm").twentytwenty({
+      before_label: 'Mesh',
+      after_label: 'Normal',
+      default_offset_pct: 0.5,
+    });
+    $(".twentytwenty-container-streetsurf").twentytwenty({
+      before_label: 'StreetSurf',
+      after_label: 'Ours',
+      default_offset_pct: 0.5,
+    });
+    $(".twentytwenty-container-sugar").twentytwenty({
+      before_label: 'SuGaR',
+      after_label: 'Ours',
+      default_offset_pct: 0.5,
+    });
+    $(".twentytwenty-container-gtour").twentytwenty({
+      before_label: 'Ground Truth',
+      after_label: 'Ours',
+      default_offset_pct: 0.5,
+    });
+    $(".twentytwenty-container-gt2dgs").twentytwenty({
+      before_label: 'Ground Truth',
+      after_label: '2DGS',
+      default_offset_pct: 0.5,
+    });
+    $(".twentytwenty-container-video").twentytwenty({
+      before_label: 'Mesh',
+      after_label: 'Normal',
+      default_offset_pct: 0.5,
+    });
+  });
+</script> -->
+
+<!-- <section class="section pt-0" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">Citation</h2>
+    <pre class="selectable"><code>@InProceedings{ke2023repurposing,
+        title={Repurposing Diffusion-Based Image Generators for Monocular Depth Estimation},
+        author={Bingxin Ke and Anton Obukhov and Shengyu Huang and Nando Metzger and Rodrigo Caye Daudt and Konrad Schindler},
+        booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+        year={2024}
+}</code></pre>
+  </div>
+</section> -->
+
+
+<footer class="footer pt-4 pb-0">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            Website template based on
+            <a href="https://github.com/nerfies/nerfies.github.io">
+              Nerfies
+            </a>
+            ,
+            <a href="https://marigoldmonodepth.github.io">
+              marigold
+            </a>
+            and licensed under
+            <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+              CC-BY-SA-4.0
+            </a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
