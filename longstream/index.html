@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>LongStream</title>
+    <meta
+      name="description"
+      content="LongStream: Long-Sequence Streaming Autoregressive Visual Geometry — a research project page."
+    />
+    <meta name="keywords" content="LongStream, streaming, autoregressive, visual geometry, 3D reconstruction" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" href="./static/images/favicon.svg" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+        }
+      }
+    </script>
+
+    <link rel="stylesheet" href="./static/css/index-light.css?v=20260213-copy2" />
+    <script defer src="./static/js/index.js?v=20260213-copy2"></script>
+    <script type="module" src="./static/js/demo.js?v=20260213-themefix1"></script>
+  </head>
+
+  <body>
+    <canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+    <div class="runtime-warning glass" id="runtime-warning" role="alert" hidden>
+      <b>Local preview:</b> This demo uses ES modules and asset fetching; please open it via <b>http(s)</b> (not
+      <span class="mono">file://</span>). In the repo root, run <span class="mono">python3 -m http.server 8000</span>,
+      then visit <span class="mono">http://localhost:8000/longstream/</span>.
+    </div>
+
+    <header class="topbar" data-topbar>
+      <div class="container topbar-inner">
+        <a class="brand" href="#top" aria-label="LongStream">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span class="brand-text">LongStream</span>
+        </a>
+
+        <nav class="nav" aria-label="Page navigation">
+          <a href="#demo">Demo</a>
+          <a href="#abstract">Abstract</a>
+          <a href="#method">Method</a>
+          <a href="#results">Results</a>
+          <a href="#bibtex">BibTeX</a>
+        </nav>
+
+        <div class="actions">
+          <button class="btn" id="theme-toggle" type="button" aria-label="Toggle theme">Light</button>
+          <a class="btn ghost" href="#abstract">arXiv</a>
+          <a class="btn primary" href="https://github.com/3DAgentWorld/LongStream/tree/main" target="_blank" rel="noreferrer">Code</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="container hero-inner">
+          <h1 class="paper-title">
+            LongStream: <span class="gradient-text">Long-Sequence Streaming Autoregressive Visual Geometry</span>
+          </h1>
+
+          <div class="authors" aria-label="Authors">
+            <span class="author">Chong Cheng<sup>1,2</sup></span>
+            <span class="author">Xianda Chen<sup>1</sup></span>
+            <span class="author">Tao Xie<sup>2,3</sup></span>
+            <span class="author">Wei Yin<sup>2</sup></span>
+            <span class="author">Weiqiang Ren<sup>2</sup></span>
+            <span class="author">Qian Zhang<sup>2</sup></span>
+            <span class="author">Xiaoyang Guo<sup>2</sup></span>
+            <span class="author">Hao Wang<sup>1</sup></span>
+          </div>
+          <div class="affiliations" aria-label="Affiliations">
+            <span><sup>1</sup>The Hong Kong University of Science and Technology (Guangzhou)</span>
+            <span><sup>2</sup>Horizon Robotics</span>
+            <span><sup>3</sup>Zhejiang University</span>
+          </div>
+
+          <div class="link-row" aria-label="Links">
+            <a class="btn" href="#abstract">arXiv</a>
+            <a class="btn" href="https://github.com/3DAgentWorld/LongStream/tree/main" target="_blank" rel="noreferrer">Code</a>
+            <a class="btn ghost" href="#demo">Demo</a>
+            <a class="btn ghost" href="https://github.com/3DAgentWorld/LongStream/tree/main" target="_blank" rel="noreferrer">Model</a>
+          </div>
+
+        </div>
+      </section>
+
+      <section class="section" id="demo">
+        <div class="container">
+          <div class="section-head demo-head">
+            <h2>Demo</h2>
+            <div class="highlights inline-highlights" aria-label="Highlights">
+              <div class="highlight glass">
+                <div class="h-line">18 FPS streaming (autoregressive).</div>
+              </div>
+              <div class="highlight glass">
+                <div class="h-line">Kilometer-scale sequences.</div>
+              </div>
+              <div class="highlight glass">
+                <div class="h-line">Metric-scale 3D geometry.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="media-grid">
+            <div class="media-side">
+              <div class="side-card glass">
+                <div class="side-title">Input</div>
+                <video
+                  id="video-input"
+                  src="./example/kitti/input.mp4"
+                  playsinline
+                  muted
+                  loop
+                  autoplay
+                  preload="metadata"
+                ></video>
+              </div>
+              <div class="side-card glass">
+                <div class="side-title">Depth</div>
+                <video
+                  id="video-depth"
+                  src="./example/kitti/depth.mp4"
+                  playsinline
+                  muted
+                  loop
+                  autoplay
+                  preload="metadata"
+                ></video>
+              </div>
+            </div>
+
+            <div class="media-main glass">
+              <div class="media-toolbar">
+                <div class="segmented" role="tablist" aria-label="Main view">
+                  <button class="seg-btn is-active" type="button" data-view="render" aria-selected="true">Render video</button>
+                  <button class="seg-btn" type="button" data-view="viewer" aria-selected="false">Global 3D</button>
+                </div>
+
+                <div class="media-controls" aria-label="Demo controls">
+                  <button class="btn small" type="button" id="toggle-play">Pause</button>
+                  <label class="control" id="point-size-wrap" title="Only affects Global 3D">
+                    <span>Global point size</span>
+                    <input id="point-size" type="range" min="0.01" max="1" step="0.01" value="0.05" />
+                  </label>
+                  <button class="btn ghost small" type="button" id="reset-view" title="Only affects the 3D viewer">
+                    Reset view
+                  </button>
+                </div>
+              </div>
+
+              <div class="media-stage" aria-label="Main media">
+                <video
+                  id="video-render"
+                  class="stage-item"
+                  src="./example/kitti/render_h264.mp4"
+                  poster="./static/images/teaser-user.png"
+                  playsinline
+                  muted
+                  loop
+                  autoplay
+                  preload="metadata"
+                ></video>
+
+                <div id="pc-viewer" class="stage-item viewer" hidden>
+                  <div class="viewer-status" id="viewer-status">Loading global point cloud…</div>
+                  <div class="viewer-canvas" id="viewer-canvas" aria-label="Interactive 3D global point cloud viewer"></div>
+                </div>
+              </div>
+
+              <div class="media-caption muted">
+                Main: rendered point cloud video. Left: input RGB and depth. Use “Global 3D” to inspect the stitched point
+                cloud (when available); per-frame point clouds are shown below.
+              </div>
+            </div>
+          </div>
+
+          <div class="scene-picker glass" aria-label="Sequence picker">
+            <div class="scene-list" id="scene-picker" role="list"></div>
+          </div>
+
+          <div class="frame-controls glass" aria-label="Per-frame point clouds">
+              <div class="frame-head">
+              <div>
+                <h3>Per-frame point clouds</h3>
+                <p class="frame-sub muted">Frames are loaded on demand (hundreds of frames per scene, no bulk download).</p>
+              </div>
+              <div class="frame-meta">
+                <span>Frame</span>
+                <span class="mono" id="frame-label">0000</span>
+              </div>
+            </div>
+
+            <div class="frame-row">
+              <input id="frame-slider" type="range" min="0" max="550" step="1" value="0" />
+              <div class="frame-actions">
+                <label class="control" id="frame-point-size-wrap" title="Only affects per-frame 3D">
+                  <span>Frame point size</span>
+                  <input id="frame-point-size" type="range" min="0.01" max="1" step="0.01" value="0.05" />
+                </label>
+                <button class="btn small" type="button" id="open-frame-3d">Hide (3D)</button>
+                <a
+                  class="btn ghost small"
+                  id="download-frame"
+                  href="./example/kitti/per_frame_points/frame_0000_points.ply"
+                  download
+                >
+                  Download PLY
+                </a>
+              </div>
+            </div>
+
+            <div class="frame-viewer" id="frame-viewer">
+              <div class="viewer-status" id="frame-viewer-status">Loading frame point cloud…</div>
+              <div class="viewer-canvas" id="frame-viewer-canvas" aria-label="Interactive 3D per-frame point cloud viewer"></div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="abstract">
+        <div class="container">
+          <div class="section-head">
+            <h2>Abstract</h2>
+          </div>
+
+          <div class="prose glass">
+            <p>
+              Long-sequence streaming 3D reconstruction remains a significant open challenge. Existing autoregressive
+              models often fail when processing long sequences. They typically anchor poses to the first frame, which
+              leads to attention decay, scale drift, and extrapolation errors. We introduce LongStream, a novel
+              gauge-decoupled streaming visual geometry model for metric-scale scene reconstruction across thousands of
+              frames. Our approach is threefold. First, we discard the first-frame anchor and predict keyframe-relative
+              poses. This reformulates long-range extrapolation into a constant-difficulty local task. Second, we
+              introduce orthogonal scale learning. This method fully disentangles geometry from scale estimation to
+              suppress drift. Finally, we solve Transformer cache issues such as attention-sink reliance and long-term
+              KV-cache contamination. We propose cache-consistent training combined with periodic cache refresh. This
+              approach suppresses attention degradation over ultra-long sequences and reduces the gap between training
+              and inference. Experiments show LongStream achieves state-of-the-art performance. It delivers stable,
+              metric-scale reconstruction over kilometer-scale sequences at 18 FPS.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="method">
+        <div class="container">
+          <div class="section-head">
+            <h2>Method</h2>
+            <p>Streaming architecture with gauge-decoupled pose and cache-consistent training.</p>
+          </div>
+
+          <figure class="figure method-figure">
+            <a
+              class="method-figure-link"
+              href="./static/images/framework-v5.png?v=20260213-hd"
+              aria-label="Open full-resolution framework figure"
+            >
+              <img src="./static/images/framework-v5.png?v=20260213-hd" alt="LongStream framework overview" loading="lazy" />
+            </a>
+            <figcaption>Framework overview (click to zoom).</figcaption>
+          </figure>
+
+          <div class="glass panel method-keyideas">
+            <h3>Key ideas</h3>
+            <p class="muted">
+              Given streaming inputs, patch tokens are extracted by a ViT encoder and augmented with keyframe,
+              normal-frame, and scale tokens. Tokens are fused via causal attention with a shared KV cache, which is
+              consistently used in both training and inference for cache-consistent streaming modeling. The network
+              predicts keyframe-relative poses T<sub>i←k</sub>, depth, pointmap, and global scale, enabling stable
+              metric-scale reconstruction over long sequences.
+            </p>
+            <ul class="bullets">
+              <li>
+                <b>Gauge-decoupled pose learning.</b> Discard first-frame anchoring and predict keyframe-relative poses to
+                keep long-horizon inference stable.
+              </li>
+              <li>
+                <b>Orthogonal metric-scale learning.</b> Fully disentangle geometry from scale estimation to suppress
+                drift.
+              </li>
+              <li>
+                <b>Cache-consistent training + refresh.</b> Use cache-consistent training and periodic cache refresh to
+                mitigate attention sink and long-term KV-cache contamination.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="attention">
+        <div class="container">
+          <div class="section-head">
+            <h2>Attention Sink Analysis</h2>
+            <p>How cache-consistent training stabilizes long-horizon streaming inference.</p>
+          </div>
+
+          <figure class="figure glass wide">
+            <img src="./static/images/attention-v5.png?v=20260213" alt="Attention analysis with and without cache-consistent training" loading="lazy" />
+	            <figcaption>
+	              <b>Additional attention visualization.</b> We visualize frame-level attention to show how the model uses
+	              historical frames during streaming inference. Token attention is aggregated into an S×S frame–frame matrix.
+	              We sum over target-frame tokens and average over source-frame tokens. Full-window inference exposes up to 80
+	              visible frames, while sliding-window inference exposes only 10. The batch-trained baseline exhibits a clear
+	              temporal bias. It assigns disproportionately high attention to the first frame as an attention sink and also
+	              to distant frames, while under-attending recent frames that are most relevant for local geometric
+	              consistency. A geometry model should primarily rely on temporally adjacent frames. This bias correlates with
+	              rapid RPE growth and unstable long-horizon predictions. Sliding-window
+	              inference further reveals a training–inference mismatch. When the first frame remains visible, attention
+	              increasingly concentrates on it and recent evidence is ignored, so performance degrades faster. When the
+	              first frame is removed, the baseline loses the anchor it has learned to rely on and the rollout collapses.
+	              With cache-consistent KV-cache training, attention becomes more balanced and allocates relatively more
+	              weight to nearby frames, improving temporal geometric coherence under both window settings. As the effective
+	              history approaches 80 frames, attention gradually shifts toward earlier history, consistent with cache
+	              saturation. Light blue denotes attention to the keyframe.
+	            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+	      <section class="section" id="results">
+	        <div class="container">
+	          <div class="section-head">
+	            <h2>Results</h2>
+	            <p>Quantitative ATE and qualitative comparisons across long-range and small-scale benchmarks.</p>
+	          </div>
+
+          <div class="grid-2">
+            <div class="glass panel">
+              <h3>What to look at</h3>
+	              <ul class="bullets">
+	                <li><b>Gauge-decoupled design.</b> Keyframe-relative poses and orthogonal scale decoupling eliminate
+	                  first-frame anchor dependence and mitigate failures in long-sequence extrapolation.</li>
+	                <li><b>Attention sink and cache contamination.</b> We identify them as primary causes of long-horizon
+	                  degradation; cache-consistent training and periodic cache refresh stabilize temporal attention and
+	                  reduce geometric drift.</li>
+	                <li><b>Streaming performance.</b> State-of-the-art accuracy across indoor and outdoor benchmarks, with
+	                  real-time throughput and stable metric scale on long sequences.</li>
+	              </ul>
+
+              <div class="chips" aria-label="Datasets">
+                <span class="chip">KITTI</span>
+                <span class="chip">vKITTI</span>
+                <span class="chip">Waymo</span>
+                <span class="chip">TUM-RGBD</span>
+              </div>
+            </div>
+
+	            <figure class="figure glass">
+	              <img src="./static/images/memory-and-time-comparison.png" alt="Memory and runtime comparison" />
+	              <figcaption>
+	                <b>Memory &amp; runtime.</b> LongStream keeps memory and latency stable in streaming settings, while some
+	                baselines grow with sequence length and can hit OOM.
+	              </figcaption>
+	            </figure>
+	          </div>
+
+          <figure class="figure glass wide">
+            <img src="./static/images/kitti-compare.png?v=20260213" alt="KITTI qualitative comparisons" loading="lazy" />
+            <figcaption>
+              <b>KITTI qualitative comparison.</b> Stable long-range trajectories and geometry under streaming rollout.
+            </figcaption>
+          </figure>
+
+          <figure class="figure glass wide">
+            <img src="./static/images/tum-7scene.png?v=20260213" alt="TUM-7Scenes qualitative comparisons" loading="lazy" />
+            <figcaption>
+              <b>TUM / 7Scenes qualitative comparison.</b> Stable geometry and camera trajectories on small indoor scenes.
+            </figcaption>
+          </figure>
+
+		          <div class="table-wrap glass" aria-label="KITTI ATE table">
+		            <div class="table-title">
+		              <b>Table 1.</b> KITTI ATE (lower is better; <span class="mono">*</span> = OOM or tracking lost).
+		            </div>
+            <div class="scroll">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>00 <span class="th-sub">4542f, 3.7km</span></th>
+                    <th>01 <span class="th-sub">1101f, 2.5km</span></th>
+                    <th>02 <span class="th-sub">4661f, 5.1km</span></th>
+                    <th>03 <span class="th-sub">801f, 0.6km</span></th>
+                    <th>04 <span class="th-sub">271f, 0.4km</span></th>
+                    <th>05 <span class="th-sub">2761f, 2.2km</span></th>
+                    <th>06 <span class="th-sub">1101f, 1.2km</span></th>
+                    <th>07 <span class="th-sub">1101f, 0.7km</span></th>
+                    <th>08 <span class="th-sub">4071f, 3.2km</span></th>
+                    <th>09 <span class="th-sub">1591f, 1.7km</span></th>
+                    <th>10 <span class="th-sub">1201f, 0.9km</span></th>
+                    <th>Avg.</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>FastVGGT</td>
+                    <td>*</td>
+                    <td>705.39</td>
+                    <td>*</td>
+                    <td>62.38</td>
+                    <td>10.27</td>
+                    <td>157.74</td>
+                    <td>124.43</td>
+                    <td>69.27</td>
+                    <td>*</td>
+                    <td>190.10</td>
+                    <td>194.75</td>
+                    <td>189.29</td>
+                  </tr>
+                  <tr>
+                    <td>MASt3R-SLAM</td>
+                    <td>*</td>
+                    <td>530.37</td>
+                    <td>*</td>
+                    <td>18.87</td>
+                    <td>88.98</td>
+                    <td>159.430</td>
+                    <td>92.00</td>
+                    <td>*</td>
+                    <td>*</td>
+                    <td>*</td>
+                    <td>*</td>
+                    <td>177.93</td>
+                  </tr>
+                  <tr>
+                    <td>VGGT-SLAM</td>
+                    <td>*</td>
+                    <td>607.16</td>
+                    <td>*</td>
+                    <td>169.83</td>
+                    <td>13.12</td>
+                    <td>*</td>
+                    <td>*</td>
+                    <td>*</td>
+                    <td>*</td>
+                    <td>*</td>
+                    <td>*</td>
+                    <td>263.37</td>
+                  </tr>
+                  <tr>
+                    <td>CUT3R</td>
+                    <td>185.89</td>
+                    <td>651.52</td>
+                    <td>296.98</td>
+                    <td>148.06</td>
+                    <td>22.17</td>
+                    <td>155.61</td>
+                    <td>132.54</td>
+                    <td>77.03</td>
+                    <td>238.39</td>
+                    <td>205.94</td>
+                    <td>193.39</td>
+                    <td>209.78</td>
+                  </tr>
+                  <tr>
+                    <td>TTT3R</td>
+                    <td>190.93</td>
+                    <td>546.84</td>
+                    <td>218.77</td>
+                    <td>105.28</td>
+                    <td>11.62</td>
+                    <td>153.12</td>
+                    <td>132.94</td>
+                    <td>70.95</td>
+                    <td>180.57</td>
+                    <td>211.01</td>
+                    <td>133.00</td>
+                    <td>177.73</td>
+                  </tr>
+                  <tr>
+                    <td>STream3R</td>
+                    <td>190.98</td>
+                    <td>681.95</td>
+                    <td>301.40</td>
+                    <td>158.25</td>
+                    <td>102.73</td>
+                    <td>159.85</td>
+                    <td>135.03</td>
+                    <td>90.37</td>
+                    <td>261.15</td>
+                    <td>216.31</td>
+                    <td>207.49</td>
+                    <td>227.77</td>
+                  </tr>
+                  <tr>
+                    <td>StreamVGGT</td>
+                    <td>191.93</td>
+                    <td>653.06</td>
+                    <td>303.35</td>
+                    <td>157.50</td>
+                    <td>108.24</td>
+                    <td>160.46</td>
+                    <td>133.71</td>
+                    <td>89.00</td>
+                    <td>263.95</td>
+                    <td>216.69</td>
+                    <td>209.80</td>
+                    <td>226.15</td>
+                  </tr>
+                  <tr class="emph">
+                    <td>Ours</td>
+                    <td>92.55</td>
+                    <td>46.01</td>
+                    <td>134.70</td>
+                    <td>3.81</td>
+                    <td>1.95</td>
+                    <td>84.69</td>
+                    <td>23.12</td>
+                    <td>14.93</td>
+                    <td>62.07</td>
+                    <td>85.61</td>
+                    <td>21.48</td>
+                    <td>51.90</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="table-grid">
+            <div class="table-wrap glass" aria-label="TUM Oxford Spires Waymo ATE table">
+              <div class="table-title">
+                <b>Table 2.</b> Quantitative comparison on TUM, Oxford Spires, and Waymo (ATE, lower is better).
+              </div>
+              <div class="scroll">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Method</th>
+                      <th>TUM</th>
+                      <th>Oxford Spires</th>
+                      <th>Waymo</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>FastVGGT</td><td>0.418</td><td>36.577</td><td>1.281</td></tr>
+                    <tr><td>MASt3R-SLAM</td><td>0.082</td><td>37.728</td><td>7.625</td></tr>
+                    <tr><td>VGGT-SLAM</td><td>0.123</td><td>31.003</td><td>7.431</td></tr>
+                    <tr><td>CUT3R</td><td>0.542</td><td>32.440</td><td>9.396</td></tr>
+                    <tr><td>TTT3R</td><td>0.308</td><td>36.214</td><td>3.486</td></tr>
+                    <tr><td>STream3R</td><td>0.633</td><td>37.569</td><td>42.203</td></tr>
+                    <tr><td>StreamVGGT</td><td>0.627</td><td>37.255</td><td>45.101</td></tr>
+                    <tr class="emph"><td>Ours</td><td>0.076</td><td>19.815</td><td>0.737</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="table-wrap glass" aria-label="vKITTI ATE table">
+              <div class="table-title">
+                <b>Table 3.</b> Quantitative comparison on vKITTI in terms of ATE (lower is better).
+              </div>
+              <div class="scroll">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Method</th>
+                      <th>Scene 01 <span class="th-sub">447m</span></th>
+                      <th>Scene 02 <span class="th-sub">223m</span></th>
+                      <th>Scene 06 <span class="th-sub">270m</span></th>
+                      <th>Scene 18 <span class="th-sub">339m</span></th>
+                      <th>Scene 20 <span class="th-sub">837m</span></th>
+                      <th>Avg.</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>FastVGGT</td><td>3.435</td><td>0.311</td><td>0.120</td><td>2.050</td><td>101.667</td><td>31.427</td></tr>
+                    <tr><td>MASt3R-SLAM</td><td>83.771</td><td>20.206</td><td>3.840</td><td>68.875</td><td>231.064</td><td>98.714</td></tr>
+                    <tr><td>VGGT-SLAM</td><td>25.128</td><td>0.237</td><td>0.281</td><td>1.641</td><td>68.840</td><td>23.667</td></tr>
+                    <tr><td>CUT3R</td><td>50.968</td><td>29.913</td><td>0.820</td><td>29.012</td><td>127.583</td><td>55.276</td></tr>
+                    <tr><td>TTT3R</td><td>29.877</td><td>11.785</td><td>0.598</td><td>7.445</td><td>71.208</td><td>28.099</td></tr>
+                    <tr><td>STream3R</td><td>68.280</td><td>26.450</td><td>8.185</td><td>43.597</td><td>198.279</td><td>82.815</td></tr>
+                    <tr><td>StreamVGGT</td><td>71.616</td><td>15.349</td><td>10.274</td><td>23.900</td><td>221.407</td><td>83.916</td></tr>
+                    <tr class="emph"><td>Ours</td><td>1.422</td><td>0.185</td><td>0.303</td><td>0.683</td><td>4.030</td><td>1.610</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+	      <section class="section" id="bibtex">
+	        <div class="container">
+	          <div class="section-head">
+	            <h2>BibTeX</h2>
+	            <p>Citation information will be provided with the public release.</p>
+	          </div>
+
+	          <pre class="code glass"><code>@misc{longstream,
+	  title   = {LongStream: Long-Sequence Streaming Autoregressive Visual Geometry},
+	  author  = {Chong Cheng and Xianda Chen and Tao Xie and Wei Yin and Weiqiang Ren and Qian Zhang and Xiaoyang Guo and Hao Wang},
+	  year    = {2026},
+	  url     = {https://github.com/3DAgentWorld/LongStream},
+	}</code></pre>
+	        </div>
+	      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <div class="footer-left">
+          <div class="brand-line">
+            <span class="brand-mark" aria-hidden="true"></span>
+            <span class="brand-text">LongStream</span>
+          </div>
+          <p class="muted">© 3DAgentWorld · Research project page.</p>
+        </div>
+        <div class="footer-right">
+          <a href="#top">Back to top</a>
+        </div>
+      </div>
+    </footer>
+
+    <noscript>
+      <div class="noscript">JavaScript is disabled; the background animation is turned off automatically.</div>
+    </noscript>
+
+    <div class="figure-lightbox" id="figure-lightbox" hidden aria-hidden="true" role="dialog" aria-label="Framework figure zoom">
+      <button class="figure-lightbox-close" id="figure-lightbox-close" type="button" aria-label="Close zoom view">Close</button>
+      <img id="figure-lightbox-image" alt="Zoomed framework figure" />
+    </div>
+
+    <script>
+      (() => {
+        const banner = document.getElementById("runtime-warning");
+        if (!banner) return;
+        const show = () => (banner.hidden = false);
+
+        if (window.location.protocol === "file:") show();
+        window.setTimeout(() => {
+          if (!window.__LONGSTREAM_DEMO_OK) show();
+        }, 900);
+      })();
+    </script>
+  </body>
+</html>

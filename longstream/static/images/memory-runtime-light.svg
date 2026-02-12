@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f6f8ff" />
+      <stop offset="0.55" stop-color="#ffffff" />
+      <stop offset="1" stop-color="#f6f8ff" />
+    </linearGradient>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#00aecd" stop-opacity="0.9" />
+      <stop offset="0.55" stop-color="#7fc400" stop-opacity="0.65" />
+      <stop offset="1" stop-color="#d81fb3" stop-opacity="0.6" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)" />
+
+  <g font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto">
+    <text x="90" y="120" font-size="54" font-weight="800" fill="rgba(10,14,28,0.82)">
+      Memory / runtime figure (placeholder)
+    </text>
+    <text x="90" y="170" font-size="24" fill="rgba(10,14,28,0.62)">
+      Replace with Figure 2 or your own plot (stable vs growing cache).
+    </text>
+  </g>
+
+  <!-- axes -->
+  <g stroke="rgba(10,14,28,0.22)" stroke-width="2" fill="none">
+    <path d="M160 760H1480" />
+    <path d="M160 760V260" />
+  </g>
+
+  <!-- baseline growing curve -->
+  <path
+    d="M180 730C380 710 520 680 660 640C820 595 980 520 1140 420C1280 330 1390 285 1460 270"
+    fill="none"
+    stroke="rgba(10,14,28,0.22)"
+    stroke-width="10"
+    stroke-linecap="round"
+  />
+
+  <!-- ours stable curve -->
+  <path
+    d="M180 620C420 620 660 620 900 620C1140 620 1310 620 1460 620"
+    fill="none"
+    stroke="url(#g)"
+    stroke-width="12"
+    stroke-linecap="round"
+  />
+
+  <g font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto" fill="rgba(10,14,28,0.62)" font-size="18">
+    <text x="240" y="800">time →</text>
+    <text x="72" y="300" transform="rotate(-90 72 300)">memory / latency ↑</text>
+    <text x="1140" y="650" fill="rgba(0,174,205,0.95)" font-weight="800">stable</text>
+    <text x="1200" y="320" fill="rgba(10,14,28,0.52)" font-weight="800">growing</text>
+  </g>
+</svg>
+

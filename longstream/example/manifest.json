@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "scenes": [
+    {
+      "id": "kitti",
+      "name": "KITTI",
+      "base": "./example/kitti/",
+      "videos": {
+        "input": "input.mp4",
+        "render": "render.mp4",
+        "depth": "depth.mp4"
+      },
+      "pointcloud": {
+        "full": "pt.ply",
+        "fullPreview": "pt_preview.ply",
+        "perFrameDir": "per_frame_points/",
+        "frameStart": 0,
+        "frameEnd": 550,
+        "frameDigits": 4,
+        "framePrefix": "frame_",
+        "frameSuffix": "_points.ply",
+        "flipY": true
+      },
+      "teaser": "./static/images/teaser-user.png",
+      "thumb": "./example/kitti/thumb.jpg"
+    },
+    {
+      "id": "vkitti",
+      "name": "vKITTI",
+      "base": "./example/vkitti/",
+      "videos": {
+        "input": "input.mp4",
+        "render": "render.mp4",
+        "depth": "depth.mp4"
+      },
+      "pointcloud": {
+        "perFrameDir": "per_frame_points/",
+        "frameStart": 0,
+        "frameEnd": 446,
+        "frameDigits": 4,
+        "framePrefix": "frame_",
+        "frameSuffix": "_points.ply",
+        "flipY": true
+      },
+      "teaser": "./static/images/teaser-user.png",
+      "thumb": "./example/vkitti/thumb.jpg"
+    },
+    {
+      "id": "waymo",
+      "name": "Waymo",
+      "base": "./example/waymo/",
+      "videos": {
+        "input": "input.mp4",
+        "render": "render.mp4",
+        "depth": "depth.mp4"
+      },
+      "pointcloud": {
+        "perFrameDir": "per_frame_points/",
+        "frameStart": 0,
+        "frameEnd": 195,
+        "frameDigits": 4,
+        "framePrefix": "frame_",
+        "frameSuffix": "_points.ply",
+        "flipY": true
+      },
+      "teaser": "./static/images/teaser-user.png",
+      "thumb": "./example/waymo/thumb.jpg"
+    },
+    {
+      "id": "waymo2",
+      "name": "Waymo2",
+      "base": "./example/waymo2/",
+      "videos": {
+        "input": "input.mp4",
+        "render": "render.mp4",
+        "depth": "depth.mp4"
+      },
+      "pointcloud": {
+        "full": "frame0000_camera0000.ply",
+        "fullPreview": "frame0000_camera0000_preview.ply",
+        "perFrameDir": "per_frame_points/",
+        "frameStart": 0,
+        "frameEnd": 197,
+        "frameDigits": 4,
+        "framePrefix": "frame_",
+        "frameSuffix": "_points.ply",
+        "flipY": true
+      },
+      "teaser": "./static/images/teaser-user.png",
+      "thumb": "./example/waymo2/thumb.jpg"
+    }
+  ]
+}

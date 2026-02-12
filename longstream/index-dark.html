@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>LongStream</title>
+    <meta
+      name="description"
+      content="LongStream: Long-Sequence Streaming Autoregressive Visual Geometry — a research project page."
+    />
+    <meta name="keywords" content="LongStream, streaming, autoregressive, visual geometry, 3D reconstruction" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- TODO: Replace with a real teaser image if you want better social preview -->
+    <!-- <meta name="twitter:image:src" content="https://your-domain/longstream/static/images/teaser.png" /> -->
+
+    <link rel="icon" href="./static/images/favicon.svg" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="./static/css/index.css" />
+    <script defer src="./static/js/index.js"></script>
+  </head>
+
+  <body>
+    <canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+    <header class="topbar" data-topbar>
+      <div class="container topbar-inner">
+        <a class="brand" href="#top" aria-label="LongStream">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span class="brand-text">LongStream</span>
+        </a>
+
+        <nav class="nav" aria-label="Page navigation">
+          <a href="#abstract">Abstract</a>
+          <a href="#method">Method</a>
+          <a href="#results">Results</a>
+          <a href="#resources">Resources</a>
+          <a href="#bibtex">BibTeX</a>
+        </nav>
+
+        <div class="actions">
+          <!-- TODO: Replace links -->
+          <a class="btn ghost" href="https://example.com" target="_blank" rel="noreferrer">Paper</a>
+          <a class="btn primary" href="https://github.com/3DAgentWorld" target="_blank" rel="noreferrer">Code</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="container hero-inner">
+          <h1 class="paper-title">
+            LongStream: <span class="gradient-text">Long-Sequence Streaming Autoregressive Visual Geometry</span>
+          </h1>
+          <p class="paper-venue">CVPR 2026</p>
+
+          <div class="authors" aria-label="Authors">
+            <!-- TODO: Replace authors (the provided PDF is an anonymous submission) -->
+            <span class="author">Author A<sup>1</sup></span>
+            <span class="author">Author B<sup>1</sup></span>
+            <span class="author">Author C<sup>2</sup></span>
+            <span class="author">Author D<sup>2</sup></span>
+          </div>
+          <div class="affiliations" aria-label="Affiliations">
+            <!-- TODO: Replace affiliations -->
+            <span><sup>1</sup>Institution 1</span>
+            <span><sup>2</sup>Institution 2</span>
+          </div>
+
+          <div class="link-row" aria-label="Links">
+            <!-- TODO: Replace links -->
+            <a class="btn primary" href="https://example.com" target="_blank" rel="noreferrer">Paper</a>
+            <a class="btn" href="https://example.com" target="_blank" rel="noreferrer">arXiv</a>
+            <a class="btn" href="https://github.com/3DAgentWorld" target="_blank" rel="noreferrer">Code</a>
+            <a class="btn ghost" href="https://example.com" target="_blank" rel="noreferrer">Dataset</a>
+          </div>
+
+          <div class="highlights" aria-label="Highlights">
+            <div class="highlight glass">
+              <div class="h-k">Speed</div>
+              <div class="h-v">18 FPS (streaming)</div>
+            </div>
+            <div class="highlight glass">
+              <div class="h-k">Scale</div>
+              <div class="h-v">2.45 km sequences</div>
+            </div>
+            <div class="highlight glass">
+              <div class="h-k">Goal</div>
+              <div class="h-v">Metric-scale 3D reconstruction</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container">
+          <figure class="figure glass" id="teaser">
+            <img src="./static/images/teaser.svg" alt="Teaser figure placeholder" />
+            <figcaption>
+              <b>Teaser.</b> Existing streaming models (e.g., Stream3R, StreamVGGT) may collapse within tens of meters due
+              to extrapolation errors. LongStream targets stable, metric-scale reconstruction over multi-kilometer
+              sequences.
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="section" id="abstract">
+        <div class="container">
+          <div class="section-head">
+            <h2>Abstract</h2>
+            <p>LongStream introduces a gauge-decoupled design and cache-consistent inference for ultra-long streaming.</p>
+          </div>
+
+          <div class="prose glass">
+            <p>
+              Long-sequence streaming 3D reconstruction remains a significant open challenge. Existing autoregressive
+              models often fail when processing long sequences. They typically anchor poses to the first frame, which
+              leads to attention decay, scale drift, and extrapolation errors. We introduce LongStream, a novel
+              gauge-decoupled streaming visual geometry model for metric-scale scene reconstruction across thousands of
+              frames. Our approach is threefold. First, we discard the first-frame anchor and predict keyframe-relative
+              poses. This reformulates long-range extrapolation into a constant-difficulty local task. Second, we
+              introduce orthogonal scale learning. This method fully disentangles geometry from scale estimation to
+              suppress drift. Finally, we solve Transformer cache issues such as attention-sink reliance and long-term
+              KV-cache contamination. We propose cache-consistent training combined with periodic cache refresh. This
+              approach suppresses attention degradation over ultra-long sequences and reduces the gap between training
+              and inference. Experiments show LongStream achieves state-of-the-art performance. It delivers stable,
+              metric-scale reconstruction over kilometer-scale sequences at 18 FPS.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="method">
+        <div class="container">
+          <div class="section-head">
+            <h2>Method</h2>
+            <p>Three pieces: gauge-decoupled poses, orthogonal scale learning, and cache-consistent inference.</p>
+          </div>
+
+          <div class="grid-2">
+            <div class="glass panel">
+              <h3>Key ideas</h3>
+              <ul class="bullets">
+                <li>
+                  <b>Remove first-frame anchoring.</b> Regress <i>keyframe-relative</i> poses to turn long-range
+                  extrapolation into a constant-difficulty local task.
+                </li>
+                <li>
+                  <b>Orthogonal scale learning.</b> Decouple geometry learning from metric-scale estimation to suppress
+                  Sim(3) scale drift.
+                </li>
+                <li>
+                  <b>Cache-consistent inference.</b> Address attention-sink reliance and long-term KV-cache contamination
+                  via cache-consistent training and periodic cache refresh.
+                </li>
+              </ul>
+
+              <div class="note">
+                Tip: replace the figure on the right with your camera-ready overview (PNG/SVG, ~1600px wide).
+              </div>
+            </div>
+
+            <figure class="figure glass">
+              <img src="./static/images/method.svg" alt="Method overview placeholder" />
+              <figcaption><b>Overview.</b> A compact diagram is often more readable than long paragraphs.</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="results">
+        <div class="container">
+          <div class="section-head">
+            <h2>Results</h2>
+            <p>Quantitative (ATE on KITTI) + qualitative stability on long streaming sequences.</p>
+          </div>
+
+          <div class="grid-2">
+            <div class="glass panel">
+              <h3>What to look at</h3>
+              <ul class="bullets">
+                <li><b>Stability:</b> trajectories stay coherent over thousands of frames.</li>
+                <li><b>Metric scale:</b> reduced drift on long-range sequences.</li>
+                <li><b>Efficiency:</b> stable memory/latency via cache handling.</li>
+              </ul>
+
+              <div class="chips" aria-label="Datasets">
+                <span class="chip">KITTI</span>
+                <span class="chip">vKITTI</span>
+                <span class="chip">Waymo</span>
+                <span class="chip">TUM-RGBD</span>
+              </div>
+            </div>
+
+            <figure class="figure glass">
+              <img src="./static/images/memory-runtime.svg" alt="Memory/runtime placeholder" />
+              <figcaption>
+                <b>Memory &amp; runtime.</b> LongStream keeps memory and latency stable, while some baselines grow and may
+                hit OOM on long sequences.
+              </figcaption>
+            </figure>
+          </div>
+
+          <div class="table-wrap glass" aria-label="KITTI ATE table">
+            <div class="table-title">
+              <b>Table.</b> KITTI ATE (↓). Columns are sequences 00–10 and overall average (from the provided paper PDF).
+            </div>
+            <div class="scroll">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>Avg.</th>
+                    <th>00</th>
+                    <th>01</th>
+                    <th>02</th>
+                    <th>03</th>
+                    <th>04</th>
+                    <th>05</th>
+                    <th>06</th>
+                    <th>07</th>
+                    <th>08</th>
+                    <th>09</th>
+                    <th>10</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>CUT3R</td>
+                    <td>185.89</td>
+                    <td>651.52</td>
+                    <td>296.98</td>
+                    <td>148.06</td>
+                    <td>22.17</td>
+                    <td>155.61</td>
+                    <td>132.54</td>
+                    <td>77.03</td>
+                    <td>238.39</td>
+                    <td>205.94</td>
+                    <td>193.39</td>
+                    <td>209.78</td>
+                  </tr>
+                  <tr>
+                    <td>TTT3R</td>
+                    <td>190.93</td>
+                    <td>546.84</td>
+                    <td>218.77</td>
+                    <td>105.28</td>
+                    <td>11.62</td>
+                    <td>153.12</td>
+                    <td>132.94</td>
+                    <td>70.95</td>
+                    <td>180.57</td>
+                    <td>211.01</td>
+                    <td>133.00</td>
+                    <td>177.73</td>
+                  </tr>
+                  <tr>
+                    <td>Stream3R</td>
+                    <td>190.98</td>
+                    <td>681.95</td>
+                    <td>301.40</td>
+                    <td>158.25</td>
+                    <td>102.73</td>
+                    <td>159.85</td>
+                    <td>135.03</td>
+                    <td>90.37</td>
+                    <td>261.15</td>
+                    <td>216.31</td>
+                    <td>207.49</td>
+                    <td>227.77</td>
+                  </tr>
+                  <tr>
+                    <td>StreamVGGT</td>
+                    <td>191.93</td>
+                    <td>653.06</td>
+                    <td>303.35</td>
+                    <td>157.50</td>
+                    <td>108.24</td>
+                    <td>160.46</td>
+                    <td>133.71</td>
+                    <td>89.00</td>
+                    <td>263.95</td>
+                    <td>216.69</td>
+                    <td>209.80</td>
+                    <td>226.15</td>
+                  </tr>
+                  <tr class="emph">
+                    <td>LongStream (Ours)</td>
+                    <td>92.55</td>
+                    <td>46.01</td>
+                    <td>134.70</td>
+                    <td>3.81</td>
+                    <td>1.95</td>
+                    <td>84.69</td>
+                    <td>23.12</td>
+                    <td>14.93</td>
+                    <td>62.07</td>
+                    <td>85.61</td>
+                    <td>21.48</td>
+                    <td>51.90</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="note small">
+            If you prefer a cleaner layout: keep only streaming baselines + ours, and move the full table into an
+            appendix section.
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="resources">
+        <div class="container">
+          <div class="section-head">
+            <h2>Resources</h2>
+            <p>Put all public links here (paper, code, data, video, contact).</p>
+          </div>
+
+          <div class="resource-grid">
+            <!-- TODO: Replace links -->
+            <a class="resource glass" href="https://example.com" target="_blank" rel="noreferrer">
+              <div class="resource-k">Paper</div>
+              <div class="resource-v">PDF</div>
+            </a>
+            <a class="resource glass" href="https://example.com" target="_blank" rel="noreferrer">
+              <div class="resource-k">arXiv</div>
+              <div class="resource-v">Preprint</div>
+            </a>
+            <a class="resource glass" href="https://github.com/3DAgentWorld" target="_blank" rel="noreferrer">
+              <div class="resource-k">Code</div>
+              <div class="resource-v">GitHub</div>
+            </a>
+            <a class="resource glass" href="mailto:team@example.com">
+              <div class="resource-k">Contact</div>
+              <div class="resource-v">Email</div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="bibtex">
+        <div class="container">
+          <div class="section-head">
+            <h2>BibTeX</h2>
+            <p>Replace authors/venue once public.</p>
+          </div>
+
+          <pre class="code glass"><code>@misc{longstream2026,
+  title   = {LongStream: Long-Sequence Streaming Autoregressive Visual Geometry},
+  author  = {Author A and Author B and Author C and Author D},
+  year    = {2026},
+  note    = {CVPR 2026},
+}</code></pre>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <div class="footer-left">
+          <div class="brand-line">
+            <span class="brand-mark" aria-hidden="true"></span>
+            <span class="brand-text">LongStream</span>
+          </div>
+          <p class="muted">© 3DAgentWorld · Research project page.</p>
+        </div>
+        <div class="footer-right">
+          <a href="#top">Back to top</a>
+        </div>
+      </div>
+    </footer>
+
+    <noscript>
+      <div class="noscript">JavaScript is disabled; the background animation is turned off automatically.</div>
+    </noscript>
+  </body>
+</html>
+
