@@ -18,10 +18,8 @@
           particleSaturation: 95,
         };
 
-  const savedTheme = window.localStorage?.getItem("longstream-theme");
-  if (savedTheme === "light" || savedTheme === "dark") {
-    root.dataset.theme = savedTheme;
-  }
+  root.dataset.theme = "light";
+  window.localStorage?.setItem("longstream-theme", "light");
 
   const themeToggle = document.getElementById("theme-toggle");
   const updateThemeToggle = () => {

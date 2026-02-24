@@ -227,8 +227,22 @@ body.is-scrolled .topbar::before {
 
 .paper-venue {
   margin: 0 0 18px;
-  color: rgba(255, 255, 255, 0.64);
-  font-weight: 800;
+  font-size: clamp(16px, 1.7vw, 22px);
+  letter-spacing: 0.08em;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: #83d8ff;
+  display: inline-block;
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .paper-venue {
+    background: linear-gradient(90deg, #00e5ff, #4f8cff, #ff2bd6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
 }
 
 .gradient-text {
@@ -278,6 +292,21 @@ body.is-scrolled .topbar::before {
 }
 
 .affiliations sup {
+  font-size: 12px;
+}
+
+.author-notes {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: -8px 0 18px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.author-notes sup {
   font-size: 12px;
 }
 
@@ -970,7 +999,7 @@ body.is-scrolled .topbar::before {
 
 .table-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   gap: 14px;
   align-items: start;
 }
@@ -997,12 +1026,23 @@ body.is-scrolled .topbar::before {
 
 [aria-label="TUM Oxford Spires Waymo ATE table"] .table {
   min-width: 0;
+  table-layout: auto;
 }
 
 [aria-label="TUM Oxford Spires Waymo ATE table"] .table th,
 [aria-label="TUM Oxford Spires Waymo ATE table"] .table td {
   padding: 7px 6px;
-  white-space: normal;
+  white-space: nowrap;
+}
+
+[aria-label="TUM Oxford Spires Waymo ATE table"] .table th:first-child,
+[aria-label="TUM Oxford Spires Waymo ATE table"] .table td:first-child {
+  width: 42%;
+}
+
+[aria-label="TUM Oxford Spires Waymo ATE table"] .table th:not(:first-child),
+[aria-label="TUM Oxford Spires Waymo ATE table"] .table td:not(:first-child) {
+  width: 19.33%;
 }
 
 /* Resources */
@@ -1136,9 +1176,24 @@ html[data-theme="light"] #theme-toggle {
 
 html[data-theme="light"] .author sup,
 html[data-theme="light"] .affiliations,
+html[data-theme="light"] .author-notes,
 html[data-theme="light"] .control span,
 html[data-theme="light"] .muted {
   color: rgba(20, 28, 44, 0.58);
+}
+
+html[data-theme="light"] .paper-venue {
+  color: #1d67d9;
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  html[data-theme="light"] .paper-venue {
+    background: linear-gradient(90deg, #0f75ff, #12a4ff, #e14ac8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
 }
 
 html[data-theme="light"] .bullets li {

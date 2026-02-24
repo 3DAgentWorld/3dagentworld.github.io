@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -61,7 +61,7 @@
 
         <div class="actions">
           <button class="btn" id="theme-toggle" type="button" aria-label="Toggle theme">Light</button>
-          <a class="btn ghost" href="#abstract">arXiv</a>
+          <a class="btn ghost" href="https://arxiv.org/abs/2602.13172" target="_blank" rel="noreferrer">arXiv</a>
           <a class="btn primary" href="https://github.com/3DAgentWorld/LongStream/tree/main" target="_blank" rel="noreferrer">Code</a>
         </div>
       </div>
@@ -73,6 +73,7 @@
           <h1 class="paper-title">
             LongStream: <span class="gradient-text">Long-Sequence Streaming Autoregressive Visual Geometry</span>
           </h1>
+          <p class="paper-venue">CVPR 2026</p>
 
           <div class="authors" aria-label="Authors">
             <span class="author">Chong Cheng<sup>1,2</sup></span>
@@ -81,17 +82,21 @@
             <span class="author">Wei Yin<sup>2</sup></span>
             <span class="author">Weiqiang Ren<sup>2</sup></span>
             <span class="author">Qian Zhang<sup>2</sup></span>
-            <span class="author">Xiaoyang Guo<sup>2</sup></span>
-            <span class="author">Hao Wang<sup>1</sup></span>
+            <span class="author">Xiaoyang Guo<sup>2,*</sup></span>
+            <span class="author">Hao Wang<sup>1,†</sup></span>
           </div>
           <div class="affiliations" aria-label="Affiliations">
             <span><sup>1</sup>The Hong Kong University of Science and Technology (Guangzhou)</span>
             <span><sup>2</sup>Horizon Robotics</span>
             <span><sup>3</sup>Zhejiang University</span>
           </div>
+          <div class="author-notes" aria-label="Author notes">
+            <span><sup>*</sup>Project Lead</span>
+            <span><sup>†</sup>Corresponding Author</span>
+          </div>
 
           <div class="link-row" aria-label="Links">
-            <a class="btn" href="#abstract">arXiv</a>
+            <a class="btn" href="https://arxiv.org/abs/2602.13172" target="_blank" rel="noreferrer">arXiv</a>
             <a class="btn" href="https://github.com/3DAgentWorld/LongStream/tree/main" target="_blank" rel="noreferrer">Code</a>
             <a class="btn ghost" href="#demo">Demo</a>
             <a class="btn ghost" href="https://github.com/3DAgentWorld/LongStream/tree/main" target="_blank" rel="noreferrer">Model</a>
@@ -600,14 +605,17 @@
 	        <div class="container">
 	          <div class="section-head">
 	            <h2>BibTeX</h2>
-	            <p>Citation information will be provided with the public release.</p>
+	            <p>If you find LongStream useful, please cite:</p>
 	          </div>
 
-	          <pre class="code glass"><code>@misc{longstream,
-	  title   = {LongStream: Long-Sequence Streaming Autoregressive Visual Geometry},
-	  author  = {Chong Cheng and Xianda Chen and Tao Xie and Wei Yin and Weiqiang Ren and Qian Zhang and Xiaoyang Guo and Hao Wang},
-	  year    = {2026},
-	  url     = {https://github.com/3DAgentWorld/LongStream},
+	          <pre class="code glass"><code>@misc{cheng2026longstreamlongsequencestreamingautoregressive,
+	  title         = {LongStream: Long-Sequence Streaming Autoregressive Visual Geometry},
+	  author        = {Chong Cheng and Xianda Chen and Tao Xie and Wei Yin and Weiqiang Ren and Qian Zhang and Xiaoyang Guo and Hao Wang},
+	  year          = {2026},
+	  eprint        = {2602.13172},
+	  archivePrefix = {arXiv},
+	  primaryClass  = {cs.CV},
+	  url           = {https://arxiv.org/abs/2602.13172},
 	}</code></pre>
 	        </div>
 	      </section>
