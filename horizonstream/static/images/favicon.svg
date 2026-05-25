@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="HorizonStream">
+  <rect width="64" height="64" rx="16" fill="#17191d"/>
+  <path d="M14 42V18h7v9h22v-9h7v24h-7v-9H21v9z" fill="#f7f8fb"/>
+  <path d="M14 48c10-1 17-4 24-9 4-3 8-5 12-5" fill="none" stroke="#1e9d68" stroke-width="4" stroke-linecap="round"/>
+  <path d="M14 16c9 2 16 5 22 10 5 4 9 6 14 6" fill="none" stroke="#3d61ff" stroke-width="4" stroke-linecap="round"/>
+</svg>
