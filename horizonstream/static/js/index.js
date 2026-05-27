@@ -20,8 +20,11 @@ const inputVideo = document.querySelector("#gallery-input");
 const renderVideo = document.querySelector("#gallery-render");
 const minimapVideo = document.querySelector("#gallery-minimap");
 const depthVideo = document.querySelector("#gallery-depth");
+const galleryLoading = document.querySelector("#gallery-loading");
 const galleryVideos = [inputVideo, renderVideo, minimapVideo, depthVideo].filter(Boolean);
 let replayTimer = null;
+let galleryReady = false;
+let syncPaused = false; // true when at least one video is buffering
 
 document.querySelectorAll('.pill[aria-disabled="true"]').forEach((link) => {
   link.addEventListener("click", (event) => event.preventDefault());
@@ -48,32 +51,145 @@ function updateVideo(video, src, poster) {
   }
 }
 
-function resetVideo(video) {
-  if (!video) return;
-  if (!video.getAttribute("src")) return;
-  video.loop = false;
-  const seekToStart = () => {
-    try {
-      video.currentTime = 0;
-    } catch {
-      // Some browsers only allow seeking after metadata is available.
-    }
-  };
-  if (video.readyState > 0) {
-    seekToStart();
-  } else {
-    video.addEventListener("loadedmetadata", seekToStart, { once: true });
+function showLoading() {
+  if (galleryLoading) galleryLoading.classList.remove("hidden");
+}
+
+function hideLoading() {
+  if (galleryLoading) galleryLoading.classList.add("hidden");
+}
+
+function activeVideos() {
+  return galleryVideos.filter(
+    (v) => v.getAttribute("src") && !v.closest("[hidden]")
+  );
+}
+
+/* ── Synchronized playback: play together, pause together on buffer ── */
+
+function onVideoWaiting() {
+  // A video is buffering — pause all others so they stay in sync
+  if (syncPaused) return;
+  syncPaused = true;
+  showLoading();
+  const videos = activeVideos();
+  videos.forEach((v) => {
+    if (!v.paused && !v.ended) v.pause();
+  });
+}
+
+function onVideoCanResume() {
+  // A video finished buffering — check if ALL are ready, then resume together
+  if (!syncPaused) return;
+  const videos = activeVideos();
+  const allReady = videos.every((v) => v.readyState >= 3 || v.ended);
+  if (!allReady) return;
+
+  syncPaused = false;
+  hideLoading();
+
+  // Sync currentTime to the minimum to avoid drift
+  const times = videos.filter((v) => !v.ended).map((v) => v.currentTime);
+  if (times.length > 0) {
+    const minTime = Math.min(...times);
+    videos.forEach((v) => {
+      if (!v.ended && Math.abs(v.currentTime - minTime) > 0.1) {
+        try { v.currentTime = minTime; } catch {}
+      }
+    });
   }
+
+  videos.forEach((v) => {
+    if (!v.ended) {
+      const p = v.play();
+      if (p) p.catch(() => {});
+    }
+  });
 }
 
 function playSyncedVideos() {
   window.clearTimeout(replayTimer);
-  galleryVideos.forEach((video) => {
-    resetVideo(video);
-    const playPromise = video.play();
-    if (playPromise) playPromise.catch(() => {});
+  syncPaused = false;
+  const videos = activeVideos();
+  if (videos.length === 0) return;
+
+  showLoading();
+  videos.forEach((v) => v.pause());
+
+  // Wait for at least one video to be playable, then start all immediately.
+  // If some aren't ready yet, the waiting/canplay sync handlers will manage pausing.
+  const ready = videos.map(
+    (v) =>
+      new Promise((resolve) => {
+        if (v.readyState >= 3) {
+          resolve();
+        } else {
+          v.addEventListener("canplay", resolve, { once: true });
+        }
+      })
+  );
+
+  // Start as soon as ANY video is ready (Promise.any), but ideally all
+  // Use a race: either all ready, or timeout after 500ms and start what we can
+  const allReady = Promise.all(ready);
+  const timeout = new Promise((resolve) => setTimeout(resolve, 500));
+
+  Promise.race([allReady, timeout]).then(() => {
+    videos.forEach((v) => {
+      try { v.currentTime = 0; } catch {}
+    });
+    hideLoading();
+    videos.forEach((v) => {
+      const p = v.play();
+      if (p) p.catch(() => {});
+    });
+
+    if (!galleryReady) {
+      galleryReady = true;
+      preloadNextScene();
+      loadInitialComparison();
+    }
   });
 }
+
+/* ── Preloading: fetch next scene videos into browser cache ── */
+
+let preloadedSceneIndex = -1;
+
+function preloadNextScene() {
+  const activeIndex = Array.from(sceneButtons).findIndex((b) => b.classList.contains("active"));
+  const nextIndex = (activeIndex + 1) % sceneButtons.length;
+  if (nextIndex === preloadedSceneIndex) return;
+  preloadedSceneIndex = nextIndex;
+
+  const button = sceneButtons[nextIndex];
+  const srcs = [button.dataset.input, button.dataset.render, button.dataset.minimap, button.dataset.depth].filter(Boolean);
+
+  // Use fetch to pull videos into browser cache with low priority
+  srcs.forEach((src) => {
+    const link = document.createElement("link");
+    link.rel = "preload";
+    link.as = "video";
+    link.href = src;
+    document.head.appendChild(link);
+  });
+}
+
+function preloadAllScenes() {
+  // Prefetch all remaining scenes after the gallery has been playing
+  sceneButtons.forEach((button, i) => {
+    if (i === preloadedSceneIndex) return;
+    const srcs = [button.dataset.input, button.dataset.render, button.dataset.minimap, button.dataset.depth].filter(Boolean);
+    srcs.forEach((src) => {
+      const link = document.createElement("link");
+      link.rel = "prefetch";
+      link.href = src;
+      document.head.appendChild(link);
+    });
+  });
+}
+
+/* ── Replay / auto-advance ── */
 
 function videoHasFinished(video) {
   if (!video) return true;
@@ -87,6 +203,8 @@ function videoHasFinished(video) {
 
 function replayWhenAllFinished() {
   if (galleryVideos.every(videoHasFinished)) {
+    // Preload next scene right when current finishes
+    preloadNextScene();
     replayTimer = window.setTimeout(activateNextSceneOrReplay, 360);
   }
 }
@@ -108,6 +226,7 @@ function activateScene(button) {
     item.setAttribute("aria-selected", String(active));
   });
 
+  showLoading();
   updateVideo(inputVideo, button.dataset.input, button.dataset.inputPoster);
   updateVideo(renderVideo, button.dataset.render, button.dataset.renderPoster);
   updateVideo(minimapVideo, button.dataset.minimap, button.dataset.minimapPoster);
@@ -124,28 +243,48 @@ sceneButtons.forEach((button) => {
 galleryVideos.forEach((video) => {
   video.loop = false;
   video.addEventListener("ended", replayWhenAllFinished);
+  // Sync handlers: pause all when one buffers, resume when all ready
+  video.addEventListener("waiting", onVideoWaiting);
+  video.addEventListener("canplay", onVideoCanResume);
+  video.addEventListener("canplaythrough", onVideoCanResume);
 });
 
-playSyncedVideos();
+// Load first scene immediately
+const firstActive = document.querySelector(".scene-button.active");
+if (firstActive) activateScene(firstActive);
+
+// After 3s, start prefetching all other scenes
+setTimeout(preloadAllScenes, 3000);
+
+/* ── Comparison section (GLBs deferred until gallery ready) ── */
 
 const comparisonButtons = document.querySelectorAll(".comparison-scene");
 const compareDrift = document.querySelector("#compare-drift");
 const compareLocal = document.querySelector("#compare-local");
 const compareOurs = document.querySelector("#compare-ours");
+const poseDrift = document.querySelector("#pose-drift");
+const poseLocal = document.querySelector("#pose-local");
+const poseOurs = document.querySelector("#pose-ours");
 
 function activateComparisonScene(button) {
   comparisonButtons.forEach((item) => item.classList.toggle("active", item === button));
   if (compareDrift && button.dataset.driftGlb) compareDrift.dataset.src = button.dataset.driftGlb;
   if (compareLocal && button.dataset.localGlb) compareLocal.dataset.src = button.dataset.localGlb;
   if (compareOurs && button.dataset.oursGlb) compareOurs.dataset.src = button.dataset.oursGlb;
+  if (poseDrift && button.dataset.driftPose) poseDrift.src = button.dataset.driftPose;
+  if (poseLocal && button.dataset.localPose) poseLocal.src = button.dataset.localPose;
+  if (poseOurs && button.dataset.oursPose) poseOurs.src = button.dataset.oursPose;
 }
 
 comparisonButtons.forEach((button) => {
   button.addEventListener("click", () => activateComparisonScene(button));
 });
 
-const activeComparison = Array.from(comparisonButtons).find((button) => button.classList.contains("active"));
-if (activeComparison) activateComparisonScene(activeComparison);
+function loadInitialComparison() {
+  const active = Array.from(comparisonButtons).find((b) => b.classList.contains("active"));
+  if (active) activateComparisonScene(active);
+  scheduleComparisonRotate();
+}
 
 let comparisonRotateTimer = null;
 function scheduleComparisonRotate() {
@@ -158,7 +297,6 @@ function scheduleComparisonRotate() {
     scheduleComparisonRotate();
   }, 9000);
 }
-scheduleComparisonRotate();
 
 const canvas = document.querySelector("#field-canvas");
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;

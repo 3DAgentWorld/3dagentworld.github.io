@@ -22,8 +22,12 @@
     <meta property="og:image" content="./static/images/qualitative-geometry.png" />
     <link rel="icon" href="./static/images/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./static/css/index.css" />
+    <!-- Preload first scene videos for instant playback -->
+    <link rel="preload" as="video" href="./example/render/office/render.mp4" />
+    <link rel="preload" as="video" href="./example/render/office/rgb.mp4" />
+    <link rel="preload" as="video" href="./example/render/office/dpt.mp4" />
+    <link rel="preload" as="video" href="./example/render/office/minimap_h264.mp4" />
     <script defer src="./static/js/index.js"></script>
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
     <script type="module" src="./static/js/pointcloud-viewer.js"></script>
   </head>
   <body>
@@ -38,7 +42,6 @@
         <a href="#gallery">Gallery</a>
         <a href="#abstract">Abstract</a>
         <a href="#method">Method</a>
-        <a href="#results">Results</a>
         <a href="#bibtex">BibTeX</a>
       </nav>
     </header>
@@ -93,15 +96,15 @@
 
         <section class="project-gallery" id="gallery" aria-label="Streaming reconstruction gallery">
           <div class="gallery-stage">
+            <div class="gallery-loading" id="gallery-loading"><div class="spinner"></div></div>
             <div class="input-stack">
               <figure class="media-panel input-panel">
                 <video
                   id="gallery-input"
-                  src="./example/render/cyberpunk/rgb.mp4"
-                  autoplay
                   muted
                   playsinline
-                  preload="metadata"
+                  preload="auto"
+                  poster="./example/render/office/rgb_poster.jpg"
                 ></video>
                 <figcaption>RGB Stream</figcaption>
               </figure>
@@ -110,22 +113,20 @@
                   <span>Camera Pose</span>
                   <video
                     id="gallery-minimap"
-                    src="./example/render/cyberpunk/minimap_h264.mp4"
-                    autoplay
                     muted
                     playsinline
-                    preload="metadata"
+                    preload="auto"
+                    poster="./example/render/office/minimap_h264_poster.jpg"
                   ></video>
                 </div>
                 <div class="instrument-tile depth-tile">
                   <span>Depth</span>
                   <video
                     id="gallery-depth"
-                    src="./example/render/cyberpunk/dpt.mp4"
-                    autoplay
                     muted
                     playsinline
-                    preload="metadata"
+                    preload="auto"
+                    poster="./example/render/office/dpt_poster.jpg"
                   ></video>
                 </div>
               </div>
@@ -135,11 +136,10 @@
               <div class="render-main">
                 <video
                   id="gallery-render"
-                  src="./example/render/cyberpunk/render.mp4"
-                  autoplay
                   muted
                   playsinline
-                  preload="metadata"
+                  preload="auto"
+                  poster="./example/render/office/render_poster.jpg"
                 ></video>
                 <figcaption>Point Cloud Render</figcaption>
               </div>
@@ -152,23 +152,6 @@
               type="button"
               role="tab"
               aria-selected="true"
-              data-scene="Cyberpunk"
-              data-distance="urban sequence"
-              data-frames="rgb + render + depth"
-              data-mode="render set"
-              data-input="./example/render/cyberpunk/rgb.mp4"
-              data-render="./example/render/cyberpunk/render.mp4"
-              data-minimap="./example/render/cyberpunk/minimap_h264.mp4"
-              data-depth="./example/render/cyberpunk/dpt.mp4"
-            >
-              <video src="./example/render/cyberpunk/rgb.mp4" autoplay muted loop playsinline preload="metadata"></video>
-              <strong>Cyberpunk</strong>
-            </button>
-            <button
-              class="scene-button"
-              type="button"
-              role="tab"
-              aria-selected="false"
               data-scene="Office"
               data-distance="indoor sequence"
               data-frames="rgb + render + depth"
@@ -177,9 +160,34 @@
               data-render="./example/render/office/render.mp4"
               data-minimap="./example/render/office/minimap_h264.mp4"
               data-depth="./example/render/office/dpt.mp4"
+              data-input-poster="./example/render/office/rgb_poster.jpg"
+              data-render-poster="./example/render/office/render_poster.jpg"
+              data-minimap-poster="./example/render/office/minimap_h264_poster.jpg"
+              data-depth-poster="./example/render/office/dpt_poster.jpg"
             >
               <video src="./example/render/office/rgb.mp4" autoplay muted loop playsinline preload="metadata"></video>
               <strong>Office</strong>
+            </button>
+            <button
+              class="scene-button"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              data-scene="Cyberpunk"
+              data-distance="urban sequence"
+              data-frames="rgb + render + depth"
+              data-mode="render set"
+              data-input="./example/render/cyberpunk/rgb.mp4"
+              data-render="./example/render/cyberpunk/render.mp4"
+              data-minimap="./example/render/cyberpunk/minimap_h264.mp4"
+              data-depth="./example/render/cyberpunk/dpt.mp4"
+              data-input-poster="./example/render/cyberpunk/rgb_poster.jpg"
+              data-render-poster="./example/render/cyberpunk/render_poster.jpg"
+              data-minimap-poster="./example/render/cyberpunk/minimap_h264_poster.jpg"
+              data-depth-poster="./example/render/cyberpunk/dpt_poster.jpg"
+            >
+              <video src="./example/render/cyberpunk/rgb.mp4" autoplay muted loop playsinline preload="metadata"></video>
+              <strong>Cyberpunk</strong>
             </button>
             <button
               class="scene-button"
@@ -194,6 +202,10 @@
               data-render="./example/render/kitti-07/render.mp4"
               data-minimap="./example/render/kitti-07/minimap_h264.mp4"
               data-depth="./example/render/kitti-07/dpt.mp4"
+              data-input-poster="./example/render/kitti-07/rgb_poster.jpg"
+              data-render-poster="./example/render/kitti-07/render_poster.jpg"
+              data-minimap-poster="./example/render/kitti-07/minimap_h264_poster.jpg"
+              data-depth-poster="./example/render/kitti-07/dpt_poster.jpg"
             >
               <video src="./example/render/kitti-07/rgb.mp4" autoplay muted loop playsinline preload="metadata"></video>
               <strong>KITTI 07</strong>
@@ -211,6 +223,10 @@
               data-render="./example/render/kitti-09/render.mp4"
               data-minimap="./example/render/kitti-09/minimap_h264.mp4"
               data-depth="./example/render/kitti-09/dpt.mp4"
+              data-input-poster="./example/render/kitti-09/rgb_poster.jpg"
+              data-render-poster="./example/render/kitti-09/render_poster.jpg"
+              data-minimap-poster="./example/render/kitti-09/minimap_h264_poster.jpg"
+              data-depth-poster="./example/render/kitti-09/dpt_poster.jpg"
             >
               <video src="./example/render/kitti-09/rgb.mp4" autoplay muted loop playsinline preload="metadata"></video>
               <strong>KITTI 09</strong>
@@ -228,6 +244,10 @@
               data-render="./example/render/lab/render.mp4"
               data-minimap="./example/render/lab/minimap_h264.mp4"
               data-depth="./example/render/lab/dpt.mp4"
+              data-input-poster="./example/render/lab/rgb_poster.jpg"
+              data-render-poster="./example/render/lab/render_poster.jpg"
+              data-minimap-poster="./example/render/lab/minimap_h264_poster.jpg"
+              data-depth-poster="./example/render/lab/dpt_poster.jpg"
             >
               <video src="./example/render/lab/rgb.mp4" autoplay muted loop playsinline preload="metadata"></video>
               <strong>Lab</strong>
@@ -245,6 +265,10 @@
               data-render="./example/render/carplant/render.mp4"
               data-minimap="./example/render/carplant/minimap_h264.mp4"
               data-depth="./example/render/carplant/dpt.mp4"
+              data-input-poster="./example/render/carplant/rgb_poster.jpg"
+              data-render-poster="./example/render/carplant/render_poster.jpg"
+              data-minimap-poster="./example/render/carplant/minimap_h264_poster.jpg"
+              data-depth-poster="./example/render/carplant/dpt_poster.jpg"
             >
               <video src="./example/render/carplant/rgb.mp4" autoplay muted loop playsinline preload="metadata"></video>
               <strong>Car Plant</strong>
@@ -260,7 +284,12 @@
               data-mode="render set"
               data-input="./example/render/oxford-college/rgb.mp4"
               data-render="./example/render/oxford-college/render.mp4"
+              data-minimap="./example/render/oxford-college/minimap_h264.mp4"
               data-depth="./example/render/oxford-college/dpt.mp4"
+              data-input-poster="./example/render/oxford-college/rgb_poster.jpg"
+              data-render-poster="./example/render/oxford-college/render_poster.jpg"
+              data-minimap-poster="./example/render/oxford-college/minimap_h264_poster.jpg"
+              data-depth-poster="./example/render/oxford-college/dpt_poster.jpg"
             >
               <video src="./example/render/oxford-college/rgb.mp4" autoplay muted loop playsinline preload="metadata"></video>
               <strong>Oxford College</strong>
@@ -278,6 +307,10 @@
               data-render="./example/render/oxford-quarter/render.mp4"
               data-minimap="./example/render/oxford-quarter/minimap_h264.mp4"
               data-depth="./example/render/oxford-quarter/dpt.mp4"
+              data-input-poster="./example/render/oxford-quarter/rgb_poster.jpg"
+              data-render-poster="./example/render/oxford-quarter/render_poster.jpg"
+              data-minimap-poster="./example/render/oxford-quarter/minimap_h264_poster.jpg"
+              data-depth-poster="./example/render/oxford-quarter/dpt_poster.jpg"
             >
               <video src="./example/render/oxford-quarter/rgb.mp4" autoplay muted loop playsinline preload="metadata"></video>
               <strong>Oxford Quarter</strong>
@@ -286,54 +319,36 @@
         </section>
       </section>
 
-      <section class="metrics-strip" aria-label="Key metrics">
-        <div>
-          <strong>48 → 10K+</strong>
-        </div>
-        <div>
-          <strong>Online causal</strong>
-        </div>
-        <div>
-          <strong>Linear time</strong>
-        </div>
-        <div>
-          <strong>Constant memory</strong>
-        </div>
-      </section>
-
       <section class="section abstract-section" id="abstract">
         <div class="section-head">
           <p class="eyebrow">Abstract</p>
-          <h2>Stable 3D streaming beyond 10K <span>frames, without reset.</span></h2>
+          <h2>Stable 3D streaming beyond<span>10K frames, without reset.</span></h2>
         </div>
         <div class="abstract-grid">
           <div class="abstract-text">
             <p>
-              Online 3D reconstruction must estimate camera pose and scene geometry under strict causal
-              and bounded-memory constraints. Existing streaming methods often drift, jitter, or collapse on
-              long sequences because they organize history purely by recency, while geometric evidence has
-              heterogeneous lifetimes.
+              Online 3D reconstruction must estimate camera pose and scene geometry causally with a bounded state. Existing streaming methods often drift, jitter, or collapse on long sequences because their influence patterns mismatch the temporal heterogeneity of geometry: short-lived correspondences and persistent global scale must coexist, yet sliding windows impose hard cutoffs, while ungated recurrence and causal attention can saturate caches and form spike-like attention sinks.
             </p>
             <p>
-              HorizonStream formalizes geometric propagation as an evidence influence kernel and factorizes
-              it into long-range temporal propagation, short-range spatial matching, and metric readout.
-              Geometric Linear Attention learns channel-wise decay rates for bounded multi-timescale memory,
-              Geometric Local Attention performs reliable local 3D matching, and Metric Readout Tokens recover
-              stable scale and rigid pose from the persistent geometric state.
+              We address this by formalizing geometric propagation as an <em>evidence influence kernel</em> and introducing HorizonStream, a long-horizon Transformer that explicitly factorizes it. Geometric Linear Attention learns channel-wise decay rates for bounded, multi-timescale temporal propagation; Geometric Local Attention with Spatiotemporal RoPE performs reliable short-range 3D matching while suppressing attention sinks; and Metric Readout Tokens recover stable scale and rigid pose directly from the persistent geometric state. Extensive experiments show that HorizonStream, trained on only 48-frame clips, generalizes stably to sequences exceeding 10,000 frames with constant memory and linear time, achieving state-of-the-art streaming 3D reconstruction performance.
             </p>
           </div>
           <div class="takeaways" aria-label="Key takeaways">
             <article>
               <span>01</span>
-              <p>Learns from 48-frame clips and generalizes to 10K+ frame streams.</p>
+              <p>Reveals why streaming methods fail on long sequences: <mark>hard cutoffs</mark>, <mark>KV-cache saturation</mark>, and <mark>attention sinks</mark>.</p>
             </article>
             <article>
               <span>02</span>
-              <p>Processes video causally with linear time and constant memory.</p>
+              <p>Models geometric propagation as an <mark>evidence influence kernel</mark> with temporal, spatial, and metric factors.</p>
             </article>
             <article>
               <span>03</span>
-              <p>Maintains recurrent geometry without accuracy degradation.</p>
+              <p>Separates <mark>long-horizon evidence</mark>, <mark>local 3D matching</mark>, and <mark>metric recovery</mark> instead of forcing one attention pattern to do all three.</p>
+            </article>
+            <article>
+              <span>04</span>
+              <p>Trains on only <mark>48-frame</mark> clips, then scales to <mark>10K+ frames</mark> with constant memory and linear time.</p>
             </article>
           </div>
         </div>
@@ -356,6 +371,9 @@
               data-drift-glb="./example/qualitative/kitti07/longstream.glb"
               data-local-glb="./example/qualitative/kitti07/lingbot-map.glb"
               data-ours-glb="./example/qualitative/kitti07/ours.glb"
+              data-drift-pose="./example/qualitative/kitti07/pose_longstream.png"
+              data-local-pose="./example/qualitative/kitti07/pose_lingbot_map.png"
+              data-ours-pose="./example/qualitative/kitti07/pose_horizonstream.png"
             >
               <video
                 src="./example/render/kitti-07/rgb.mp4"
@@ -375,6 +393,9 @@
               data-drift-glb="./example/qualitative/kitti09/longstream.glb"
               data-local-glb="./example/qualitative/kitti09/lingbot-map.glb"
               data-ours-glb="./example/qualitative/kitti09/ours.glb"
+              data-drift-pose="./example/qualitative/kitti09/pose_longstream.png"
+              data-local-pose="./example/qualitative/kitti09/pose_lingbot_map.png"
+              data-ours-pose="./example/qualitative/kitti09/pose_horizonstream.png"
             >
               <video
                 src="./example/render/kitti-09/rgb.mp4"
@@ -394,9 +415,34 @@
               data-drift-glb="./example/qualitative/oxford-college/longstream.glb"
               data-local-glb="./example/qualitative/oxford-college/lingbot-map.glb"
               data-ours-glb="./example/qualitative/oxford-college/ours.glb"
+              data-drift-pose="./example/qualitative/oxford-college/pose_longstream.png"
+              data-local-pose="./example/qualitative/oxford-college/pose_lingbot_map.png"
+              data-ours-pose="./example/qualitative/oxford-college/pose_horizonstream.png"
             >
               <video
                 src="./example/render/oxford-college/rgb.mp4"
+                autoplay
+                loop
+                muted
+                playsinline
+                preload="metadata"
+              ></video>
+            </button>
+            <button
+              class="comparison-scene"
+              type="button"
+              data-compare-scene="oxford-quarter"
+              data-title="Oxford Quarter"
+              data-note="GLB comparison across methods"
+              data-drift-glb="./example/qualitative/oxford-quarter/longstream.glb"
+              data-local-glb="./example/qualitative/oxford-quarter/lingbot-map.glb"
+              data-ours-glb="./example/qualitative/oxford-quarter/ours.glb"
+              data-drift-pose="./example/qualitative/oxford-quarter/pose_longstream.png"
+              data-local-pose="./example/qualitative/oxford-quarter/pose_lingbot_map.png"
+              data-ours-pose="./example/qualitative/oxford-quarter/pose_horizonstream.png"
+            >
+              <video
+                src="./example/render/oxford-quarter/rgb.mp4"
                 autoplay
                 loop
                 muted
@@ -410,15 +456,33 @@
             <div class="cloud-compare-grid" aria-label="Interactive point cloud comparison">
               <article class="cloud-card">
                 <span class="cloud-method">LongStream</span>
-                <div id="compare-drift" class="compare-cloud" data-src="./example/qualitative/kitti07/longstream.glb" aria-label="LongStream point cloud"></div>
+                <div id="compare-drift" class="compare-cloud" aria-label="LongStream point cloud"></div>
               </article>
               <article class="cloud-card">
                 <span class="cloud-method">LingBot-Map</span>
-                <div id="compare-local" class="compare-cloud" data-src="./example/qualitative/kitti07/lingbot-map.glb" aria-label="LingBot-Map point cloud"></div>
+                <div id="compare-local" class="compare-cloud" aria-label="LingBot-Map point cloud"></div>
               </article>
               <article class="cloud-card ours">
                 <span class="cloud-method">HorizonStream</span>
-                <div id="compare-ours" class="compare-cloud" data-src="./example/qualitative/kitti07/ours.glb" aria-label="HorizonStream point cloud"></div>
+                <div id="compare-ours" class="compare-cloud" aria-label="HorizonStream point cloud"></div>
+              </article>
+            </div>
+
+            <div class="cloud-compare-grid" aria-label="Trajectory comparison">
+              <article class="cloud-card">
+                <div class="pose-panel">
+                  <img id="pose-drift" alt="LongStream vs GT" />
+                </div>
+              </article>
+              <article class="cloud-card">
+                <div class="pose-panel">
+                  <img id="pose-local" alt="LingBot-Map vs GT" />
+                </div>
+              </article>
+              <article class="cloud-card ours">
+                <div class="pose-panel">
+                  <img id="pose-ours" alt="HorizonStream vs GT" />
+                </div>
               </article>
             </div>
           </div>
@@ -458,59 +522,6 @@
               </p>
             </article>
           </div>
-        </div>
-      </section>
-
-      <section class="section results-section" id="results">
-        <div class="section-head">
-          <p class="eyebrow">Results</p>
-          <h2>Lower ATE on long-horizon sequences</h2>
-        </div>
-
-        <div class="result-panels compact-results">
-          <article class="result-panel">
-            <div class="panel-label">KITTI mean ATE ↓</div>
-            <div class="bar-list" aria-label="KITTI mean ATE comparison">
-              <div style="--score: 100">
-                <span>LongStream</span>
-                <b>51.90</b>
-              </div>
-              <div style="--score: 49">
-                <span>Lingbot-map</span>
-                <b>25.29</b>
-              </div>
-              <div class="ours" style="--score: 38">
-                <span>HorizonStream</span>
-                <b>19.75</b>
-              </div>
-              <div class="ours" style="--score: 32">
-                <span>HorizonStream + LC</span>
-                <b>16.44</b>
-              </div>
-            </div>
-          </article>
-
-          <article class="result-panel">
-            <div class="panel-label">VBR ATE ↓</div>
-            <div class="bar-list" aria-label="VBR ATE comparison">
-              <div style="--score: 100">
-                <span>LongStream</span>
-                <b>77.93</b>
-              </div>
-              <div style="--score: 35">
-                <span>Lingbot-map</span>
-                <b>27.53</b>
-              </div>
-              <div class="ours" style="--score: 32">
-                <span>HorizonStream</span>
-                <b>25.30</b>
-              </div>
-              <div class="ours" style="--score: 24">
-                <span>HorizonStream + LC</span>
-                <b>18.84</b>
-              </div>
-            </div>
-          </article>
         </div>
       </section>
 
