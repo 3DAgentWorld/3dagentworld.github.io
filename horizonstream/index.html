@@ -487,6 +487,36 @@
             </div>
           </div>
         </div>
+
+        <div class="video-compare-card" data-video-compare style="--split: 49.5%" aria-label="KITTI 07 video comparison">
+          <div class="video-compare-window" role="slider" tabindex="0" aria-valuemin="5" aria-valuemax="95" aria-valuenow="49.5" aria-label="Horizontal comparison split">
+            <video
+              class="video-compare-base"
+              src="./example/render/kitti-07/render.mp4"
+              autoplay
+              muted
+              loop
+              playsinline
+              preload="metadata"
+              poster="./example/render/kitti-07/render_poster.jpg"
+            ></video>
+            <div class="video-compare-layer" aria-hidden="true">
+              <video
+                src="./example/render/kitti-07/lingbot_compare.mp4"
+                autoplay
+                muted
+                loop
+                playsinline
+                preload="metadata"
+                poster="./example/render/kitti-07/lingbot_compare_poster.jpg"
+              ></video>
+            </div>
+            <span class="video-compare-label left">LingBot-Map</span>
+            <span class="video-compare-label right">HorizonStream</span>
+            <span class="video-compare-divider" aria-hidden="true"></span>
+          </div>
+          <p class="video-compare-caption">LingBot-Map begins to lose accuracy and jitter as the input stream grows longer, while HorizonStream maintains stable accuracy under longer inputs.</p>
+        </div>
       </section>
 
       <section class="section method-section" id="method">

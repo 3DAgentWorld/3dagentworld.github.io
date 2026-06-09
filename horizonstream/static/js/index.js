@@ -280,6 +280,80 @@ comparisonButtons.forEach((button) => {
   button.addEventListener("click", () => activateComparisonScene(button));
 });
 
+document.querySelectorAll("[data-video-compare]").forEach((compare) => {
+  const windowEl = compare.querySelector(".video-compare-window");
+  const videos = Array.from(compare.querySelectorAll("video"));
+  const leadVideo = videos[0];
+  let syncing = false;
+
+  function setSplit(value) {
+    const split = Math.max(5, Math.min(95, value));
+    compare.style.setProperty("--split", `${split}%`);
+    if (windowEl) windowEl.setAttribute("aria-valuenow", String(Math.round(split)));
+  }
+
+  function updateSplitFromPointer(event) {
+    if (!windowEl) return;
+    const rect = windowEl.getBoundingClientRect();
+    setSplit(((event.clientX - rect.left) / rect.width) * 100);
+  }
+
+  function syncVideos() {
+    if (!leadVideo || syncing) return;
+    syncing = true;
+    videos.slice(1).forEach((video) => {
+      if (Math.abs(video.currentTime - leadVideo.currentTime) > 0.08) {
+        try { video.currentTime = leadVideo.currentTime; } catch {}
+      }
+      if (leadVideo.paused && !video.paused) {
+        video.pause();
+      } else if (!leadVideo.paused && video.paused) {
+        const play = video.play();
+        if (play) play.catch(() => {});
+      }
+    });
+    syncing = false;
+  }
+
+  videos.forEach((video) => {
+    video.muted = true;
+    video.loop = true;
+    video.addEventListener("play", syncVideos);
+    video.addEventListener("seeked", syncVideos);
+    video.addEventListener("canplay", syncVideos);
+  });
+
+  if (leadVideo) {
+    window.setInterval(syncVideos, 500);
+  }
+
+  if (windowEl) {
+    windowEl.addEventListener("pointerdown", (event) => {
+      windowEl.setPointerCapture(event.pointerId);
+      updateSplitFromPointer(event);
+    });
+    windowEl.addEventListener("pointermove", (event) => {
+      if (windowEl.hasPointerCapture(event.pointerId)) updateSplitFromPointer(event);
+    });
+    windowEl.addEventListener("keydown", (event) => {
+      const current = parseFloat(compare.style.getPropertyValue("--split")) || 50;
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        setSplit(current - 4);
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        setSplit(current + 4);
+      } else if (event.key === "Home") {
+        event.preventDefault();
+        setSplit(5);
+      } else if (event.key === "End") {
+        event.preventDefault();
+        setSplit(95);
+      }
+    });
+  }
+});
+
 function loadInitialComparison() {
   const active = Array.from(comparisonButtons).find((b) => b.classList.contains("active"));
   if (active) activateComparisonScene(active);
