@@ -271,13 +271,29 @@ function activateComparisonScene(button) {
   if (compareDrift && button.dataset.driftGlb) compareDrift.dataset.src = button.dataset.driftGlb;
   if (compareLocal && button.dataset.localGlb) compareLocal.dataset.src = button.dataset.localGlb;
   if (compareOurs && button.dataset.oursGlb) compareOurs.dataset.src = button.dataset.oursGlb;
-  if (poseDrift && button.dataset.driftPose) poseDrift.src = button.dataset.driftPose;
-  if (poseLocal && button.dataset.localPose) poseLocal.src = button.dataset.localPose;
-  if (poseOurs && button.dataset.oursPose) poseOurs.src = button.dataset.oursPose;
+
+  // Clear old pose images immediately so they don't appear stuck, then load new ones
+  const poseEntries = [
+    [poseDrift, button.dataset.driftPose],
+    [poseLocal, button.dataset.localPose],
+    [poseOurs, button.dataset.oursPose],
+  ];
+  poseEntries.forEach(([img, src]) => {
+    if (!img) return;
+    if (src) {
+      img.style.opacity = "0.3";
+      const onLoad = () => { img.style.opacity = ""; img.removeEventListener("load", onLoad); };
+      img.addEventListener("load", onLoad);
+      img.src = src;
+    }
+  });
 }
 
 comparisonButtons.forEach((button) => {
-  button.addEventListener("click", () => activateComparisonScene(button));
+  button.addEventListener("click", () => {
+    activateComparisonScene(button);
+    scheduleComparisonRotate(); // reset auto-rotation so it doesn't override the user's choice
+  });
 });
 
 document.querySelectorAll("[data-video-compare]").forEach((compare) => {
