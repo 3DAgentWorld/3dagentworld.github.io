@@ -160,3 +160,64 @@ body {
     -ms-user-select: all; /* Internet Explorer/Edge */
     user-select: all; /* Chrome and Opera */
 }
+
+.more-research-bar {
+    padding-top: 1rem;
+}
+
+.more-research-button {
+    align-items: center;
+    background: rgba(255, 255, 255, 0.86);
+    border: 1px solid rgba(40, 40, 40, 0.12);
+    border-radius: 999px;
+    box-shadow: 0 8px 24px rgba(10, 10, 10, 0.08);
+    color: #222;
+    cursor: pointer;
+    display: inline-flex;
+    font-family: 'Google Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    gap: 0.25rem;
+    line-height: 1;
+    padding: 0.65rem 1rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.more-research-button:hover,
+.dropdown.is-hoverable:hover .more-research-button {
+    border-color: rgba(40, 40, 40, 0.24);
+    box-shadow: 0 12px 30px rgba(10, 10, 10, 0.12);
+    transform: translateY(-1px);
+}
+
+.more-research-bar .dropdown-menu {
+    left: 50%;
+    min-width: max-content;
+    padding-top: 0.55rem;
+    transform: translateX(-50%);
+}
+
+.more-research-bar .dropdown-content {
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(40, 40, 40, 0.1);
+    border-radius: 14px;
+    box-shadow: 0 16px 38px rgba(10, 10, 10, 0.12);
+    overflow: hidden;
+    padding: 0.25rem;
+}
+
+.more-research-bar .dropdown-item {
+    border-radius: 10px;
+    color: #222;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: 600;
+    padding: 0.55rem 0.7rem;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.more-research-bar .dropdown-item:hover {
+    background: #f3f4f6;
+    color: #111;
+}
