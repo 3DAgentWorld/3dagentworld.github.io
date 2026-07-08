@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MotionGRPO — ICML 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ===== RESET & BASE ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #fafbfc;
+    color: #1a1a2e;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  /* ===== TOKEN SYSTEM ===== */
+  :root {
+    --bg: #fafbfc;
+    --surface: #ffffff;
+    --text: #1a1a2e;
+    --text-secondary: #5b6877;
+    --text-muted: #8e99a8;
+    --border: #e8ecf1;
+    --border-light: #f1f5f9;
+    --accent-1: #6366f1;
+    --accent-2: #a855f7;
+    --accent-3: #ec4899;
+    --accent-glow: rgba(99, 102, 241, 0.12);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
+    --shadow-xl: 0 16px 48px rgba(0,0,0,0.1);
+    --radius-sm: 8px;
+    --radius: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+  }
+
+  /* ===== NAVIGATION ===== */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    padding: 16px 0;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .nav.scrolled {
+    background: rgba(250, 251, 252, 0.82);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    padding: 10px 0;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 4px 24px rgba(0,0,0,0.04);
+  }
+  .nav-inner {
+    max-width: 1120px; margin: 0 auto; padding: 0 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo {
+    font-weight: 800; font-size: 18px; letter-spacing: -0.3px;
+    background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .nav-links { display: flex; gap: 28px; list-style: none; }
+  .nav-links a {
+    text-decoration: none; color: var(--text-secondary); font-size: 14px;
+    font-weight: 500; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  /* ===== HERO ===== */
+  .hero {
+    position: relative; min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 120px 32px 80px;
+    overflow: hidden;
+  }
+  #hero-canvas {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0;
+  }
+  .hero-content { position: relative; z-index: 1; text-align: center; max-width: 800px; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 16px; border-radius: 100px;
+    background: var(--surface); border: 1px solid var(--border);
+    font-size: 13px; font-weight: 600; color: var(--text-secondary);
+    letter-spacing: -0.1px; margin-bottom: 32px;
+    box-shadow: var(--shadow-sm);
+    animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .hero-badge-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.5); }
+  }
+  .hero-title {
+    font-size: clamp(36px, 6vw, 60px); font-weight: 900;
+    letter-spacing: -1.2px; line-height: 1.08;
+    margin-bottom: 20px;
+    animation: fadeInUp 0.7s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .hero-title-accent {
+    background: linear-gradient(135deg, var(--accent-1) 0%, var(--accent-2) 50%, var(--accent-3) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-subtitle {
+    font-size: clamp(16px, 2.2vw, 19px); font-weight: 400;
+    color: var(--text-secondary); line-height: 1.5; max-width: 620px;
+    margin: 0 auto 12px;
+    animation: fadeInUp 0.7s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .hero-authors {
+    font-size: 15px; color: var(--text-muted); margin-bottom: 8px;
+    animation: fadeInUp 0.7s 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .hero-affiliations {
+    font-size: 13px; color: var(--text-muted); margin-bottom: 36px;
+    animation: fadeInUp 0.7s 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .hero-buttons {
+    display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+    animation: fadeInUp 0.7s 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 22px; border-radius: 100px;
+    font-size: 14px; font-weight: 600; text-decoration: none;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer; border: none;
+    letter-spacing: -0.1px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+    color: #fff; box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(99, 102, 241, 0.4);
+  }
+  .btn-outline {
+    background: var(--surface); color: var(--text);
+    border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+  }
+  .btn-outline:hover {
+    border-color: var(--accent-1); color: var(--accent-1);
+    box-shadow: var(--shadow-md); transform: translateY(-2px);
+  }
+  .btn svg { width: 16px; height: 16px; }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== SECTIONS ===== */
+  .section { padding: 100px 32px; }
+  .section-inner { max-width: 1120px; margin: 0 auto; }
+  .section-label {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.8px; color: var(--accent-1);
+    margin-bottom: 16px;
+  }
+  .section-label::before {
+    content: ''; width: 20px; height: 2px;
+    background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+    border-radius: 1px;
+  }
+  .section-title {
+    font-size: clamp(28px, 4vw, 40px); font-weight: 800;
+    letter-spacing: -0.6px; margin-bottom: 16px; line-height: 1.2;
+  }
+  .section-desc {
+    font-size: 17px; color: var(--text-secondary); max-width: 600px;
+    line-height: 1.6; margin-bottom: 48px;
+  }
+
+  /* ===== TASK OVERVIEW ===== */
+  .task-visual {
+    background: var(--surface); border-radius: var(--radius-xl);
+    border: 1px solid var(--border); padding: 12px;
+    box-shadow: var(--shadow-lg); overflow: hidden;
+  }
+  .task-visual img {
+    width: 100%; height: auto; display: block; border-radius: var(--radius);
+  }
+
+  /* ===== ABSTRACT + CONTRIBUTIONS ===== */
+  .abstract-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
+    align-items: start;
+  }
+  .abstract-card {
+    background: var(--surface); border-radius: var(--radius-lg);
+    padding: 36px; border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+  }
+  .abstract-card h3 {
+    font-size: 20px; font-weight: 700; letter-spacing: -0.3px;
+    margin-bottom: 16px;
+  }
+  .abstract-card p {
+    font-size: 15px; color: var(--text-secondary); line-height: 1.7;
+  }
+  .contributions {
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .contrib-card {
+    background: var(--surface); border-radius: var(--radius);
+    padding: 24px 28px; border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    display: flex; gap: 16px; align-items: flex-start;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .contrib-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: transparent;
+  }
+  .contrib-icon {
+    flex-shrink: 0; width: 40px; height: 40px; border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .contrib-icon.c1 { background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(99,102,241,0.06)); }
+  .contrib-icon.c2 { background: linear-gradient(135deg, rgba(168,85,247,0.12), rgba(168,85,247,0.06)); }
+  .contrib-icon.c3 { background: linear-gradient(135deg, rgba(236,72,153,0.12), rgba(236,72,153,0.06)); }
+  .contrib-card h4 { font-size: 15px; font-weight: 700; letter-spacing: -0.2px; margin-bottom: 4px; }
+  .contrib-card p { font-size: 13.5px; color: var(--text-secondary); line-height: 1.55; }
+
+  /* ===== METHOD ===== */
+  .method-visual {
+    background: var(--surface); border-radius: var(--radius-xl);
+    border: 1px solid var(--border); padding: 12px;
+    box-shadow: var(--shadow-lg); margin-bottom: 48px;
+    overflow: hidden;
+  }
+  .method-visual img {
+    width: 100%; height: auto; display: block; border-radius: var(--radius);
+  }
+  .insight-cards {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  }
+  .insight-card {
+    background: var(--surface); border-radius: var(--radius-lg);
+    padding: 32px; border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .insight-card:hover {
+    transform: translateY(-3px); box-shadow: var(--shadow-lg);
+  }
+  .insight-card .tag {
+    display: inline-block; padding: 4px 10px; border-radius: 6px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.3px;
+    text-transform: uppercase; margin-bottom: 16px;
+  }
+  .tag.hybrid { background: rgba(99,102,241,0.08); color: var(--accent-1); }
+  .tag.noise { background: rgba(168,85,247,0.08); color: var(--accent-2); }
+  .insight-card h3 {
+    font-size: 19px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 10px;
+  }
+  .insight-card p {
+    font-size: 14px; color: var(--text-secondary); line-height: 1.65;
+  }
+
+  /* ===== RESULTS TABS ===== */
+  .results-tabs {
+    display: flex; gap: 8px; margin-bottom: 32px; flex-wrap: wrap;
+  }
+  .tab-btn {
+    padding: 10px 20px; border-radius: 100px;
+    border: 1px solid var(--border); background: var(--surface);
+    font-size: 14px; font-weight: 600; color: var(--text-secondary);
+    cursor: pointer; transition: all 0.25s;
+    font-family: inherit; letter-spacing: -0.1px;
+  }
+  .tab-btn:hover { border-color: var(--accent-1); color: var(--accent-1); }
+  .tab-btn.active {
+    background: var(--text); color: #fff; border-color: var(--text);
+  }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .result-figure {
+    background: var(--surface); border-radius: var(--radius-xl);
+    border: 1px solid var(--border); padding: 12px;
+    box-shadow: var(--shadow-lg);
+  }
+  .result-figure img { width: 100%; height: auto; display: block; border-radius: var(--radius); }
+  .result-caption {
+    text-align: center; margin-top: 16px;
+    font-size: 14px; color: var(--text-muted);
+  }
+
+  /* ===== QUANTITATIVE TABLE ===== */
+  .table-wrapper {
+    background: var(--surface); border-radius: var(--radius-xl);
+    border: 1px solid var(--border); box-shadow: var(--shadow-lg);
+    padding: 28px 8px; overflow-x: auto;
+  }
+  .data-table {
+    width: 100%; border-collapse: collapse; font-size: 13px;
+    min-width: 900px;
+  }
+  .data-table th, .data-table td {
+    padding: 10px 12px; text-align: center;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .data-table thead th {
+    font-weight: 700; font-size: 12px; color: var(--text-secondary);
+    background: #f8f9fb; position: sticky; top: 0;
+    white-space: nowrap;
+  }
+  .data-table thead th.dataset-header {
+    font-size: 14px; color: var(--text); font-weight: 800;
+    background: transparent;
+  }
+  .data-table tbody td {
+    font-variant-numeric: tabular-nums; font-family: 'Inter', sans-serif;
+    font-weight: 500;
+  }
+  .data-table tbody tr:last-child td { border-bottom: none; }
+  .data-table .best { font-weight: 700; color: var(--accent-1); }
+  .data-table .second { font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+  .data-table .method-name { font-weight: 700; text-align: left; white-space: nowrap; }
+  .data-table tbody tr:hover { background: rgba(99,102,241,0.03); }
+  .data-table .metric-unit { font-weight: 400; color: var(--text-muted); font-size: 11px; }
+
+  .ablation-table {
+    width: 100%; border-collapse: collapse; font-size: 13px;
+    min-width: 900px;
+  }
+  .ablation-table th, .ablation-table td {
+    padding: 10px 12px; text-align: center;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .ablation-table thead th {
+    font-weight: 700; font-size: 12px; color: var(--text-secondary);
+    background: #f8f9fb;
+  }
+  .ablation-table thead th.dataset-header {
+    font-size: 14px; color: var(--text); font-weight: 800;
+    background: transparent;
+  }
+  .ablation-table tbody td {
+    font-variant-numeric: tabular-nums; font-weight: 500;
+  }
+  .ablation-table tbody tr:last-child td { border-bottom: none; }
+  .ablation-table tbody tr:hover { background: rgba(99,102,241,0.03); }
+  .ablation-table .method-name { font-weight: 700; text-align: left; white-space: nowrap; }
+  .ablation-table .best { font-weight: 700; color: var(--accent-1); }
+
+  .table-note {
+    margin-top: 16px; font-size: 13px; color: var(--text-muted);
+    text-align: center;
+  }
+
+  /* ===== CITATION ===== */
+  .citation-card {
+    background: var(--surface); border-radius: var(--radius-lg);
+    border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+    padding: 36px; position: relative;
+  }
+  .bibtex-container {
+    position: relative; background: #f8f9fb; border-radius: var(--radius);
+    padding: 28px; border: 1px solid var(--border-light);
+    font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', monospace;
+    font-size: 13px; line-height: 1.8; overflow-x: auto;
+    white-space: pre-wrap; word-break: break-all;
+    color: var(--text);
+  }
+  .copy-btn {
+    position: absolute; top: 52px; right: 52px;
+    padding: 8px 16px; border-radius: 8px;
+    background: var(--surface); border: 1px solid var(--border);
+    font-size: 13px; font-weight: 600; color: var(--text-secondary);
+    cursor: pointer; transition: all 0.2s;
+    font-family: 'Inter', sans-serif; letter-spacing: -0.1px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .copy-btn:hover { border-color: var(--accent-1); color: var(--accent-1); }
+  .copy-btn.copied { background: #ecfdf5; border-color: #6ee7b7; color: #059669; }
+  .links-row { display: flex; gap: 16px; margin-top: 24px; flex-wrap: wrap; }
+  .link-item {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 18px; border-radius: 100px;
+    background: var(--surface); border: 1px solid var(--border);
+    font-size: 14px; font-weight: 500; color: var(--text);
+    text-decoration: none; transition: all 0.25s;
+  }
+  .link-item:hover { border-color: var(--accent-1); color: var(--accent-1); }
+  .link-item svg { width: 16px; height: 16px; opacity: 0.6; }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    border-top: 1px solid var(--border); padding: 32px;
+    text-align: center; font-size: 13px; color: var(--text-muted);
+  }
+
+  /* ===== REVEAL ANIMATIONS ===== */
+  .reveal { opacity: 0; transform: translateY(32px); }
+  .reveal.visible {
+    opacity: 1; transform: translateY(0);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .abstract-grid { grid-template-columns: 1fr; }
+    .insight-cards { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    .hero { padding: 100px 20px 60px; }
+    .section { padding: 60px 20px; }
+    .citation-card { padding: 24px; }
+    .bibtex-container { padding: 20px; font-size: 11px; }
+    .copy-btn { top: 36px; right: 36px; }
+    .table-wrapper { padding: 16px 4px; }
+    .data-table, .ablation-table { font-size: 11px; }
+  }
+
+  /* ===== REDUCED MOTION ===== */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+    #hero-canvas { display: none; }
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">MotionGRPO</div>
+    <ul class="nav-links">
+      <li><a href="#task">Task</a></li>
+      <li><a href="#abstract">Abstract</a></li>
+      <li><a href="#method">Method</a></li>
+      <li><a href="#results">Results</a></li>
+      <li><a href="#cite">Cite</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      ICML 2026
+    </div>
+    <h1 class="hero-title">
+      <span class="hero-title-accent">MotionGRPO</span><br>
+      Overcoming Low Intra-Group Diversity in GRPO-Based Egocentric Motion Recovery
+    </h1>
+    <p class="hero-subtitle">
+      A reinforcement learning framework that post-trains diffusion models to recover high-fidelity full-body 3D human motion from head-mounted device signals.
+    </p>
+    <p class="hero-authors">
+      Nanjie Yao &middot; Junlong Ren &middot; Wenhao Shen &middot; Hao Wang
+    </p>
+    <p class="hero-affiliations">
+      The Hong Kong University of Science and Technology (Guangzhou) &middot; Nanyang Technological University
+    </p>
+    <div class="hero-buttons">
+      <a href="https://github.com/3DAgentWorld/MotionGRPO/" class="btn btn-primary" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        Code
+      </a>
+      <a href="https://arxiv.org/abs/2605.05680" class="btn btn-outline" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        arXiv
+      </a>
+      <a href="#cite" class="btn btn-outline">BibTeX</a>
+    </div>
+  </div>
+</section>
+
+<!-- Task Overview -->
+<section class="section" id="task">
+  <div class="section-inner">
+    <div class="section-label reveal">Task Overview</div>
+    <h2 class="section-title reveal reveal-delay-1">Egocentric Motion Recovery</h2>
+    <p class="section-desc reveal reveal-delay-1">
+      Given head trajectory signals and optional egocentric images from a head-mounted device, MotionGRPO recovers high-fidelity full-body 3D human motion in 3D scenes.
+    </p>
+    <div class="task-visual reveal reveal-delay-1">
+      <img src="images/teaser.png" alt="MotionGRPO Task Overview" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<!-- Abstract + Contributions -->
+<section class="section" id="abstract">
+  <div class="section-inner">
+    <div class="section-label reveal">Abstract</div>
+    <h2 class="section-title reveal reveal-delay-1">Overview</h2>
+    <p class="section-desc reveal reveal-delay-1">Recovering full-body 3D human motion from sparse head-mounted device signals.</p>
+    <div class="abstract-grid">
+      <div class="abstract-card reveal reveal-delay-1">
+        <h3>Abstract</h3>
+        <p>
+          This paper studies full-body 3D human motion recovery from head-mounted device signals. Existing diffusion-based methods often rely on global distribution matching, leading to local joint reconstruction errors. We propose <strong>MotionGRPO</strong>, a novel framework leveraging reinforcement learning post-training to inject fine-grained guidance into the diffusion process. Technically, we model diffusion sampling as a Markov decision process optimized via Group Relative Policy Optimization (GRPO). To this end, we introduce a hybrid reward mechanism that combines a learned conditioned perceptual model for global visual plausibility and explicit constraints for local joint precision. Our key technical insight is that policy optimization in diffusion-based recovery suffers from vanishing gradients due to limited intra-group sample diversity. To address this, we further introduce a noise-injection strategy that explicitly increases sample variance and stabilizes learning. Extensive experiments demonstrate that MotionGRPO achieves state-of-the-art performance with superior visual fidelity.
+        </p>
+      </div>
+      <div class="contributions">
+        <div class="contrib-card reveal reveal-delay-1">
+          <div class="contrib-icon c1">🎯</div>
+          <div>
+            <h4>RL-Based Motion Recovery Framework</h4>
+            <p>We propose MotionGRPO, which optimizes a hybrid reward combining a trajectory-conditioned perceptual model for global plausibility and fine-grained objectives for precise joint alignment.</p>
+          </div>
+        </div>
+        <div class="contrib-card reveal reveal-delay-2">
+          <div class="contrib-icon c2">🎲</div>
+          <div>
+            <h4>Noise-Injection Strategy</h4>
+            <p>We identify the "low intra-group diversity" bottleneck in GRPO and introduce temporally smoothed noise injection to increase output diversity and stabilize training.</p>
+          </div>
+        </div>
+        <div class="contrib-card reveal reveal-delay-3">
+          <div class="contrib-icon c3">🏆</div>
+          <div>
+            <h4>State-of-the-Art Performance</h4>
+            <p>Extensive experiments on AMASS and RICH benchmarks show superior visual fidelity and strong generalization to real-world scenarios.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Method -->
+<section class="section" id="method" style="background: var(--border-light);">
+  <div class="section-inner">
+    <div class="section-label reveal">Method</div>
+    <h2 class="section-title reveal reveal-delay-1">How It Works</h2>
+    <p class="section-desc reveal reveal-delay-1">
+      MotionGRPO formulates diffusion sampling as a Markov Decision Process (MDP), optimized via GRPO with a hybrid reward mechanism. A noise-injection strategy overcomes the low intra-group diversity bottleneck.
+    </p>
+    <div class="method-visual reveal reveal-delay-1">
+      <img src="images/overview.png" alt="MotionGRPO Framework Overview" loading="lazy">
+    </div>
+    <div class="insight-cards">
+      <div class="insight-card reveal reveal-delay-1">
+        <span class="tag hybrid">Hybrid Reward</span>
+        <h3>Perceptual + Geometric Guidance</h3>
+        <p>
+          A trajectory-conditioned perceptual model trained with online contrastive learning detects visual artifacts like foot skating and motion jitter. Combined with explicit sub-rewards on joint positions, rotations, and velocities, the hybrid reward guides the diffusion model toward both visually plausible and geometrically accurate motions.
+        </p>
+      </div>
+      <div class="insight-card reveal reveal-delay-2">
+        <span class="tag noise">Noise Injection</span>
+        <h3>Overcoming Low Intra-Group Diversity</h3>
+        <p>
+          Directly applying GRPO to motion recovery suffers from vanishing gradients because strong conditioning from head signals constrains the output space. Our temporally smoothed noise-injection strategy simulates out-of-distribution inputs, increasing model uncertainty and output diversity for effective GRPO optimization.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Results -->
+<section class="section" id="results">
+  <div class="section-inner">
+    <div class="section-label reveal">Results</div>
+    <h2 class="section-title reveal reveal-delay-1">Experimental Results</h2>
+    <p class="section-desc reveal reveal-delay-1">
+      MotionGRPO achieves state-of-the-art performance on both AMASS and RICH benchmarks.
+    </p>
+
+    <!-- Results Tabs -->
+    <div class="results-tabs reveal reveal-delay-1">
+      <button class="tab-btn active" data-tab="tab-quant">Quantitative Results</button>
+      <button class="tab-btn" data-tab="tab-qual">Qualitative Comparison</button>
+      <button class="tab-btn" data-tab="tab-abl">Ablation Study</button>
+    </div>
+
+    <!-- Quantitative -->
+    <div class="tab-panel active" id="tab-quant">
+      <div class="table-wrapper reveal reveal-delay-1">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th rowspan="3" style="text-align:left;">Method</th>
+              <th class="dataset-header" colspan="7">AMASS Dataset</th>
+              <th class="dataset-header" colspan="7">RICH Dataset</th>
+            </tr>
+            <tr>
+              <th colspan="4">Joint Accuracy</th>
+              <th colspan="3">Visual Quality</th>
+              <th colspan="4">Joint Accuracy</th>
+              <th colspan="3">Visual Quality</th>
+            </tr>
+            <tr>
+              <th>MPJPE<br><span class="metric-unit">(mm) ↓</span></th>
+              <th>PA-MPJPE<br><span class="metric-unit">(mm) ↓</span></th>
+              <th>MPJVE<br><span class="metric-unit">(mm/s) ↓</span></th>
+              <th>MPJRE<br><span class="metric-unit">(°) ↓</span></th>
+              <th>Jitter<br><span class="metric-unit">↓</span></th>
+              <th>GP<br><span class="metric-unit">(m) ↓</span></th>
+              <th>FS<br><span class="metric-unit">(m) ↓</span></th>
+              <th>MPJPE<br><span class="metric-unit">(mm) ↓</span></th>
+              <th>PA-MPJPE<br><span class="metric-unit">(mm) ↓</span></th>
+              <th>MPJVE<br><span class="metric-unit">(mm/s) ↓</span></th>
+              <th>MPJRE<br><span class="metric-unit">(°) ↓</span></th>
+              <th>Jitter<br><span class="metric-unit">↓</span></th>
+              <th>GP<br><span class="metric-unit">(m) ↓</span></th>
+              <th>FS<br><span class="metric-unit">(m) ↓</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="method-name">EgoEgo</td>
+              <td>177.231</td><td>152.125</td><td>588.661</td><td>9.457</td>
+              <td>2.643</td><td>1.331</td><td>1.241</td>
+              <td>221.450</td><td>196.223</td><td>572.331</td><td>13.312</td>
+              <td>5.187</td><td>4.357</td><td>1.021</td>
+            </tr>
+            <tr>
+              <td class="method-name">EgoAllo</td>
+              <td>124.985</td><td>103.958</td><td>553.221</td><td>8.777</td>
+              <td>2.394</td><td>1.143</td><td>1.290</td>
+              <td>192.686</td><td>172.724</td><td>506.992</td><td>12.734</td>
+              <td>4.135</td><td>4.145</td><td>1.094</td>
+            </tr>
+            <tr>
+              <td class="method-name">EgoAllo<sup>ℵ</sup></td>
+              <td>121.651</td><td>101.034</td><td class="second">483.471</td><td>8.728</td>
+              <td class="second">1.455</td><td>1.099</td><td class="second">0.479</td>
+              <td>190.000</td><td>169.838</td><td class="second">407.628</td><td>12.638</td>
+              <td class="second">1.880</td><td>4.438</td><td class="second">0.223</td>
+            </tr>
+            <tr style="background: rgba(99,102,241,0.04);">
+              <td class="method-name">MotionGRPO</td>
+              <td class="second">114.207</td><td class="second">95.512</td><td>531.217</td><td class="second">8.413</td>
+              <td>2.000</td><td class="best">0.901</td><td>1.169</td>
+              <td class="second">187.223</td><td class="second">169.146</td><td>477.344</td><td class="second">11.944</td>
+              <td>3.685</td><td class="second">3.161</td><td>1.008</td>
+            </tr>
+            <tr style="background: rgba(99,102,241,0.06);">
+              <td class="method-name"><strong>MotionGRPO</strong><sup>ℵ</sup></td>
+              <td class="best">111.776</td><td class="best">93.702</td><td class="best">461.702</td><td class="best">8.330</td>
+              <td class="best">1.309</td><td class="second">0.963</td><td class="best">0.399</td>
+              <td class="best">184.992</td><td class="best">167.032</td><td class="best">378.423</td><td class="best">11.886</td>
+              <td class="best">1.614</td><td class="best">3.156</td><td class="best">0.199</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-note"><strong>Bold</strong>: best, <span style="text-decoration:underline;text-underline-offset:3px;">Underline</span>: second best. <sup>ℵ</sup> denotes test-time post-processing. ↓ lower is better.</p>
+    </div>
+
+    <!-- Qualitative -->
+    <div class="tab-panel" id="tab-qual">
+      <div class="result-figure">
+        <img src="images/results.png" alt="Qualitative comparison results" loading="lazy">
+      </div>
+      <p class="result-caption">Qualitative comparison on AMASS and ADT datasets. MotionGRPO produces more accurate joint alignment and fewer visual artifacts, with strong generalization to real-world scenarios.</p>
+    </div>
+
+    <!-- Ablation -->
+    <div class="tab-panel" id="tab-abl">
+      <div class="table-wrapper reveal reveal-delay-1">
+        <table class="ablation-table">
+          <thead>
+            <tr>
+              <th rowspan="2" style="text-align:left;">Method</th>
+              <th class="dataset-header" colspan="7">AMASS Dataset</th>
+              <th class="dataset-header" colspan="7">RICH Dataset</th>
+            </tr>
+            <tr>
+              <th>MPJPE ↓</th><th>PA-MPJPE ↓</th><th>MPJVE ↓</th><th>MPJRE ↓</th>
+              <th>Jitter ↓</th><th>GP ↓</th><th>FS ↓</th>
+              <th>MPJPE ↓</th><th>PA-MPJPE ↓</th><th>MPJVE ↓</th><th>MPJRE ↓</th>
+              <th>Jitter ↓</th><th>GP ↓</th><th>FS ↓</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="method-name">Baseline</td>
+              <td>124.985</td><td>103.958</td><td>553.221</td><td>8.777</td>
+              <td>2.394</td><td>1.143</td><td>1.290</td>
+              <td>192.686</td><td>172.724</td><td>506.992</td><td>12.734</td>
+              <td>4.135</td><td>4.145</td><td>1.094</td>
+            </tr>
+            <tr>
+              <td class="method-name">+ Vanilla GRPO</td>
+              <td>117.418</td><td>97.945</td><td>543.012</td><td>8.403</td>
+              <td>2.084</td><td>0.999</td><td>1.272</td>
+              <td>190.248</td><td>171.223</td><td>494.125</td><td>12.369</td>
+              <td>3.793</td><td>3.633</td><td>1.076</td>
+            </tr>
+            <tr>
+              <td class="method-name">+ Visual Reward</td>
+              <td>116.549</td><td>96.729</td><td>546.128</td><td>8.427</td>
+              <td>2.014</td><td>0.886</td><td>1.221</td>
+              <td>189.103</td><td>170.002</td><td>497.480</td><td>12.268</td>
+              <td>3.684</td><td>3.225</td><td>1.044</td>
+            </tr>
+            <tr style="background: rgba(99,102,241,0.06);">
+              <td class="method-name"><strong>+ Perlin Noise</strong></td>
+              <td class="best">114.207</td><td class="best">95.512</td><td class="best">531.217</td><td class="best">8.413</td>
+              <td class="best">2.000</td><td class="best">0.901</td><td class="best">1.169</td>
+              <td class="best">187.223</td><td class="best">169.146</td><td class="best">477.344</td><td class="best">11.944</td>
+              <td class="best">3.685</td><td class="best">3.161</td><td class="best">1.008</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-note">Ablation study validating each component: Vanilla GRPO → Visual Reward → Perlin Noise Injection. Each addition progressively improves both joint accuracy and visual quality.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Citation -->
+<section class="section" id="cite" style="background: var(--border-light);">
+  <div class="section-inner">
+    <div class="section-label reveal">Citation</div>
+    <h2 class="section-title reveal reveal-delay-1">BibTeX</h2>
+    <p class="section-desc reveal reveal-delay-1">
+      If you find this work useful, please cite our paper.
+    </p>
+    <div class="citation-card reveal reveal-delay-1">
+      <button class="copy-btn" id="copyBtn" onclick="copyBibtex()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        <span id="copyText">Copy</span>
+      </button>
+      <div class="bibtex-container" id="bibtex">
+@inproceedings{
+yao2026motiongrpo,
+title={Motion{GRPO}: Overcoming Low Intra-Group Diversity in {GRPO}-Based Egocentric Motion Recovery},
+author={Nanjie Yao and Junlong Ren and Wenhao Shen and Hao Wang},
+booktitle={Forty-third International Conference on Machine Learning},
+year={2026},
+}
+      </div>
+      <div class="links-row">
+        <a href="https://arxiv.org/abs/2605.05680" class="link-item" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          arXiv
+        </a>
+        <a href="https://github.com/3DAgentWorld/MotionGRPO/" class="link-item" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          GitHub
+        </a>
+        <a href="mailto:haowang@hkust-gz.edu.cn" class="link-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Contact
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <p>MotionGRPO &copy; 2026 &mdash; The Hong Kong University of Science and Technology (Guangzhou)</p>
+</footer>
+
+<script>
+// ===== CANVAS PARTICLE ANIMATION =====
+(function() {
+  const canvas = document.getElementById('hero-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let animId;
+
+  function resize() {
+    canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+    canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+  }
+
+  class Particle {
+    constructor() {
+      this.reset();
+    }
+    reset() {
+      this.x = Math.random() * canvas.offsetWidth;
+      this.y = Math.random() * canvas.offsetHeight;
+      this.size = Math.random() * 2 + 1;
+      this.speedX = (Math.random() - 0.5) * 0.4;
+      this.speedY = (Math.random() - 0.5) * 0.4;
+      this.opacity = Math.random() * 0.4 + 0.1;
+      this.phase = Math.random() * Math.PI * 2;
+    }
+    update(time) {
+      this.x += Math.sin(time * 0.001 + this.phase) * 0.3 + this.speedX;
+      this.y += Math.cos(time * 0.0013 + this.phase) * 0.3 + this.speedY;
+      if (this.x < -50) this.x = canvas.offsetWidth + 50;
+      if (this.x > canvas.offsetWidth + 50) this.x = -50;
+      if (this.y < -50) this.y = canvas.offsetHeight + 50;
+      if (this.y > canvas.offsetHeight + 50) this.y = -50;
+    }
+    draw(ctx, time) {
+      const pulse = Math.sin(time * 0.002 + this.phase) * 0.2 + 0.8;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size * pulse, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(99, 102, 241, ${this.opacity * pulse})`;
+      ctx.fill();
+    }
+  }
+
+  const PARTICLE_COUNT = 45;
+  function initParticles() {
+    particles = [];
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push(new Particle());
+    }
+  }
+
+  function drawConnections(ctx) {
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 100) {
+          const alpha = (1 - dist / 100) * 0.08;
+          const gradient = ctx.createLinearGradient(
+            particles[i].x, particles[i].y,
+            particles[j].x, particles[j].y
+          );
+          gradient.addColorStop(0, `rgba(99, 102, 241, ${alpha})`);
+          gradient.addColorStop(0.5, `rgba(168, 85, 247, ${alpha})`);
+          gradient.addColorStop(1, `rgba(236, 72, 153, ${alpha})`);
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = gradient;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function animate(time) {
+    ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+    particles.forEach(p => p.update(time));
+    drawConnections(ctx);
+    particles.forEach(p => p.draw(ctx, time));
+    animId = requestAnimationFrame(animate);
+  }
+
+  resize();
+  initParticles();
+  animId = requestAnimationFrame(animate);
+
+  window.addEventListener('resize', () => {
+    resize();
+    initParticles();
+  });
+})();
+
+// ===== NAV SCROLL EFFECT =====
+const nav = document.getElementById('nav');
+function updateNav() {
+  if (window.scrollY > 60) {
+    nav.classList.add('scrolled');
+  } else {
+    nav.classList.remove('scrolled');
+  }
+}
+window.addEventListener('scroll', updateNav, { passive: true });
+
+// ===== SCROLL REVEAL =====
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// ===== TABS =====
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tabId = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+  });
+});
+
+// ===== COPY BIBTEX =====
+function copyBibtex() {
+  const bibtex = document.getElementById('bibtex').innerText;
+  const btn = document.getElementById('copyBtn');
+  const copyText = document.getElementById('copyText');
+  navigator.clipboard.writeText(bibtex.trim()).then(() => {
+    btn.classList.add('copied');
+    copyText.textContent = 'Copied!';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      copyText.textContent = 'Copy';
+    }, 2000);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = bibtex.trim();
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.classList.add('copied');
+    copyText.textContent = 'Copied!';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      copyText.textContent = 'Copy';
+    }, 2000);
+  });
+}
+</script>
+</body>
+</html>
