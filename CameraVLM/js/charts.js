@@ -29,11 +29,20 @@
     el.innerHTML = items.map(([n, col]) => `<span><i style="background:${col}"></i>${n}</span>`).join('');
   }
 
-  // ---- Fig. 1(b): accuracy vs parameters
+  // ---- Fig. 1(b): accuracy vs parameters, with the Pareto front of the baselines (as in the paper)
   const family = m => /CameraModel|ACaM|CamReasoner|ShotVL/.test(m) ? 2 : /Cambrian|CamDistill|CamInject|VLM-3R|Spatial/.test(m) ? 1 : 0;
+  const CLOSED = { 'Gemini 3.5 Flash': 300, 'Claude Opus 4.8': 2700, 'GPT-6 Astra (high)': 6000 };  // estimated, not public
   let metric = 3;
   function scatter(el) {
-    const narrow = (el ? el.clientWidth : 800) < 440;
+    const W = el ? el.clientWidth : 800, H = el ? el.clientHeight : 430;
+    const narrow = W < 440;
+    const G = { left: 44, right: 16, top: 30, bottom: narrow ? 150 : 96 };
+    const Y0 = 40, Y1 = 90;
+    // data -> pixel, for placing the frontier labels in the empty lower-right area
+    const px = b => G.left + Math.log10(b) / 4 * (W - G.left - G.right);
+    const py = v => G.top + (Y1 - v) / (Y1 - Y0) * (H - G.top - G.bottom);
+    const score = n => C.paperModels.find(m => m.model === n).scores[metric];
+
     const groups = [
       { name: 'General open-source', symbol: 'circle', color: GREY, data: [] },
       { name: 'Geometry-aware', symbol: 'rect', color: '#8b93a0', data: [] },
@@ -42,14 +51,45 @@
     C.paperModels.filter(m => m.params && m.model !== 'CameraVLM').forEach(m => groups[family(m.model)].data.push({ name: m.model, value: [m.params, m.scores[metric]] }));
     const ours = C.paperModels.find(m => m.model === 'CameraVLM');
     const human = C.paperModels.find(m => m.model === 'Human');
-    const closed = [['Gemini 3.5 Flash', 300, 'Gemini Flash'], ['Claude Opus 4.8', 2700, 'Claude Opus'], ['GPT-6 Astra (high)', 6000, 'GPT-6 Astra']]
-      .map(([n, p, short]) => ({ name: n, short, value: [p, C.paperModels.find(m => m.model === n).scores[metric]], est: true }));
-    const series = groups.map(g => ({ name: g.name, type: 'scatter', symbol: g.symbol, symbolSize: 11, itemStyle: { color: g.color }, emphasis: { scale: 1.6 }, data: g.data }));
-    const gpt = closed.find(d => d.short === 'GPT-6 Astra');
-    series.push({ name: 'Closed-source (parameters estimated)', type: 'scatter', symbol: 'diamond', symbolSize: 12, itemStyle: { color: '#5d6470' },
-      label: { show: !narrow, position: 'left', distance: 7, formatter: p => p.data.short, fontSize: 12.5, fontWeight: 600, color: '#5d6470', fontFamily: FONT },
-      data: closed.map(d => d === gpt ? { ...d, symbolSize: 15, itemStyle: { color: '#1f5fbf' }, label: { show: true, position: 'left', distance: 8, color: '#1f5fbf', fontSize: narrow ? 12 : 13.5, fontWeight: 750, formatter: () => (narrow ? 'GPT-6 ' : 'GPT-6 Astra ') + d.value[1].toFixed(2) } } : d) });
-    series.push({ name: 'CameraVLM', type: 'scatter', symbolSize: 26,
+
+    // Pareto front: every baseline that beats all smaller baselines
+    const base = C.paperModels.filter(m => m.model !== 'CameraVLM' && m.model !== 'Human')
+      .map(m => ({ name: m.model, b: m.params || CLOSED[m.model], v: m.scores[metric] })).filter(m => m.b)
+      .sort((a, b) => a.b - b.b || b.v - a.v);
+    const front = []; base.forEach(m => { if (!front.length || m.v > front[front.length - 1].v) front.push(m); });
+
+    const series = [{ name: 'Baseline Pareto front', type: 'line', z: 1, silent: true, symbol: 'none', data: front.map(m => [m.b, m.v]),
+      lineStyle: { color: '#3b4048', type: [6, 5], width: 1.6 }, itemStyle: { color: '#3b4048' }, tooltip: { show: false } }];
+    series.push(...groups.map(g => ({ name: g.name, type: 'scatter', symbol: g.symbol, symbolSize: 11, itemStyle: { color: g.color }, emphasis: { scale: 1.6 }, data: g.data })));
+
+    // closed-source models: name and score always on the chart
+    const lab = (pos, color, size, weight) => ({ show: true, position: pos, distance: 8, color, fontSize: size, fontWeight: weight, fontFamily: FONT, lineHeight: size + 3 });
+    const closed = [
+      { name: 'Gemini 3.5 Flash', label: { ...lab('bottom', '#5d6470', narrow ? 11 : 12.5, 650), formatter: p => `Gemini 3.5 Flash\n${p.value[1].toFixed(2)}` } },
+      { name: 'Claude Opus 4.8', label: { ...lab('bottom', '#5d6470', narrow ? 11 : 12.5, 650), formatter: p => `Claude Opus 4.8\n${p.value[1].toFixed(2)}` } },
+      { name: 'GPT-6 Astra (high)', symbolSize: 15, itemStyle: { color: '#1f5fbf' }, label: { ...lab('left', '#1f5fbf', narrow ? 12 : 13.5, 750), formatter: p => `${narrow ? 'GPT-6' : 'GPT-6 Astra'} ${p.value[1].toFixed(2)}` } }
+    ].map(d => ({ ...d, value: [CLOSED[d.name], score(d.name)], est: true }));
+    series.push({ name: 'Closed-source (parameters estimated)', type: 'scatter', symbol: 'diamond', symbolSize: 12, itemStyle: { color: '#5d6470' }, data: closed });
+
+    // open models on the front: labels stacked to the right of the cluster, with leader lines (paper style)
+    const openFront = front.filter(m => !CLOSED[m.name]);
+    if (!narrow) {
+      const nano = openFront.find(m => m.b >= 10);
+      const small = openFront.filter(m => m !== nano).reverse();
+      const x0 = px(22), yTop = py(53);
+      series.push({ name: 'front-labels', type: 'scatter', z: 3, silent: true, symbol: 'circle', symbolSize: 1, itemStyle: { color: 'rgba(0,0,0,0)' }, tooltip: { show: false },
+        data: openFront.map(m => ({ name: m.name, value: [m.b, m.v] })),
+        label: { show: true, color: '#3b4048', fontSize: 12.5, fontWeight: 650, fontFamily: FONT,
+          formatter: p => `${new RegExp(p.value[0] + 'B').test(p.name) ? p.name : `${p.name} (${p.value[0]}B)`} · ${p.value[1].toFixed(2)}` },
+        labelLine: { show: true, lineStyle: { color: '#9aa1ab', width: 1 } },
+        labelLayout: q => {
+          const m = openFront[q.dataIndex];
+          if (m === nano) return { x: px(m.b) - 8, y: py(m.v) - 12, align: 'right', verticalAlign: 'bottom' };
+          return { x: x0, y: yTop + small.indexOf(m) * 20, align: 'left', verticalAlign: 'middle' };
+        } });
+    }
+
+    series.push({ name: 'CameraVLM', type: 'scatter', symbolSize: 26, z: 4,
       symbol: 'path://M0,-12 L3,-4 L12,-4 L5,2 L8,11 L0,6 L-8,11 L-5,2 L-12,-4 L-3,-4 Z',
       itemStyle: { color: RED }, label: { show: true, position: 'top', distance: 10, formatter: p => (narrow ? 'CameraVLM ' : 'CameraVLM · 9B · ') + p.value[1].toFixed(2), color: RED, fontWeight: 800, fontSize: narrow ? 13 : 15, fontFamily: FONT },
       data: [{ name: 'CameraVLM', value: [9, ours.scores[metric]] }],
@@ -57,11 +97,12 @@
         label: { formatter: 'Human ' + human.scores[metric].toFixed(2), position: narrow ? 'insideMiddleBottom' : 'insideStartBottom', color: INK, fontSize: 12.5, fontWeight: 700, fontFamily: FONT },
         data: [{ yAxis: human.scores[metric] }] } });
     return {
-      grid: { left: 44, right: 16, top: 30, bottom: narrow ? 150 : 96 },
+      grid: G,
       tooltip: { ...base.tooltip, trigger: 'item', formatter: p => `<b>${p.name}</b><br>Accuracy ${p.value[1].toFixed(2)}%<br>Parameters ${p.data.est ? '≈' : ''}${p.value[0]}B${p.data.est ? ' (estimated, not public)' : ''}` },
-      legend: { bottom: 0, left: 'center', itemWidth: 10, itemHeight: 10, itemGap: 14, textStyle: { fontSize: 12.5, color: '#454a52', fontFamily: FONT } },
+      legend: { bottom: 0, left: 'center', itemWidth: 14, itemHeight: 10, itemGap: 14, textStyle: { fontSize: 12.5, color: '#454a52', fontFamily: FONT },
+        data: ['General open-source', 'Geometry-aware', 'Camera-motion-specific', 'Closed-source (parameters estimated)', { name: 'Baseline Pareto front', icon: 'path://M0,4h5v2h-5z M7,4h5v2h-5z M14,4h5v2h-5z' }, 'CameraVLM'] },
       xAxis: { ...axis, type: 'log', min: 1, max: 10000, name: 'Total parameters (B, log scale)', nameLocation: 'middle', nameGap: 28, nameTextStyle: { fontSize: 12.5, color: '#6a7079' }, axisLabel: { ...axis.axisLabel, formatter: v => v >= 1000 ? v / 1000 + 'k' : v } },
-      yAxis: { ...axis, min: 40, max: 90, interval: 10, name: 'Average accuracy (%)', nameTextStyle: { fontSize: 12.5, color: '#6a7079', align: 'left' } },
+      yAxis: { ...axis, min: Y0, max: Y1, interval: 10, name: 'Average accuracy (%)', nameTextStyle: { fontSize: 12.5, color: '#6a7079', align: 'left' } },
       series
     };
   }
