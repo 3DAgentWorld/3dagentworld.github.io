@@ -79,12 +79,13 @@
       const x0 = px(22), yTop = py(53);
       series.push({ name: 'front-labels', type: 'scatter', z: 3, silent: true, symbol: 'circle', symbolSize: 1, itemStyle: { color: 'rgba(0,0,0,0)' }, tooltip: { show: false },
         data: openFront.map(m => ({ name: m.name, value: [m.b, m.v] })),
-        label: { show: true, color: '#3b4048', fontSize: 12.5, fontWeight: 650, fontFamily: FONT,
-          formatter: p => `${new RegExp(p.value[0] + 'B').test(p.name) ? p.name : `${p.name} (${p.value[0]}B)`} · ${p.value[1].toFixed(2)}` },
+        label: { show: true, color: '#3b4048', fontSize: 12.5, fontWeight: 650, fontFamily: FONT, lineHeight: 16,
+          // Cosmos3-Nano sits close to the y axis: name on the first line, score on the second
+          formatter: p => `${new RegExp(p.value[0] + 'B').test(p.name) ? p.name : `${p.name} (${p.value[0]}B)`}${p.value[0] >= 10 ? '\n' : ' · '}${p.value[1].toFixed(2)}` },
         labelLine: { show: true, lineStyle: { color: '#9aa1ab', width: 1 } },
         labelLayout: q => {
           const m = openFront[q.dataIndex];
-          if (m === nano) return { x: px(m.b) - 8, y: py(m.v) - 12, align: 'right', verticalAlign: 'bottom' };
+          if (m === nano) return { x: px(m.b) - 10, y: py(m.v) - 8, align: 'center', verticalAlign: 'bottom' };
           return { x: x0, y: yTop + small.indexOf(m) * 20, align: 'left', verticalAlign: 'middle' };
         } });
     }
