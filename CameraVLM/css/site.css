@@ -36,7 +36,11 @@ sup{font-size:.62em;line-height:0;margin-left:.08em;font-weight:500}
 .hero-nav{display:flex;align-items:center;justify-content:space-between;gap:24px;height:92px;padding:0 48px}
 .orgs{display:flex;align-items:center;gap:24px}
 .orgs img{width:auto;display:block;filter:brightness(0) invert(1)}
-.org-tencent{height:30px} .org-hkust{height:40px}
+.org-tencent{height:30px} .org-hkust{height:40px} .org-poly{height:40px} .org-ipp{height:28px}
+.org-x{display:flex;align-items:center;gap:12px}
+.org-rule-in{height:26px;opacity:.6}
+.org-tc{display:flex;align-items:center;gap:10px}
+.orgs img.org-mark{height:34px;filter:none}
 .org-rule{width:1px;height:34px;background:rgba(255,255,255,.55)}
 .nav-links{display:flex;align-items:center;gap:8px}
 .nav-links a,.nav-present{white-space:nowrap;height:38px;padding:0 18px;display:inline-flex;align-items:center;border-radius:999px;font-size:15px;font-weight:550;text-decoration:none;color:#fff;background:rgba(255,255,255,.14);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:background .2s}
@@ -546,3 +550,18 @@ body.present .how-no{width:32px;height:32px;font-size:16px}
 body.present #overview .abstract .abs-short{font-size:17px;line-height:1.5}
 body.present .how-k{display:none}
 body.present #method .fig-wide figcaption{display:none}
+
+@media (max-width:760px){
+  .org-poly{height:26px} .org-ipp{height:18px} .org-x{gap:7px} .org-rule-in{height:16px} .orgs img.org-mark{height:20px} .org-tc{gap:6px}
+}
+@media (max-width:480px){
+  .orgs{gap:7px} .org-poly{height:21px} .org-ipp{height:15px} .org-x{gap:5px} .org-rule-in{height:13px} .orgs img.org-mark{height:16px} .org-tc{gap:4px} .org-tencent{height:14px} .org-hkust{height:19px} .org-rule{height:18px}
+  .hero-nav{gap:6px} .nav-links .nav-present{padding:0 10px;font-size:12.5px}
+}
+@media (max-width:480px){
+  .hero-nav{padding-left:12px;padding-right:12px}
+  .orgs{gap:6px;flex:none} .orgs img{flex:none}
+  .orgs img.org-mark{height:12px} .org-tc{gap:3px} .org-tencent{height:12px} .org-hkust{height:16px}
+  .org-poly{height:18px} .org-ipp{height:12px} .org-x{gap:4px} .org-rule{height:15px} .org-rule-in{height:11px}
+  .nav-links .nav-present{height:30px;padding:0 9px;font-size:12px}
+}
