@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CameraVLM · When Left Is Right? Camera-Motion Understanding beyond Screen</title>
+<meta name="description" content="CameraVLM couples off-screen camera motion with on-screen flow dynamics and lets the language model read both. With 9B parameters it reaches the highest three-benchmark average among more than 20 baselines.">
+<meta name="theme-color" content="#0b0e13">
+<link rel="preload" href="assets/fonts/Archivo.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/hero-truck-0.webp" as="image">
+<link rel="preload" href="js/demo-data.js" as="script">
+<link rel="stylesheet" href="css/site.css">
+<script src="js/hero-data.js" defer></script>
+<script src="js/apps-data.js" defer></script>
+<script src="js/demo.js" defer></script>
+<script src="js/content.js" defer></script>
+<script src="js/paper-data.js" defer></script>
+<script src="js/charts.js" defer></script>
+<script src="js/app.js" defer></script>
+<script src="js/present.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#overview">Skip to content</a>
+
+<!-- ============ 1 · HERO ============ -->
+<header class="hero slide" id="top" data-title="CameraVLM" aria-label="CameraVLM">
+  <div class="hero-wash" aria-hidden="true"><canvas id="hero-wash"></canvas></div>
+
+  <nav class="hero-nav" aria-label="Main">
+    <div class="orgs" aria-label="Institutions">
+      <img class="org-tencent" src="assets/brands/tencent.png" alt="Tencent">
+      <i class="org-rule" aria-hidden="true"></i>
+      <img class="org-hkust" src="assets/brands/hkustgz.png" alt="The Hong Kong University of Science and Technology (Guangzhou)">
+    </div>
+    <div class="nav-links">
+      <a href="#overview">Overview</a><a href="#problem">Problem</a><a href="#method">Method</a><a href="#examples">Results</a><a href="#cite">BibTeX</a>
+      <button class="nav-present" type="button" data-present>▷ Present</button>
+    </div>
+  </nav>
+
+  <div class="hero-center">
+    <h1 class="wordmark">Camera<span>VLM</span></h1>
+    <p class="paper-title">When <span class="t-left">Left</span> Is <span class="t-right">Right?</span> Camera-Motion Understanding beyond Screen</p>
+    <p class="authors">
+      <span>Chong Cheng<sup>1,2*</sup></span><span>Ran Zhang<sup>2§</sup></span><span>Xinyuan Li<sup>2</sup></span><span>Alan Zhao<sup>2</sup></span><span>Hao Wang<sup>1†</sup></span><span>Xi Wang<sup>3</sup></span>
+    </p>
+    <p class="affils"><span><sup>1</sup>The Hong Kong University of Science and Technology (Guangzhou)</span><span><sup>2</sup>Tencent</span><span><sup>3</sup>IP Paris</span></p>
+    <p class="hero-foot">* Work done during an internship at Tencent &nbsp;·&nbsp; † Corresponding author &nbsp;·&nbsp; § Project leader &nbsp;·&nbsp; Joint supervision: Hao Wang and Xi Wang</p>
+    <div class="hero-actions res-links">
+      <a class="pill pill-main" href="https://huggingface.co/spaces/NicolasCC/CameraVLM" target="_blank" rel="noopener"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6 4.5v11l9-5.5z" fill="currentColor"/></svg>Demo</a>
+      <button class="pill pill-glass" type="button" data-api><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 5 2.5 10 7 15M13 5l4.5 5-4.5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>API</button>
+      <a class="pill pill-glass" href="https://github.com/nicolascc1/CameraVLM" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Code</a>
+      <span class="pill pill-off" aria-disabled="true">arXiv <em>soon</em></span>
+      <span class="pill pill-off" aria-disabled="true">Model <em>soon</em></span>
+    </div>
+  </div>
+
+  <!-- what CameraVLM does: one clip in, three synchronized outputs -->
+  <section class="demo" aria-label="What CameraVLM does: it reads a video and outputs a camera-motion description, the camera pose and the point flow">
+    <div class="demo-head">
+      <p class="demo-title">Give CameraVLM a video. It reports how the camera moved.</p>
+    </div>
+    <div class="demo-grid">
+      <figure class="tile tile-in">
+        <video id="demo-video" class="demo-src" src="assets/hero-truck.mp4" muted playsinline preload="auto" poster="assets/hero-truck-0.webp"></video>
+        <canvas id="demo-in" aria-label="Input video"></canvas>
+        <figcaption class="tile-k"><b>1</b>Input video</figcaption>
+      </figure>
+      <div class="demo-outs">
+        <figure class="tile tile-text">
+          <figcaption class="tile-k k-ours"><b>2</b>CameraVLM output</figcaption>
+          <div class="demo-out" id="demo-out" aria-live="off"><span class="q">Which camera movement best describes this shot?</span><div class="opt"><i>A</i><span>Trucking Right Shot</span></div><div class="opt"><i>B</i><span>Trucking Left Shot</span></div><div class="opt"><i>C</i><span>Zoom In Shot</span></div><div class="opt"><i>D</i><span>Dolly In Shot, then adds Trucking Left Shot</span></div></div>
+        </figure>
+        <figure class="tile tile-pose">
+          <figcaption class="tile-k k-cam"><b>3</b>Camera pose<em>off screen</em></figcaption>
+          <canvas id="demo-pose" aria-label="Camera path seen from above"></canvas>
+        </figure>
+        <figure class="tile tile-flow">
+          <figcaption class="tile-k k-flow"><b>4</b>Point flow<em>on screen</em></figcaption>
+          <canvas id="demo-flow" aria-label="Point tracks over the video"></canvas>
+        </figure>
+      </div>
+    </div>
+  </section>
+</header>
+
+<main>
+<!-- ============ 2 · OVERVIEW + ABSTRACT ============ -->
+<section class="section" id="overview" aria-labelledby="overview-h">
+  <div class="slide wrap" data-title="Overview and abstract">
+    <header class="sec-head">
+      <p class="eyebrow">Overview</p>
+      <h2 id="overview-h">With 9B parameters, CameraVLM matches or surpasses GPT-6 Astra on average.</h2>
+    </header>
+    <div class="ov-grid">
+      <figure class="card fig-card teaser-card" data-step="1">
+        <button class="zoomable" type="button" data-zoom="assets/hero-schematic.webp" data-caption="CameraVLM learns off-screen camera motion and on-screen flow together with language." aria-label="Enlarge the overview figure"><img src="assets/hero-schematic.webp" alt="A video and a question enter CameraVLM; camera states give the camera trajectory, flow states give point flow, and the language model answers how the camera moves."></button>
+        <figcaption><b>Camera, flow and language.</b> Camera states describe how the camera moves off screen; flow states describe what moves on screen; the language model reads both to answer.</figcaption>
+      </figure>
+      <figure class="card chart-card" data-step="1">
+        <div class="chart-top"><span class="chart-title">Average accuracy vs. model size</span></div>
+        <div id="chart-scatter" class="chart chart-tall" role="img" aria-label="Three-benchmark average accuracy against total parameters for 23 models. CameraVLM at 9B lies above GPT-6 Astra and the human average."></div>
+        <figcaption>Mean accuracy over CameraBench, CineTechBench and ShotBench. Parameter counts of closed-source models are estimated.</figcaption>
+      </figure>
+    </div>
+    <article class="card abstract" data-step="2" aria-labelledby="abs-h">
+        <div class="abs-top"><h3 id="abs-h">Abstract</h3>
+          <div class="seg abs-seg" role="group" aria-label="Abstract length"><button type="button" data-abs="full" aria-pressed="true">Full</button><button type="button" data-abs="short" aria-pressed="false">Short</button></div></div>
+        <p class="abs-full">Can a vision–language model tell left from right? Modern VLMs solve visual puzzles and follow hour-long videos, yet when asked whether the camera moved left or right, most do no better than a coin flip. Adding camera-motion data or geometric representations has been tried, separately, and neither closes the gap. We argue that camera-motion understanding needs two conditions at once: the representation must couple off-screen camera motion with on-screen flow dynamics, and it must be interpreted by the language model rather than trained as a standalone pose or depth estimator. We propose CameraVLM, which pairs a motion-state representation with state–language alignment. Camera tokens capture how the camera moves off screen, flow tokens capture how the subject and background move on screen, and a two-stage training strategy keeps language in the loop so that both are learned together with camera-motion semantics. With only 9B parameters, CameraVLM outperforms all open-source and camera-motion-specific models by a wide margin across three benchmarks and more than 20 baselines, and matches or surpasses GPT-6 Astra as well as human viewers in a 48-participant study.</p>
+        <p class="abs-short">Asked whether the camera moved left or right, most VLMs do no better than a coin flip. We argue that camera-motion understanding needs two conditions at once: a representation that couples off-screen camera motion with on-screen flow dynamics, and a language model that interprets it. CameraVLM meets both with camera tokens, flow tokens and a two-stage state–language alignment. With only 9B parameters, it outperforms all open-source and camera-motion-specific models on three benchmarks, and matches or surpasses GPT-6 Astra and human viewers.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ============ 3 · PROBLEM, SOLVED ============ -->
+<section class="section" id="problem" aria-labelledby="problem-h">
+  <div class="slide wrap" data-title="Left and right">
+    <header class="sec-head">
+      <p class="eyebrow">The problem</p>
+      <h2 id="problem-h">Most VLMs cannot tell left from right. CameraVLM can.</h2>
+    </header>
+    <div class="pr-grid">
+      <figure class="card fig-card" data-step="1">
+        <button class="zoomable" type="button" data-zoom="assets/problem-full.webp" data-caption="Spatial motion semantics depend on reference and spatio-temporal state." aria-label="Enlarge the four ambiguity examples"><img src="assets/problem-concepts.webp" alt="Four examples: whose left, mirror reflection, zoom in versus dolly in, pan versus truck."></button>
+        <figcaption><b>Why it is hard.</b> The same scene gives opposite directions under different references, and different camera motions look alike on screen.</figcaption>
+      </figure>
+      <figure class="card chart-card" data-step="2">
+        <div class="chart-top"><span class="chart-title">Accuracy on left/right questions (%)</span></div>
+        <div id="chart-lr" class="chart" role="img" aria-label="Left/right accuracy: Qwen3.5 42.3, Claude Opus 44.2, Gemini Flash 55.8, GPT-6 Astra 82.7, Human 86.0, CameraVLM 85.8."></div>
+        <figcaption>Only GPT-6 Astra and CameraVLM (9B) come close to human viewers; the other models stay near chance.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4 · METHOD ============ -->
+<section class="section" id="method" aria-labelledby="method-h">
+  <div class="slide wrap" data-title="Method">
+    <header class="sec-head">
+      <p class="eyebrow">Method</p>
+      <h2 id="method-h">Camera tokens and flow tokens, read by one language model.</h2>
+    </header>
+    <div class="how" data-step="1">
+      <p class="how-k">Two conditions, met at once</p>
+      <div class="how-grid">
+        <div class="how-item how-cam"><span class="how-no">1</span><p><b>Couple the off-screen camera with the on-screen flow</b> in one representation.</p></div>
+        <div class="how-item how-flow"><span class="how-no">2</span><p><b>Let the language model read it</b> under the reference the question gives.</p></div>
+      </div>
+    </div>
+    <figure class="card fig-card fig-wide" data-step="2">
+      <button class="zoomable" type="button" data-zoom="assets/framework.webp" data-caption="Architecture of CameraVLM." aria-label="Enlarge architecture diagram"><img src="assets/framework.webp" alt="Camera, vision, flow and question tokens enter a shared VLM backbone; a Camera Head predicts camera parameters, the flow pathway predicts trajectories, and the LM Head answers."></button>
+      <figcaption><b>Architecture.</b> Camera, vision, flow and question tokens are jointly contextualized by the shared backbone. The Camera Head predicts camera parameters, the flow pathway predicts trajectories, visibility and confidence, and the LM Head answers under the query.</figcaption>
+    </figure>
+    <div class="m-grid" data-step="3">
+      <div class="m-item"><h3>Camera states</h3><p>One learnable token per frame; a Camera Head decodes per-frame pose.</p></div>
+      <div class="m-item"><h3>Flow states</h3><p>Point tracks from the vision encoder's features, pooled into flow tokens.</p></div>
+      <div class="m-item"><h3>Two-stage alignment</h3><p>Stage 1 aligns the new states with a frozen LLM; stage 2 trains everything jointly.</p></div>
+    </div>
+    <p class="note-line" data-step="3">At inference, CameraVLM takes only the video and the question.</p>
+  </div>
+</section>
+
+<!-- ============ 5 · QUALITATIVE ============ -->
+<section class="section" id="examples" aria-labelledby="examples-h">
+  <div class="slide wrap" data-title="Examples" data-custom-steps="3">
+    <header class="sec-head">
+      <p class="eyebrow">Examples</p>
+      <h2 id="examples-h">Same clip, same question: CameraVLM gets the camera move right.</h2>
+    </header>
+    <div class="card player" id="player">
+      <div class="player-media"><video id="player-video" muted loop playsinline preload="none"></video><span class="player-label" id="player-label"></span></div>
+      <div class="player-side">
+        <p class="player-src" id="player-src"></p>
+        <h3 id="player-q"></h3>
+        <ol class="player-opts" id="player-opts"></ol>
+        <div class="answers" id="player-answers" aria-live="polite"></div>
+      </div>
+    </div>
+    <div class="thumbs" id="thumbs" role="tablist" aria-label="Choose a clip"></div>
+  </div>
+</section>
+
+<!-- ============ 6 · QUANTITATIVE ============ -->
+<section class="section" id="results" aria-labelledby="results-h">
+  <div class="slide wrap" data-title="Benchmarks">
+    <header class="sec-head">
+      <p class="eyebrow">Benchmarks</p>
+      <h2 id="results-h">State-of-the-art average accuracy on three benchmarks.</h2>
+    </header>
+    <div class="card tbl-card tbl-one" data-step="1"><table class="rtable" id="tbl-main"><thead></thead><tbody></tbody></table></div>
+    <p class="tbl-hint" aria-hidden="true">Swipe the table to see every benchmark →</p>
+    <p class="mini-note tbl-note">Accuracy (%). <b>Bold</b>: best per column; <u>underline</u>: second best (human study excluded from ranking).</p>
+  </div>
+
+  <div class="slide wrap" data-title="By motion type">
+    <header class="sec-head">
+      <p class="eyebrow">By motion type</p>
+      <h2>Strong across all eight camera-motion types.</h2>
+    </header>
+    <div class="cat-grid" data-step="1">
+      <figure class="card chart-card">
+        <div class="chart-top"><span class="chart-title">Accuracy per camera-motion category (%)</span><span class="legend" id="legend-cat"></span></div>
+        <div id="chart-cat" class="chart chart-tall" role="img" aria-label="Accuracy per category for seven models across pan, tilt, crane, dolly, zoom, static, shake and composite motion."></div>
+      </figure>
+      <figure class="card chart-card">
+        <div class="chart-top"><span class="chart-title">Pooled accuracy (%)</span></div>
+        <div id="chart-overall" class="chart chart-tall" role="img" aria-label="Pooled accuracy for the same seven models."></div>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7 · APPLICATIONS ============ -->
+<section class="section" id="applications" aria-labelledby="apps-h">
+  <div class="slide wrap" data-title="Applications · Shot description">
+    <header class="sec-head">
+      <p class="eyebrow">Applications</p>
+      <h2 id="apps-h">From one video, CameraVLM writes the shot description and its attributes.</h2>
+    </header>
+    <div class="card apps" id="apps">
+      <div class="apps-media"><video id="apps-video" muted loop playsinline preload="none"></video><span class="apps-title" id="apps-title"></span><span class="apps-in">Input video</span></div>
+      <div class="apps-out" aria-live="polite">
+        <div class="gen-head"><span class="out-badge">CameraVLM output</span></div>
+        <p class="out-k">Description</p>
+        <blockquote class="out-quote" id="out-quote"></blockquote>
+        <p class="out-k">Shot attributes</p>
+        <dl class="attrs" id="out-attrs"></dl>
+      </div>
+    </div>
+    <div class="thumbs thumbs-4" id="apps-thumbs" role="tablist" aria-label="Choose a clip"></div>
+  </div>
+
+  <div class="slide wrap" data-title="Applications · Previs to final render">
+    <header class="sec-head">
+      <p class="eyebrow">Applications</p>
+      <h2>From previs to final render, CameraVLM describes both shots.</h2>
+    </header>
+    <div class="pair" id="pair">
+      <figure class="card pair-card" data-k="previs">
+        <div class="pair-media"><video muted playsinline preload="none"></video><span class="apps-title">Previsualization</span></div>
+        <figcaption class="pair-out"><span class="out-badge">CameraVLM output</span><p class="out-k">Description</p><p class="pair-desc"></p></figcaption>
+      </figure>
+      <figure class="card pair-card" data-k="render">
+        <div class="pair-media"><video muted playsinline preload="none"></video><span class="apps-title">Final render</span></div>
+        <figcaption class="pair-out"><span class="out-badge">CameraVLM output</span><p class="out-k">Description</p><p class="pair-desc"></p></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 8 · CLOSE ============ -->
+<section class="section close" id="cite" aria-labelledby="cite-h">
+  <div class="slide wrap" data-title="Citation">
+    <header class="sec-head">
+      <p class="eyebrow">Citation</p>
+      <h2 id="cite-h">Cite CameraVLM.</h2>
+    </header>
+    <div class="close-grid">
+      <div class="card bib-card">
+        <div class="bib-top"><h3>BibTeX</h3><button type="button" class="copy" id="copy-bib">Copy</button></div>
+<pre id="bibtex">@article{cheng2026cameravlm,
+  title   = {When Left Is Right? Camera-Motion
+             Understanding beyond Screen},
+  author  = {Cheng, Chong and Zhang, Ran and Li, Xinyuan
+             and Zhao, Alan and Wang, Hao and Wang, Xi},
+  journal = {arXiv preprint},
+  year    = {2026}
+}</pre>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <a href="#top">Back to top ↑</a>
+</footer>
+
+<!-- presentation chrome -->
+<div class="deck-bar" id="deck-bar" hidden>
+  <span class="deck-count"><b id="deck-i">1</b> / <span id="deck-n">1</span></span>
+  <span class="deck-title" id="deck-title"></span>
+  <div class="deck-progress" aria-hidden="true"><i id="deck-fill"></i></div>
+  <button type="button" id="deck-prev" aria-label="Previous">←</button>
+  <button type="button" id="deck-next" aria-label="Next">→</button>
+  <button type="button" id="deck-auto" aria-pressed="false">▷ Autoplay</button>
+  <button type="button" id="deck-full" aria-label="Full screen"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M3 7.5V3h4.5M12.5 3H17v4.5M17 12.5V17h-4.5M7.5 17H3v-4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <button type="button" id="deck-exit">Exit</button>
+</div>
+
+<dialog id="api-dialog" class="api-dialog" aria-labelledby="api-h">
+  <button type="button" class="zoom-close" data-close aria-label="Close">×</button>
+  <h3 id="api-h">Use CameraVLM via API</h3>
+  <p class="api-lede">The hosted <a href="https://huggingface.co/spaces/NicolasCC/CameraVLM" target="_blank" rel="noopener">Hugging Face demo</a> exposes one endpoint, <code>/predict</code>. It returns the text answer and an <code>.npz</code> file with per-frame camera poses and point tracks.</p>
+  <div class="api-block"><div class="api-bar"><span>Install</span><button type="button" class="copy" data-copy="api-install">Copy</button></div>
+<pre id="api-install">pip install gradio_client numpy</pre></div>
+  <div class="api-block"><div class="api-bar"><span>Python</span><button type="button" class="copy" data-copy="api-code">Copy</button></div>
+<pre id="api-code">import numpy as np
+from gradio_client import Client, handle_file
+
+# a Hugging Face token raises your GPU quota
+client = Client("NicolasCC/CameraVLM", token="hf_...")
+
+answer, geometry = client.predict(
+    video=handle_file("video.mp4"),  # local path or URL
+    task="question",                 # "question" | "camera_motion"
+    prompt="How does the camera move relative to the car?",
+    num_frames=128,                  # 2–128 frames, sampled uniformly
+    api_name="/predict",
+)
+print(answer)
+
+g = np.load(geometry)
+g["camera_to_world"]  # (S, 4, 4) per-frame camera poses
+g["intrinsics"]       # (S, 3, 3)
+g["tracks"]           # (S/2, 256, 2) point tracks in pixels</pre></div>
+  <p class="api-note">With <code>task="camera_motion"</code> the answer is a JSON string with <code>primary_motion</code>, <code>secondary_motion</code>, <code>direction</code>, <code>evidence</code> and <code>confidence</code>; <code>prompt</code> is ignored. Full field list in the <a href="https://github.com/nicolascc1/CameraVLM" target="_blank" rel="noopener">GitHub README</a>.</p>
+</dialog>
+<dialog id="zoom-dialog" class="zoom-dialog"><button type="button" class="zoom-close" data-close aria-label="Close">×</button><div id="zoom-slot"></div><p id="zoom-cap"></p></dialog>
+<noscript><p class="noscript">Charts, clips and the presentation mode need JavaScript. Code and API usage are on <a href="https://github.com/nicolascc1/CameraVLM">GitHub</a>.</p></noscript>
+</body>
+</html>
