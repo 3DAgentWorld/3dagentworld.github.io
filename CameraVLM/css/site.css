@@ -580,3 +580,7 @@ body.present #method .fig-wide figcaption{display:none}
 }
 .orgs,.org-tc,.org-solar,.org-x{flex-shrink:0}
 @media (max-width:1400px){.nav-links a{display:none}}
+
+@font-face{font-family:"Solar Condensed";src:url("../assets/fonts/BarlowCondensed-SemiBold.ttf") format("truetype");font-weight:600;font-style:normal;font-display:swap}
+.org-solar-name{font-family:"Solar Condensed","Arial Narrow",sans-serif;font-size:17px;font-weight:600;line-height:1.05;letter-spacing:.35px}
+@media(max-width:760px){.org-solar-name{font-size:14px;letter-spacing:.25px}}
