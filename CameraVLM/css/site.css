@@ -565,3 +565,18 @@ body.present #method .fig-wide figcaption{display:none}
   .org-poly{height:18px} .org-ipp{height:12px} .org-x{gap:4px} .org-rule{height:15px} .org-rule-in{height:11px}
   .nav-links .nav-present{height:30px;padding:0 9px;font-size:12px}
 }
+
+/* The colorful mark identifies Tencent Video Solar System. */
+.org-solar{display:flex;align-items:center;gap:8px}
+.org-solar-name{color:#fff;font-size:13px;font-weight:600;line-height:1.2;white-space:nowrap}
+.org-tc{gap:18px}
+@media (max-width:760px){
+  .hero-nav{flex-wrap:wrap;justify-content:center;row-gap:12px}
+  .orgs{flex-wrap:wrap;justify-content:center;gap:12px;width:100%;flex:auto}
+  .org-tc{gap:10px}
+  .org-solar{gap:6px}
+  .org-solar-name{font-size:11px}
+  .orgs img.org-mark{height:22px}
+}
+.orgs,.org-tc,.org-solar,.org-x{flex-shrink:0}
+@media (max-width:1400px){.nav-links a{display:none}}
