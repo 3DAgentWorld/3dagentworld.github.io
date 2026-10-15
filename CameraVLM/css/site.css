@@ -584,3 +584,19 @@ body.present #method .fig-wide figcaption{display:none}
 @font-face{font-family:"Solar Condensed";src:url("../assets/fonts/BarlowCondensed-SemiBold.ttf") format("truetype");font-weight:600;font-style:normal;font-display:swap}
 .org-solar-name{font-family:"Solar Condensed","Arial Narrow",sans-serif;font-size:17px;font-weight:600;line-height:1.05;letter-spacing:.35px}
 @media(max-width:760px){.org-solar-name{font-size:14px;letter-spacing:.25px}}
+
+/* Resource links and institution marks belong to the final presentation slide only. */
+.present-end-logos,.present-end-links{display:none}
+body.present .close .present-end-logos{display:flex;gap:30px;margin:2px 0 32px;width:auto;flex-wrap:nowrap;justify-content:flex-start}
+body.present .present-end-logos img{filter:brightness(0);flex:none}
+body.present .present-end-logos img.org-mark{filter:none}
+body.present .present-end-logos .org-solar-name{color:var(--ink)}
+body.present .present-end-logos .org-rule{background:rgba(0,0,0,.2)}
+body.present .close-grid{display:grid;grid-template-columns:1.2fr 1fr;align-items:stretch;gap:28px}
+body.present .close .bib-card{padding:24px;min-width:0}
+body.present .close #bibtex{font-size:16px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
+body.present .present-end-links{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+body.present .present-qr-card{display:flex;flex-direction:column;align-items:center;justify-content:center;background:white;border:1px solid var(--rule);border-radius:20px;padding:20px 12px;min-width:0;text-decoration:none;color:var(--ink);gap:12px}
+body.present .present-qr-card img{width:210px;height:210px;image-rendering:pixelated;max-width:100%;object-fit:contain}
+body.present .present-qr-card strong{font-size:24px}
+body.present .present-qr-card span{font-size:12px;white-space:nowrap;color:var(--ink-3)}
