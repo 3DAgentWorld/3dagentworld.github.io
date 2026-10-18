@@ -1,0 +1,1006 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WaMo: Wavelet-Enhanced Multi-Frequency Trajectory Analysis for Fine-Grained Text-Motion Retrieval</title>
+<meta name="description" content="WaMo (ACM MM 2026): wavelet-enhanced multi-frequency trajectory analysis for fine-grained text-motion retrieval.">
+<style>
+:root{--ease-out:cubic-bezier(0.23,1,0.32,1);--ease-in-out:cubic-bezier(0.77,0,0.175,1);--ease-drawer:cubic-bezier(0.32,0.72,0,1)}
+body{margin:0;background:#FFFFFF;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+sc-for,sc-if{display:contents}
+sub,sup{line-height:0}
+a{color:#19698A;text-underline-offset:3px}
+a:hover{color:#1D1D1F}
+::selection{background:rgba(36,132,168,.18)}
+.glass{background:rgba(251,251,253,.8);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px)}
+.navscroll{scrollbar-width:none}
+.navscroll::-webkit-scrollbar{display:none}
+.press{transition:transform 160ms var(--ease-out),background-color 200ms ease,color 200ms ease,border-color 200ms ease,box-shadow 200ms ease}
+.press:active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){
+.nav-a:hover{color:#1D1D1F !important}
+.btn-dark:hover{background:#000000 !important}
+.btn-light:hover{background:#DCDCE1 !important}
+.pill:hover,.seg:hover{color:#1D1D1F !important}
+.pill:hover{border-color:#D2D2D7 !important}
+.legend-btn:hover{border-color:#AEAEB2 !important}
+.phrase:hover{background-color:rgba(36,132,168,.12) !important}
+.rowbtn:hover{background:#FFFFFF !important}
+.copy:hover{border-color:#AEAEB2 !important}
+.foot-a:hover{color:#19698A !important}
+}
+a:focus-visible,button:focus-visible{outline:2px solid #2484A8;outline-offset:2px;border-radius:8px}
+.copy:focus-visible,.pill:focus-visible,.legend-btn:focus-visible{outline-offset:-1px}
+.hscroll{scrollbar-width:thin;scrollbar-color:#C7C7CC transparent}
+@keyframes wm-type{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes wm-caret{0%,49%{opacity:1}50%,100%{opacity:0}}
+@keyframes wm-rise{from{opacity:0;transform:translateY(16px) scale(.98);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
+@keyframes wm-badge{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
+@keyframes wm-ring{from{opacity:.6;transform:scale(1)}to{opacity:0;transform:scale(1.05)}}
+@keyframes wm-fade{from{opacity:0}to{opacity:1}}
+@keyframes wm-sweep{0%{clip-path:inset(0 100% 0 0)}84.6%,100%{clip-path:inset(0 0 0 0)}}
+@keyframes wm-head{0%{transform:translateX(0);opacity:1}84.6%{transform:translateX(100%);opacity:1}95%,100%{transform:translateX(100%);opacity:0}}
+@keyframes wm-fa{0%,23.1%{opacity:0}25%,70.1%{opacity:1}75%,100%{opacity:0}}
+@keyframes wm-fb{0%,74.6%{opacity:0}76.5%,86%{opacity:1}95%,100%{opacity:0}}
+@keyframes wm-pa{0%,23.1%{background-color:rgba(36,132,168,0)}25%,70.1%{background-color:rgba(36,132,168,.16)}75%,100%{background-color:rgba(36,132,168,0)}}
+@keyframes wm-pb{0%,74.6%{background-color:rgba(36,132,168,0)}76.5%,86%{background-color:rgba(36,132,168,.16)}95%,100%{background-color:rgba(36,132,168,0)}}
+@media (max-width:720px){.wm-first{order:-1 !important}.wm-row{grid-template-columns:minmax(0,1fr) !important;grid-template-rows:none !important;row-gap:32px !important}.wm-col{grid-row:auto !important;grid-template-rows:auto auto !important;row-gap:16px}.wm-query{letter-spacing:-0.022em !important}.wm-type{animation-name:wm-fade !important;animation-duration:500ms !important;animation-timing-function:var(--ease-out) !important}.wm-venue{display:none}}
+@media (max-width:1000px){.wm-orgs{gap:12px !important}.wm-l1{height:22px !important}.wm-l2{height:23px !important}.wm-l3{height:27px !important}}
+@media (max-width:720px){.wm-hdr{flex-wrap:wrap;justify-content:center !important;row-gap:2px;padding-top:6px !important}.wm-hdr nav{flex:1 1 100%}.wm-orgs{min-height:36px !important}}
+@media (max-width:688px){.navscroll{padding-right:24px;-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 32px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 32px),transparent)}}
+@media (prefers-reduced-motion:reduce){
+html{scroll-behavior:auto}
+.wm-type,.wm-caret,.wm-ring,.wm-sweep,.wm-head,.wm-flash{animation:none !important}
+.wm-rise,.wm-badge{animation-name:wm-fade !important;animation-duration:300ms !important;animation-delay:0s !important}
+.press:active{transform:none}
+.wm-bar{transition:none !important}
+}
+@media (prefers-reduced-transparency:reduce){.glass{background:#FFFFFF;-webkit-backdrop-filter:none;backdrop-filter:none}}
+.wm-bar{transform-origin:0 50%}
+@keyframes wm-grow{from{transform:scaleX(0)}}
+@media screen and (max-height:2399.98px){
+.rv-h{opacity:0}
+.rv-in{transition:opacity 700ms var(--ease-out),transform 900ms var(--ease-out)}
+.rv-in.rv-d1{transition-delay:80ms}
+.rv-in.rv-d2{transition-delay:160ms}
+}
+@media screen and (max-height:2399.98px) and (prefers-reduced-motion:no-preference){
+.rv-h{transform:translateY(24px)}
+.rv-h.rv-s{transform:translateY(12px)}
+.rv-h.rv-o{transform:none}
+.st-arm .wm-sweep{clip-path:inset(0 100% 0 0) !important}
+.st-arm .wm-bar{transform:scaleX(0)}
+.st-play .wm-bar{animation-name:wm-grow;animation-duration:650ms;animation-timing-function:var(--ease-drawer);animation-delay:var(--bd,0ms);animation-fill-mode:backwards}
+}
+@media screen and (max-height:2399.98px) and (prefers-reduced-motion:reduce){
+.rv-in{transition:opacity 400ms ease}
+}
+@media print,(min-height:2400px){.wm-sweep,.wm-head,.wm-flash{animation:none !important}}
+body[data-dc-capturing] .rv-h{opacity:1 !important;transform:none !important}
+body[data-dc-capturing] .rv-in{transition:none !important}
+body[data-dc-capturing] .wm-bar{transform:none !important;animation:none !important}
+body[data-dc-capturing] .wm-sweep{clip-path:inset(0 0 0 0) !important;animation:none !important}
+body[data-dc-capturing] .wm-head,body[data-dc-capturing] .wm-flash{animation:none !important}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+<script>
+(function () {
+  var h = React.createElement;
+  var TREE = [["div",{"style":"background: #FFFFFF; color: #424245; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'PingFang SC', system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 16px; line-height: 1.6"},[["header",{"class":"glass","style":"position: sticky; top: 0; z-index: 30; border-bottom: 1px solid rgba(0,0,0,0.06)"},[["div",{"class":"wm-hdr","style":"max-width: 1200px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 40px); min-height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 24px"},[["a",{"class":"wm-orgs","href":"#top","onClick":"{{blurSelf}}","aria-label":"Back to top. The Hong Kong University of Science and Technology (Guangzhou), The University of Queensland, Nanyang Technological University","style":"flex: none; display: flex; align-items: center; gap: 18px; min-height: 44px; text-decoration: none"},[["img",{"class":"wm-l1","src":"assets/logo-hkust-gz.png","alt":"The Hong Kong University of Science and Technology (Guangzhou)","width":"147","height":"28","decoding":"async","style":"display: block; width: auto; height: 28px"},[]],["span",{"aria-hidden":"true","style":"flex: none; width: 1px; height: 24px; background: #D2D2D7"},[]],["img",{"class":"wm-l2","src":"assets/logo-uq.png","alt":"The University of Queensland","width":"110","height":"29","decoding":"async","style":"display: block; width: auto; height: 29px"},[]],["span",{"aria-hidden":"true","style":"flex: none; width: 1px; height: 24px; background: #D2D2D7"},[]],["img",{"class":"wm-l3","src":"assets/logo-ntu.png","alt":"Nanyang Technological University","width":"95","height":"34","decoding":"async","style":"display: block; width: auto; height: 34px"},[]]]],["nav",{"aria-label":"Sections","class":"navscroll","style":"display: flex; gap: 4px; overflow-x: auto; white-space: nowrap; min-width: 0"},[["sc-for",{"list":"{{navItems}}","as":"n","hint-placeholder-count":"8"},[["a",{"class":"nav-a press","href":"{{n.href}}","onClick":"{{blurSelf}}","aria-current":"{{n.current}}","style":"display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px; border-radius: 999px; background: {{n.bg}}; color: {{n.fg}}; font-size: 12px; font-weight: 400; line-height: 1; letter-spacing: -0.01em; text-decoration: none"},["{{n.label}}"]]]]]]]]]],["section",{"id":"top","ref":"{{secRefs.top}}","style":"max-width: 1200px; margin: 0 auto; padding: clamp(32px, 2.8vw, 40px) clamp(16px, 4vw, 40px) clamp(56px, 5.6vw, 80px); display: flex; flex-direction: column; align-items: center; text-align: center; scroll-margin-top: 56px"},[["p",{"style":"margin: 0; font-size: 17px; font-weight: 600; line-height: 24px; letter-spacing: -0.022em; color: {{motionInk}}"},["ACM Multimedia 2026"]],["h1",{"style":"margin: 4px 0 0; display: flex; flex-direction: column; align-items: center; gap: 8px; font-weight: 400"},[["span",{"style":"font-size: clamp(56px, 3.75vw + 26px, 80px); font-weight: 600; line-height: 1; letter-spacing: -0.015em; color: #1D1D1F"},["WaMo"]],["span",{"style":"max-width: 23em; font-size: clamp(21px, 1.25vw + 10px, 28px); font-weight: 400; line-height: 1.1429; letter-spacing: 0.007em; color: #1D1D1F; text-wrap: balance"},[["span",{"style":"white-space: nowrap"},["Wavelet-Enhanced"]]," ",["span",{"style":"white-space: nowrap"},["Multi-Frequency"]]," Trajectory Analysis for ",["span",{"style":"white-space: nowrap"},["Fine-Grained"]]," ",["span",{"style":"white-space: nowrap"},["Text-Motion"]]," Retrieval"]]]],["div",{"style":"margin-top: 32px; display: flex; flex-direction: column; align-items: center; gap: 4px"},[["p",{"style":"margin: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 0 24px; font-size: 17px; font-weight: 400; line-height: 24px; letter-spacing: -0.022em; color: #1D1D1F"},[["span",{},["Junlong Ren",["sup",{"style":"margin-left: 1px; font-size: 11px; font-weight: 400; letter-spacing: 0; color: #6E6E73"},["1*"]]]],["span",{},["Gangjian Zhang",["sup",{"style":"margin-left: 1px; font-size: 11px; font-weight: 400; letter-spacing: 0; color: #6E6E73"},["1*"]]]],["span",{},["Honghao Fu",["sup",{"style":"margin-left: 1px; font-size: 11px; font-weight: 400; letter-spacing: 0; color: #6E6E73"},["2"]]]],["span",{},["Pengcheng Wu",["sup",{"style":"margin-left: 1px; font-size: 11px; font-weight: 400; letter-spacing: 0; color: #6E6E73"},["3"]]]],["span",{},["Hao Wang",["sup",{"style":"margin-left: 1px; font-size: 11px; font-weight: 400; letter-spacing: 0; color: #6E6E73"},["1†"]]]]]],["p",{"style":"margin: 0; font-size: 14px; line-height: 20px; letter-spacing: -0.016em; color: #6E6E73; text-wrap: balance"},[["span",{"style":"display: inline-block; margin: 0 8px; text-wrap: balance"},[["sup",{"style":"margin-right: 2px; font-size: 10px; letter-spacing: 0"},["1"]],"The Hong Kong University of Science and Technology (Guangzhou)"]],["span",{"style":"display: inline-block; margin: 0 8px; text-wrap: balance"},[["sup",{"style":"margin-right: 2px; font-size: 10px; letter-spacing: 0"},["2"]],"The University of Queensland"]],["span",{"style":"display: inline-block; margin: 0 8px; text-wrap: balance"},[["sup",{"style":"margin-right: 2px; font-size: 10px; letter-spacing: 0"},["3"]],"Nanyang Technological University"]]]],["p",{"style":"margin: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 0 16px; font-size: 12px; line-height: 16px; letter-spacing: -0.01em; color: #6E6E73"},[["span",{},["*Equal contribution"]],["span",{},["†Corresponding author"]]]]]],["div",{"style":"margin-top: 28px; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px"},[["a",{"class":"btn-dark press","href":"https://arxiv.org/pdf/2508.03343","style":"display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 clamp(16px, 1.6vw, 22px) 0 clamp(14px, 1.3vw, 18px); border-radius: 999px; background: #1D1D1F; color: #FFFFFF; text-decoration: none; font-size: 17px; font-weight: 400; line-height: 1; letter-spacing: -0.022em"},[["svg",{"width":"16","height":"16","viewBox":"0 0 24 24","aria-hidden":"true","style":"flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round"},[["path",{"d":"M6 3h8l4 4v14H6z"},[]],["path",{"d":"M14 3v4h4"},[]],["path",{"d":"M9 12.5h6M9 16.5h6"},[]]]],"Paper"]],["a",{"class":"btn-light press","href":"https://github.com/3DAgentWorld/WaMo/","style":"display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 clamp(16px, 1.6vw, 22px) 0 clamp(14px, 1.3vw, 18px); border-radius: 999px; background: #E8E8ED; color: #1D1D1F; text-decoration: none; font-size: 17px; font-weight: 400; line-height: 1; letter-spacing: -0.022em"},[["svg",{"width":"16","height":"16","viewBox":"0 0 24 24","aria-hidden":"true","style":"flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round"},[["path",{"d":"M8.5 7.5 4 12l4.5 4.5"},[]],["path",{"d":"M15.5 7.5 20 12l-4.5 4.5"},[]]]],"Code"]],["a",{"class":"btn-light press","href":"#citation","onClick":"{{blurSelf}}","style":"display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 clamp(16px, 1.6vw, 22px) 0 clamp(14px, 1.3vw, 18px); border-radius: 999px; background: #E8E8ED; color: #1D1D1F; text-decoration: none; font-size: 17px; font-weight: 400; line-height: 1; letter-spacing: -0.022em"},[["svg",{"width":"16","height":"16","viewBox":"0 0 24 24","aria-hidden":"true","style":"flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round"},[["path",{"d":"M7 4h10v16l-5-3.5L7 20z"},[]]]],"BibTeX"]]]],["figure",{"style":"margin: clamp(32px, 2.8vw, 40px) 0 0; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 16px"},[["div",{"style":"width: 100%; border-radius: 28px; background: #F5F5F7; padding: clamp(16px, 1.7vw, 24px); display: flex; flex-direction: column; gap: clamp(16px, 1.7vw, 24px)"},[["div",{"style":"align-self: center; width: 100%; max-width: 800px; display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 12px 24px 12px 20px; border-radius: 28px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px -12px rgba(0,0,0,0.16); text-align: left"},[["svg",{"width":"20","height":"20","viewBox":"0 0 24 24","aria-hidden":"true","style":"flex: none; fill: none; stroke: #6E6E73; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"},[["circle",{"cx":"11","cy":"11","r":"6.5"},[]],["path",{"d":"m16 16 4.5 4.5"},[]]]],["span",{"class":"wm-query","style":"flex: 1 1 auto; min-width: 0; font-size: clamp(17px, 0.625vw + 12px, 21px); font-weight: 400; line-height: 24px; letter-spacing: 0.011em; color: #1D1D1F"},[["span",{"class":"wm-type","style":"display: inline-block; animation: wm-type 1.3s steps(44, end) .25s backwards"},["a person balances on one foot while moving their other, and then switches.",["span",{"class":"wm-caret","style":"display: inline-block; width: 2px; height: 1.15em; margin-left: 2px; vertical-align: -0.2em; border-radius: 1px; background: {{motion}}; opacity: 0; animation: wm-caret 1s steps(1) 1.55s 3"},[]]]]]]]],["div",{"class":"wm-row","style":"display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.42fr) minmax(0, 1fr); grid-template-rows: auto auto; column-gap: clamp(16px, 2.2vw, 28px); row-gap: 16px"},[["div",{"class":"wm-rise wm-col","style":"order: 1; grid-row: span 2; display: grid; grid-template-rows: subgrid; align-items: end; min-width: 0; animation: wm-rise 700ms var(--ease-out) 1.6s backwards"},[["div",{"style":"aspect-ratio: 4 / 3; border-radius: 16px; overflow: hidden; background: #E3E2E7"},[["img",{"src":"assets/retrieval-mopa.webp","alt":"MoPa top-1 result for the query","decoding":"async","style":"display: block; width: 112%; max-width: none; height: auto; margin-left: -6%"},[]]]],["div",{"style":"display: flex; flex-direction: column; gap: 4px; padding: 0 4px; text-align: center; align-self: start"},[["p",{"style":"margin: 0; display: flex; justify-content: center; align-items: baseline; gap: 8px; line-height: 20px"},[["span",{"style":"font-size: 14px; font-weight: 600; letter-spacing: -0.016em; color: #1D1D1F"},["MoPa"]],["span",{"style":"font-size: 12px; color: #6E6E73; letter-spacing: -0.01em"},["CVPR’24"]]]],["p",{"style":"margin: 0; font-size: 14px; line-height: 20px; letter-spacing: -0.016em; color: #6E6E73; text-wrap: balance"},["a man leans forward slightly, stands on one foot, and kicks his other foot out behind him quickly."]]]]]],["div",{"class":"wm-first wm-rise wm-col","style":"order: 2; grid-row: span 2; display: grid; grid-template-rows: subgrid; align-items: end; min-width: 0; animation: wm-rise 700ms var(--ease-out) 1.74s backwards"},[["div",{"style":"position: relative"},[["span",{"class":"wm-ring","aria-hidden":"true","style":"position: absolute; inset: -6px; border-radius: 22px; border: 2px solid {{motion}}; opacity: 0; pointer-events: none; animation: wm-ring 900ms var(--ease-out) 2.35s"},[]],["div",{"style":"position: relative; aspect-ratio: 4 / 3; border-radius: 16px; overflow: hidden; background: #E3E2E7; box-shadow: 0 24px 48px -24px rgba(0,0,0,0.30)"},[["img",{"src":"assets/retrieval-wamo.webp","alt":"WaMo top-1 result, which is the ground-truth motion","decoding":"async","style":"display: block; width: 112%; max-width: none; height: auto; margin-left: -6%"},[]],["span",{"class":"wm-badge","style":"position: absolute; right: 12px; top: 12px; display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 10px 0 8px; border-radius: 999px; background: #177A4C; color: #FFFFFF; font-size: 12px; font-weight: 600; line-height: 1; letter-spacing: -0.01em; transform-origin: 100% 50%; animation: wm-badge 300ms var(--ease-out) 2.25s backwards"},[["svg",{"width":"12","height":"12","viewBox":"0 0 24 24","aria-hidden":"true","style":"flex: none; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round"},[["path",{"d":"M5 12.5l4.5 4.5L19 7.5"},[]]]],"Ground truth"]]]]]],["div",{"style":"display: flex; flex-direction: column; gap: 4px; padding: 0 4px; text-align: center; align-self: start"},[["p",{"style":"margin: 0; display: flex; justify-content: center; align-items: baseline; gap: 8px; line-height: 20px"},[["span",{"style":"font-size: 14px; font-weight: 600; letter-spacing: -0.016em; color: #1D1D1F"},["WaMo"]],["span",{"style":"font-size: 12px; font-weight: 600; color: {{motionInk}}; letter-spacing: -0.01em"},["Ours"]]]],["p",{"style":"margin: 0; font-size: 14px; line-height: 20px; letter-spacing: -0.016em; color: #424245; text-wrap: balance"},["a person balances on one foot while moving their other, and then switches."]]]]]],["div",{"class":"wm-rise wm-col","style":"order: 3; grid-row: span 2; display: grid; grid-template-rows: subgrid; align-items: end; min-width: 0; animation: wm-rise 700ms var(--ease-out) 1.67s backwards"},[["div",{"style":"aspect-ratio: 4 / 3; border-radius: 16px; overflow: hidden; background: #E3E2E7"},[["img",{"src":"assets/retrieval-tmr.webp","alt":"TMR top-1 result for the query","decoding":"async","style":"display: block; width: 112%; max-width: none; height: auto; margin-left: -6%"},[]]]],["div",{"style":"display: flex; flex-direction: column; gap: 4px; padding: 0 4px; text-align: center; align-self: start"},[["p",{"style":"margin: 0; display: flex; justify-content: center; align-items: baseline; gap: 8px; line-height: 20px"},[["span",{"style":"font-size: 14px; font-weight: 600; letter-spacing: -0.016em; color: #1D1D1F"},["TMR"]],["span",{"style":"font-size: 12px; color: #6E6E73; letter-spacing: -0.01em"},["ICCV’23"]]]],["p",{"style":"margin: 0; font-size: 14px; line-height: 20px; letter-spacing: -0.016em; color: #6E6E73; text-wrap: balance"},["a person moves their right foot around while balancing on their left foot."]]]]]]]]]],["figcaption",{"style":"font-size: 14px; line-height: 20px; letter-spacing: -0.016em; color: #6E6E73; text-wrap: balance"},["Top-1 text-to-motion retrieval on HumanML3D, from Figure 6 of the paper. Only WaMo retrieves the ",["span",{"style":"white-space: nowrap"},["ground-truth"]]," motion."]]]]]],["section",{"id":"abstract","ref":"{{secRefs.abstract}}","style":"background: #F5F5F7; scroll-margin-top: 56px"},[["div",{"style":"max-width: 1200px; margin: 0 auto; padding: clamp(72px, 9vw, 120px) clamp(16px, 4vw, 40px)"},[["div",{"style":"max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px"},[["h2",{"ref":"{{rvRef.absH}}","class":"{{rv.absH}}","style":"margin: 0; text-align: center; font-size: clamp(30px, 3.6vw, 46px); font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; color: #1D1D1F"},["Abstract"]],["div",{"style":"display: flex; flex-direction: column; gap: 18px; font-size: 17px; line-height: 1.75; color: #424245"},[["p",{"ref":"{{rvRef.absP1}}","class":"{{rv.absP1}}","style":"margin: 0; text-wrap: pretty"},["Text-Motion Retrieval (TMR) aims to retrieve 3D motion sequences semantically relevant to text descriptions. However, matching 3D motions with text remains highly challenging, primarily due to the intricate structure of the human body and its spatiotemporal dynamics. Existing approaches often overlook these complexities, relying on general encoding methods that fail to distinguish different body parts and their dynamics, limiting precise semantic alignment."]],["p",{"ref":"{{rvRef.absP2}}","class":"{{rv.absP2}}","style":"margin: 0; text-wrap: pretty"},["To address this, we propose WaMo, a novel wavelet-based multi-frequency feature extraction framework. It fully captures joint-specific and time-varying motion details at multiple resolutions for individual joint trajectories, extracting discriminative motion features to achieve fine-grained alignment with texts. WaMo has three key components: (1) Trajectory Wavelet Decomposition decomposes motion signals into frequency components that preserve both local kinematic details and global motion semantics. (2) Trajectory Wavelet Reconstruction uses learnable inverse wavelet transforms to reconstruct original joint trajectories from extracted features, ensuring the preservation of essential spatiotemporal information. (3) Disordered Motion Sequence Prediction reorders shuffled motion sequences to improve learning of inherent temporal coherence, enhancing motion-text alignment."]],["p",{"ref":"{{rvRef.absP3}}","class":"{{rv.absP3}}","style":"margin: 0; text-wrap: pretty"},["Extensive experiments demonstrate WaMo’s superiority, achieving 17.0% and 18.2% relative improvements in Rsum on HumanML3D and KIT-ML datasets, respectively, outperforming existing state-of-the-art (SOTA) methods."]]]]]]]]]],["section",{"id":"motivation","ref":"{{secRefs.motivation}}","style":"scroll-margin-top: 56px"},[["div",{"style":"max-width: 1200px; margin: 0 auto; padding: clamp(72px, 9vw, 120px) clamp(16px, 4vw, 40px)"},[["div",{"ref":"{{rvRef.motH}}","style":"max-width: 1040px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center"},[["h2",{"class":"{{rv.motH}}","style":"margin: 0; font-size: clamp(30px, 3.6vw, 46px); font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; color: #1D1D1F"},["Motivation"]],["p",{"class":"rv-d1 {{rv.motH}}","style":"margin: 0; font-size: clamp(16px, 1.35vw, 19px); line-height: 1.6; color: #6E6E73; text-wrap: balance"},["Frequency-specific decomposition of joint trajectories reveals the correspondence between motion details and text."]]]],["figure",{"style":"margin: 44px 0 0; display: flex; flex-direction: column; align-items: center; gap: 18px"},[["div",{"ref":"{{rvRef.motP}}","class":"rv-d1 {{rv.motP}}","style":"width: 100%; background: #F5F5F7; border-radius: 28px; padding: clamp(16px, 2.8vw, 36px); display: flex; flex-direction: column; gap: 24px"},[["div",{"style":"display: flex; flex-wrap: wrap; align-items: center; gap: 20px clamp(18px, 2.6vw, 32px)"},[["div",{"style":"flex: 1 1 220px; max-width: 300px; min-width: 0"},[["div",{"style":"border-radius: 18px; overflow: hidden; background: #E2E2E7"},[["img",{"src":"assets/motion-render.webp","alt":"Rendered motion: a person pulls an object, picks it up, wipes it and puts it down","loading":"lazy","decoding":"async","style":"display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover"},[]]]]]],["div",{"style":"flex: 999 1 460px; min-width: 0; display: flex; flex-direction: column; gap: 10px"},[["div",{"style":"display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 18px; font-size: 13px; color: #424245"},[["div",{"style":"display: flex; flex-wrap: wrap; gap: 4px 18px"},[["span",{"style":"display: inline-flex; align-items: center; gap: 8px"},[["span",{"style":"width: 18px; height: 2.5px; border-radius: 2px; background: {{lang}}"},[]],"Left arm"]],["span",{"style":"display: inline-flex; align-items: center; gap: 8px"},[["span",{"style":"width: 18px; height: 2.5px; border-radius: 2px; background: {{motion}}"},[]],"Right arm"]]]],["span",{"aria-live":"polite","style":"font-variant-numeric: tabular-nums; font-weight: 500; color: {{readoutColor}}; transition: color 200ms ease"},["{{readout}}"]]]],["div",{"style":"display: flex; gap: 12px"},[["div",{"aria-hidden":"true","style":"flex: none; width: 82px; display: flex; flex-direction: column; gap: 8px; padding-top: 26px; font-size: 12.5px; line-height: 1.25"},[["div",{"style":"height: 58px; display: flex; flex-direction: column; justify-content: center; gap: 2px"},[["span",{"style":"font-weight: 600; color: #1D1D1F"},["Input"]],["span",{"style":"font-size: 11.5px; color: #6E6E73"},["trajectory"]]]],["div",{"style":"height: 58px; display: flex; flex-direction: column; justify-content: center; gap: 2px"},[["span",{"style":"font-weight: 600; color: #1D1D1F"},["Scale 0"]],["span",{"style":"font-size: 11.5px; color: #6E6E73"},["approximation"]]]],["div",{"style":"height: 58px; display: flex; flex-direction: column; justify-content: center; gap: 2px"},[["span",{"style":"font-weight: 600; color: #1D1D1F"},["Scale 1"]],["span",{"style":"font-size: 11.5px; color: #6E6E73"},["detail"]]]],["div",{"style":"height: 58px; display: flex; flex-direction: column; justify-content: center; gap: 2px"},[["span",{"style":"font-weight: 600; color: #1D1D1F"},["Scale 2"]],["span",{"style":"font-size: 11.5px; color: #6E6E73"},["detail"]]]]]],["div",{"onPointerMove":"{{scrubMove}}","onPointerLeave":"{{scrubLeave}}","style":"flex: 1 1 auto; min-width: 0; position: relative; display: flex; flex-direction: column; gap: 8px; padding-top: 26px; cursor: crosshair; touch-action: pan-y"},[["div",{"aria-hidden":"true","style":"position: absolute; left: 0; right: 0; top: 26px; bottom: 0; border-right: 1px solid #E5E5EA; background-image: linear-gradient(to right, #E5E5EA 1px, transparent 1px); background-size: 10% 100%; pointer-events: none"},[]],["div",{"aria-hidden":"true","style":"position: absolute; top: 26px; bottom: 0; left: 27.27%; width: 55.56%; background: {{winA.bg}}; border-left: 1px solid {{winA.edge}}; border-right: 1px solid {{winA.edge}}; pointer-events: none; transition: background-color 300ms ease, border-color 300ms ease"},[["div",{"class":"wm-flash","style":"position: absolute; inset: 0; background: {{motionWash}}; opacity: 0; animation: {{fx.fa}}"},[]]]],["div",{"aria-hidden":"true","style":"position: absolute; top: 26px; bottom: 0; left: 88.16%; right: 0; background: {{winB.bg}}; border-left: 1px solid {{winB.edge}}; pointer-events: none; transition: background-color 300ms ease, border-color 300ms ease"},[["div",{"class":"wm-flash","style":"position: absolute; inset: 0; background: {{motionWash}}; opacity: 0; animation: {{fx.fb}}"},[]]]],["span",{"aria-hidden":"true","style":"position: absolute; top: 0; left: 27.27%; display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 999px; border: 1px solid {{chipA.bd}}; background: {{chipA.bg}}; color: {{chipA.fg}}; font-size: 11px; font-weight: 700; transition: background-color 300ms ease, color 300ms ease, border-color 300ms ease"},["A"]],["span",{"aria-hidden":"true","style":"position: absolute; top: 0; left: 88.16%; display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 999px; border: 1px solid {{chipB.bd}}; background: {{chipB.bg}}; color: {{chipB.fg}}; font-size: 11px; font-weight: 700; transition: background-color 300ms ease, color 300ms ease, border-color 300ms ease"},["B"]],["div",{"style":"position: relative; height: 58px"},[["div",{"aria-hidden":"true","style":"position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: #E5E5EA"},[]],["svg",{"viewBox":"0 0 1000 1000","preserveAspectRatio":"none","aria-hidden":"true","style":"position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible"},[["path",{"d":"{{pOrigL}}","style":"fill: none; stroke: {{lang}}; stroke-opacity: 0.22; stroke-width: 1.4; stroke-linejoin: round; vector-effect: non-scaling-stroke"},[]],["path",{"d":"{{pOrigR}}","style":"fill: none; stroke: {{motion}}; stroke-opacity: 0.22; stroke-width: 1.4; stroke-linejoin: round; vector-effect: non-scaling-stroke"},[]]]],["svg",{"class":"wm-sweep","viewBox":"0 0 1000 1000","preserveAspectRatio":"none","aria-hidden":"true","style":"position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; clip-path: {{fx.clip}}; animation: {{fx.sweep}}"},[["path",{"d":"{{pOrigL}}","style":"fill: none; stroke: {{lang}}; stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke"},[]],["path",{"d":"{{pOrigR}}","style":"fill: none; stroke: {{motion}}; stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke"},[]]]]]],["div",{"style":"position: relative; height: 58px"},[["div",{"aria-hidden":"true","style":"position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: #E5E5EA"},[]],["svg",{"viewBox":"0 0 1000 1000","preserveAspectRatio":"none","aria-hidden":"true","style":"position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible"},[["path",{"d":"{{pApxL}}","style":"fill: none; stroke: {{lang}}; stroke-opacity: 0.22; stroke-width: 1.4; stroke-linejoin: round; vector-effect: non-scaling-stroke"},[]],["path",{"d":"{{pApxR}}","style":"fill: none; stroke: {{motion}}; stroke-opacity: 0.22; stroke-width: 1.4; stroke-linejoin: round; vector-effect: non-scaling-stroke"},[]]]],["svg",{"class":"wm-sweep","viewBox":"0 0 1000 1000","preserveAspectRatio":"none","aria-hidden":"true","style":"position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; clip-path: {{fx.clip}}; animation: {{fx.sweep}}"},[["path",{"d":"{{pApxL}}","style":"fill: none; stroke: {{lang}}; stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke"},[]],["path",{"d":"{{pApxR}}","style":"fill: none; stroke: {{motion}}; stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke"},[]]]]]],["div",{"style":"position: relative; height: 58px"},[["div",{"aria-hidden":"true","style":"position: absolute; left: 0; right: 0; top: 59.19%; height: 1px; background: #D2D2D7"},[]],["div",{"aria-hidden":"true","style":"position: absolute; top: -4px; bottom: -4px; left: 27.27%; width: 55.56%; border: 1.5px solid {{ringA}}; border-radius: 8px; pointer-events: none; transition: border-color 300ms ease"},[["div",{"class":"wm-flash","style":"position: absolute; inset: -1.5px; border: 1.5px solid {{motionInk}}; border-radius: 8px; opacity: 0; animation: {{fx.fa}}"},[]]]],["svg",{"viewBox":"0 0 1000 1000","preserveAspectRatio":"none","aria-hidden":"true","style":"position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible"},[["path",{"d":"{{pD1L}}","style":"fill: none; stroke: {{lang}}; stroke-opacity: 0.22; stroke-width: 1.3; stroke-linejoin: round; vector-effect: non-scaling-stroke"},[]],["path",{"d":"{{pD1R}}","style":"fill: none; stroke: {{motion}}; stroke-opacity: 0.22; stroke-width: 1.3; stroke-linejoin: round; vector-effect: non-scaling-stroke"},[]]]],["svg",{"class":"wm-sweep","viewBox":"0 0 1000 1000","preserveAspectRatio":"none","aria-hidden":"true","style":"position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; clip-path: {{fx.clip}}; animation: {{fx.sweep}}"},[["path",{"d":"{{pD1L}}","style":"fill: none; stroke: {{lang}}; stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke"},[]],["path",{"d":"{{pD1R}}","style":"fill: none; stroke: {{motion}}; stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke"},[]]]]]],["div",{"style":"position: relative; height: 58px"},[["div",{"aria-hidden":"true","style":"position: absolute; left: 0; right: 0; top: 58.72%; height: 1px; background: #D2D2D7"},[]],["div",{"aria-hidden":"true","style":"position: absolute; top: -4px; bottom: -4px; left: 88.16%; right: 0; border: 1.5px solid {{ringB}}; border-radius: 8px; pointer-events: none; transition: border-color 300ms ease"},[["div",{"class":"wm-flash","style":"position: absolute; inset: -1.5px; border: 1.5px solid {{motionInk}}; border-radius: 8px; opacity: 0; animation: {{fx.fb}}"},[]]]],["svg",{"viewBox":"0 0 1000 1000","preserveAspectRatio":"none","aria-hidden":"true","style":"position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible"},[["path",{"d":"{{pD2L}}","style":"fill: none; stroke: {{lang}}; stroke-opacity: 0.22; stroke-width: 1.3; stroke-linejoin: round; vector-effect: non-scaling-stroke"},[]],["path",{"d":"{{pD2R}}","style":"fill: none; stroke: {{motion}}; stroke-opacity: 0.22; stroke-width: 1.3; stroke-linejoin: round; vector-effect: non-scaling-stroke"},[]]]],["svg",{"class":"wm-sweep","viewBox":"0 0 1000 1000","preserveAspectRatio":"none","aria-hidden":"true","style":"position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; clip-path: {{fx.clip}}; animation: {{fx.sweep}}"},[["path",{"d":"{{pD2L}}","style":"fill: none; stroke: {{lang}}; stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke"},[]],["path",{"d":"{{pD2R}}","style":"fill: none; stroke: {{motion}}; stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke"},[]]]]]],["div",{"aria-hidden":"true","style":"position: absolute; top: 22px; bottom: -6px; left: 0; right: 0; overflow: hidden; pointer-events: none"},[["div",{"class":"wm-head","style":"position: absolute; top: 4px; bottom: 2px; left: 0; width: 100%; transform: translateX(100%); opacity: 0; animation: {{fx.head}}"},[["div",{"style":"position: absolute; top: 0; bottom: 0; left: -1px; width: 2px; border-radius: 2px; background: {{motion}}"},[]]]],["div",{"style":"position: absolute; top: 4px; bottom: 2px; left: 0; width: 100%; transform: translateX({{sc.x}}%); opacity: {{sc.op}}; transition: opacity 200ms ease"},[["div",{"style":"position: absolute; top: 0; bottom: 0; left: -0.75px; width: 1.5px; background: #1D1D1F"},[]]]]]]]]]],["div",{"aria-hidden":"true","style":"display: flex; gap: 12px"},[["div",{"style":"flex: none; width: 82px"},[]],["div",{"style":"flex: 1 1 auto; min-width: 0; position: relative; height: 16px; font-size: 11.5px; color: #6E6E73; font-variant-numeric: tabular-nums"},[["span",{"style":"position: absolute; left: 0"},["0"]],["span",{"style":"position: absolute; left: 29.9%; transform: translateX(-50%)"},["50"]],["span",{"style":"position: absolute; left: 59.81%; transform: translateX(-50%)"},["100"]],["span",{"style":"position: absolute; left: 89.71%; transform: translateX(-50%)"},["150"]]]]]]]]]],["p",{"style":"margin: 0; padding-top: 22px; border-top: 1px solid #E5E5EA; font-size: clamp(16px, 1.5vw, 19px); font-weight: 500; line-height: 1.65; color: #1D1D1F; text-wrap: pretty"},["“The person pulls something towards him with his right hand, picks something up with his left hand, ",["button",{"type":"button","class":"phrase wm-flash","onMouseEnter":"{{hoverA}}","onMouseLeave":"{{unhover}}","onFocus":"{{hoverA}}","onBlur":"{{unhover}}","style":"display: inline; margin: 0; padding: 1px 4px; border: 0; border-radius: 6px; background: {{phA.bg}}; color: #1D1D1F; font: inherit; line-height: inherit; text-decoration: underline dotted #AEAEB2; text-decoration-thickness: 1.5px; text-underline-offset: 5px; cursor: pointer; transition: background-color 300ms ease; animation: {{fx.pa}}"},["wipes it off using right hand",["sup",{"style":"font-size: 11px; font-weight: 700; margin-left: 3px; color: {{motionInk}}"},["A"]]]],", and ",["button",{"type":"button","class":"phrase wm-flash","onMouseEnter":"{{hoverB}}","onMouseLeave":"{{unhover}}","onFocus":"{{hoverB}}","onBlur":"{{unhover}}","style":"display: inline; margin: 0; padding: 1px 4px; border: 0; border-radius: 6px; background: {{phB.bg}}; color: #1D1D1F; font: inherit; line-height: inherit; text-decoration: underline dotted #AEAEB2; text-decoration-thickness: 1.5px; text-underline-offset: 5px; cursor: pointer; transition: background-color 300ms ease; animation: {{fx.pb}}"},["puts it down in his left hand",["sup",{"style":"font-size: 11px; font-weight: 700; margin-left: 3px; color: {{motionInk}}"},["B"]]]],".”"]]]],["figcaption",{"ref":"{{rvRef.motC}}","class":"rv-s rv-d1 {{rv.motC}}","style":"max-width: 1040px; text-align: center; font-size: 14px; line-height: 1.6; color: #6E6E73; text-wrap: balance"},[["span",{"style":"font-weight: 600; color: #1D1D1F"},["Figure 1."]]," Wavelet decomposition of the left- and right-arm trajectories. Scale 1 highlights the rapid wiping movement (A), and scale 2 captures the two-handed interaction at the end (B)."]]]]]]]],["section",{"id":"method","ref":"{{secRefs.method}}","style":"background: #F5F5F7; scroll-margin-top: 56px"},[["div",{"style":"max-width: 1200px; margin: 0 auto; padding: clamp(72px, 9vw, 120px) clamp(16px, 4vw, 40px)"},[["div",{"ref":"{{rvRef.metH}}","style":"max-width: 1040px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center"},[["h2",{"class":"{{rv.metH}}","style":"margin: 0; font-size: clamp(30px, 3.6vw, 46px); font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; color: #1D1D1F"},["Method"]],["p",{"class":"rv-d1 {{rv.metH}}","style":"margin: 0; font-size: clamp(16px, 1.35vw, 19px); line-height: 1.6; color: #6E6E73; text-wrap: balance"},["WaMo extracts multi-frequency features from each joint trajectory and aligns them with the text embedding."]]]],["figure",{"ref":"{{rvRef.metF}}","class":"rv-d1 {{rv.metF}}","style":"margin: 44px 0 0; display: flex; flex-direction: column; align-items: center; gap: 18px"},[["div",{"class":"hscroll","style":"width: 100%; overflow-x: auto; background: #FFFFFF; border-radius: 28px; padding: clamp(14px, 2.8vw, 40px)"},[["img",{"src":"assets/overview.webp","alt":"Overview of WaMo: Trajectory Wavelet Decomposition, Trajectory Wavelet Reconstruction and Disordered Motion Sequence Prediction around the text and motion encoders","loading":"lazy","decoding":"async","style":"display: block; width: 100%; min-width: 720px; height: auto; aspect-ratio: auto 2544 / 1468"},[]]]],["figcaption",{"style":"max-width: 1040px; text-align: center; font-size: 14px; line-height: 1.6; color: #6E6E73; text-wrap: balance"},[["span",{"style":"font-weight: 600; color: #1D1D1F"},["Figure 2."]]," Overview of WaMo. The reconstruction and reordering branches are used only during training."]]]],["div",{"style":"margin-top: 52px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: 20px"},[["div",{"ref":"{{rvRef.metA}}","class":"{{rv.metA}}","style":"background: #FFFFFF; border-radius: 24px; padding: 24px; display: flex; flex-direction: column; gap: 16px"},[["span",{"aria-hidden":"true","style":"display: inline-flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 14px; background: {{motionWash}}; color: {{motionInk}}"},[["svg",{"width":"24","height":"24","viewBox":"0 0 24 24","style":"fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round"},[["path",{"d":"M2.5 8.5C5 4.5 7.5 12.5 10 8.5s5-4 7.5 0 2.5 2 4 0"},[]],["path",{"d":"M2.5 16.5c.9-1.6 1.8 1.6 2.7 0s1.8-1.6 2.7 0 1.8 1.6 2.7 0 1.8-1.6 2.7 0 1.8 1.6 2.7 0 1.8-1.6 2.7 0 .9.8 1.8 0"},[]]]]]],["div",{"style":"display: flex; flex-direction: column; gap: 6px"},[["h3",{"style":"margin: 0; font-size: 17px; font-weight: 600; line-height: 1.3; letter-spacing: -0.022em; color: #1D1D1F; text-wrap: balance"},["Trajectory Wavelet Decomposition"]],["p",{"style":"margin: 0; font-size: 15.5px; line-height: 1.6; color: #424245; text-wrap: pretty"},["Decomposes joint trajectories into frequency components with a learnable stationary wavelet transform and models them with intra- and inter-frequency attention."]]]]]],["div",{"ref":"{{rvRef.metB}}","class":"rv-d1 {{rv.metB}}","style":"background: #FFFFFF; border-radius: 24px; padding: 24px; display: flex; flex-direction: column; gap: 16px"},[["span",{"aria-hidden":"true","style":"display: inline-flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 14px; background: {{motionWash}}; color: {{motionInk}}"},[["svg",{"width":"24","height":"24","viewBox":"0 0 24 24","style":"fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round"},[["path",{"d":"M3.5 12a8.5 8.5 0 1 0 2.5-6"},[]],["path",{"d":"M3.5 4.5V9H8"},[]],["path",{"d":"M8.5 13c1.2-2 2.3 2 3.5 0s2.3 2 3.5 0"},[]]]]]],["div",{"style":"display: flex; flex-direction: column; gap: 6px"},[["h3",{"style":"margin: 0; font-size: 17px; font-weight: 600; line-height: 1.3; letter-spacing: -0.022em; color: #1D1D1F; text-wrap: balance"},["Trajectory Wavelet Reconstruction"]],["p",{"style":"margin: 0; font-size: 15.5px; line-height: 1.6; color: #424245; text-wrap: pretty"},["Reconstructs the original trajectories from the extracted features through learnable inverse wavelet transforms, preserving spatiotemporal information."]]]]]],["div",{"ref":"{{rvRef.metC}}","class":"rv-d2 {{rv.metC}}","style":"background: #FFFFFF; border-radius: 24px; padding: 24px; display: flex; flex-direction: column; gap: 16px"},[["span",{"aria-hidden":"true","style":"display: inline-flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 14px; background: {{motionWash}}; color: {{motionInk}}"},[["svg",{"width":"24","height":"24","viewBox":"0 0 24 24","style":"fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round"},[["path",{"d":"M3 7h3.2c1.9 0 3 .9 4.1 2.7l2.4 4.6c1 1.8 2.2 2.7 4.1 2.7H20"},[]],["path",{"d":"M3 17h3.2c1.2 0 2.1-.4 2.9-1.3"},[]],["path",{"d":"M14.7 8.3c.8-.9 1.7-1.3 2.9-1.3H20"},[]],["path",{"d":"M17.5 4.5 20 7l-2.5 2.5"},[]],["path",{"d":"M17.5 14.5 20 17l-2.5 2.5"},[]]]]]],["div",{"style":"display: flex; flex-direction: column; gap: 6px"},[["h3",{"style":"margin: 0; font-size: 17px; font-weight: 600; line-height: 1.3; letter-spacing: -0.022em; color: #1D1D1F; text-wrap: balance"},["Disordered Motion Sequence Prediction"]],["p",{"style":"margin: 0; font-size: 15.5px; line-height: 1.6; color: #424245; text-wrap: pretty"},["Recovers the temporal order of partially shuffled motion sequences, improving the learning of temporal coherence."]]]]]]]]]]]],["section",{"id":"results","ref":"{{secRefs.results}}","style":"scroll-margin-top: 56px"},[["div",{"style":"max-width: 1200px; margin: 0 auto; padding: clamp(72px, 9vw, 120px) clamp(16px, 4vw, 40px)"},[["div",{"ref":"{{rvRef.resH}}","style":"max-width: 1040px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center"},[["h2",{"class":"{{rv.resH}}","style":"margin: 0; font-size: clamp(30px, 3.6vw, 46px); font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; color: #1D1D1F"},["Results"]],["p",{"class":"rv-d1 {{rv.resH}}","style":"margin: 0; font-size: clamp(16px, 1.35vw, 19px); line-height: 1.6; color: #6E6E73; text-wrap: balance"},["WaMo improves Rsum by 17.0% on HumanML3D and 18.2% on KIT-ML over the previous best methods."]]]],["div",{"class":"rv-d2 {{rv.resH}}","style":"margin-top: 36px; display: flex; justify-content: center"},[["div",{"role":"group","aria-label":"Dataset","style":"display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; background: #F5F5F7"},[["button",{"type":"button","class":"seg press","onClick":"{{pickH}}","aria-pressed":"{{segH.pressed}}","style":"min-height: 42px; padding: 0 22px; border: 0; border-radius: 999px; background: {{segH.bg}}; color: {{segH.fg}}; box-shadow: {{segH.sh}}; font: inherit; font-size: 14.5px; font-weight: 600; cursor: pointer"},["HumanML3D"]],["button",{"type":"button","class":"seg press","onClick":"{{pickK}}","aria-pressed":"{{segK.pressed}}","style":"min-height: 42px; padding: 0 22px; border: 0; border-radius: 999px; background: {{segK.bg}}; color: {{segK.fg}}; box-shadow: {{segK.sh}}; font: inherit; font-size: 14.5px; font-weight: 600; cursor: pointer"},["KIT-ML"]]]]]],["div",{"ref":"{{rvRef.resC}}","class":"rv-d1 {{rv.resC}}","style":"margin-top: 28px; background: #F5F5F7; border-radius: 28px; padding: clamp(16px, 2.8vw, 32px); display: flex; flex-direction: column; gap: 6px"},[["div",{"style":"display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 24px; padding: 0 8px 14px"},[["span",{"style":"font-size: 15px; font-weight: 600; color: #1D1D1F"},["Rsum on {{dsName}}"]],["span",{"aria-live":"polite","style":"display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 16px; font-size: 13.5px; color: #6E6E73; font-variant-numeric: tabular-nums"},[["span",{"style":"font-weight: 600; color: #1D1D1F"},["{{rd.name}}"]],["span",{},["Rsum {{rd.rsum}}"]],["span",{},["Text-to-motion R@1 {{rd.t2m}}"]],["span",{},["Motion-to-text R@1 {{rd.m2t}}"]]]]]],["sc-for",{"list":"{{bars}}","as":"b","hint-placeholder-count":"11"},[["button",{"type":"button","class":"rowbtn","onMouseEnter":"{{b.hover}}","onFocus":"{{b.hover}}","onMouseLeave":"{{unhoverRow}}","onBlur":"{{unhoverRow}}","aria-label":"{{b.aria}}","style":"display: grid; grid-template-columns: clamp(96px, 28%, 180px) minmax(0, 1fr) 64px; align-items: center; gap: 14px; width: 100%; min-height: 36px; margin: 0; padding: 3px 8px; border: 0; border-radius: 10px; background: {{b.rowBg}}; color: inherit; font: inherit; text-align: left; cursor: default; transition: background-color 200ms ease"},[["span",{"style":"display: flex; align-items: baseline; gap: 8px; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis"},[["span",{"style":"font-size: 14px; font-weight: {{b.weight}}; color: #1D1D1F"},["{{b.name}}"]],["span",{"class":"wm-venue","style":"font-size: 12px; color: #6E6E73"},["{{b.venue}}"]]]],["span",{"style":"position: relative; height: 14px; border-left: 1px solid #D2D2D7"},[["span",{"class":"wm-bar","style":"position: absolute; left: 0; top: 0; bottom: 0; width: {{b.w}}%; --bd: {{b.delay}}ms; border-radius: 0 4px 4px 0; background: {{b.color}}; transition: width 650ms var(--ease-drawer) {{b.delay}}ms, background-color 300ms ease"},[]]]],["span",{"style":"font-size: 14px; font-weight: {{b.weight}}; text-align: right; color: #1D1D1F; font-variant-numeric: tabular-nums"},["{{b.val}}"]]]]]]]],["figure",{"ref":"{{rvRef.resT}}","class":"rv-d1 {{rv.resT}}","style":"margin: 28px 0 0; display: flex; flex-direction: column; gap: 12px"},[["figcaption",{"style":"font-size: 14px; line-height: 1.6; color: #6E6E73; text-wrap: pretty"},[["span",{"style":"font-weight: 600; color: #1D1D1F"},["{{tableNo}}."]]," Comparison with state-of-the-art methods on {{dsName}}. Best results are in bold and second best are underlined. † Reproduced using official checkpoints."]],["div",{"class":"hscroll","style":"overflow-x: auto; background: #F5F5F7; border-radius: 24px"},[["div",{"role":"table","aria-label":"Retrieval results","style":"min-width: 1040px; padding: 6px 8px 10px; font-variant-numeric: tabular-nums; color: #1D1D1F"},[["div",{"role":"rowgroup","style":"display: grid; grid-template-columns: 140px 92px repeat(12, minmax(0, 1fr)) 82px; align-items: end; border-bottom: 1px solid #D2D2D7; font-size: 12.5px; font-weight: 600; color: #424245"},[["span",{"style":"grid-column: span 2"},[]],["span",{"role":"columnheader","style":"grid-column: span 6; text-align: center; padding: 12px 0 7px; margin: 0 10px; border-bottom: 1px solid #D2D2D7; color: #1D1D1F"},["Text-to-motion"]],["span",{"role":"columnheader","style":"grid-column: span 6; text-align: center; padding: 12px 0 7px; margin: 0 10px; border-bottom: 1px solid #D2D2D7; color: #1D1D1F"},["Motion-to-text"]],["span",{},[]],["span",{"role":"columnheader","style":"padding: 9px 12px"},["Method"]],["span",{"role":"columnheader","style":"padding: 9px 0"},["Venue"]],["span",{"role":"columnheader","style":"padding: 9px 0; text-align: center"},["R@1↑"]],["span",{"role":"columnheader","style":"padding: 9px 0; text-align: center"},["R@2↑"]],["span",{"role":"columnheader","style":"padding: 9px 0; text-align: center"},["R@3↑"]],["span",{"role":"columnheader","style":"padding: 9px 0; text-align: center"},["R@5↑"]],["span",{"role":"columnheader","style":"padding: 9px 0; text-align: center"},["R@10↑"]],["span",{"role":"columnheader","style":"padding: 9px 0; text-align: center"},["MedR↓"]],["span",{"role":"columnheader","style":"padding: 9px 0; text-align: center"},["R@1↑"]],["span",{"role":"columnheader","style":"padding: 9px 0; text-align: center"},["R@2↑"]],["span",{"role":"columnheader","style":"padding: 9px 0; text-align: center"},["R@3↑"]],["span",{"role":"columnheader","style":"padding: 9px 0; text-align: center"},["R@5↑"]],["span",{"role":"columnheader","style":"padding: 9px 0; text-align: center"},["R@10↑"]],["span",{"role":"columnheader","style":"padding: 9px 0; text-align: center"},["MedR↓"]],["span",{"role":"columnheader","style":"padding: 9px 0; text-align: center"},["Rsum↑"]]]],["sc-for",{"list":"{{tableRows}}","as":"row","hint-placeholder-count":"11"},[["div",{"role":"row","style":"display: grid; grid-template-columns: 140px 92px repeat(12, minmax(0, 1fr)) 82px; align-items: center; min-height: 42px; border-top: 1px solid #E5E5EA; border-radius: 10px; background: {{row.bg}}; font-size: 14px"},[["span",{"role":"cell","style":"padding: 0 12px; font-weight: {{row.weight}}"},["{{row.name}}"]],["span",{"role":"cell","style":"font-size: 13px; color: #6E6E73"},["{{row.venue}}"]],["sc-for",{"list":"{{row.cells}}","as":"c","hint-placeholder-count":"13"},[["span",{"role":"cell","style":"text-align: center; font-weight: {{c.weight}}; text-decoration: {{c.deco}}; text-underline-offset: 3px"},["{{c.v}}"]]]]]]]]]]]]]]]]]],["section",{"id":"ablations","ref":"{{secRefs.ablations}}","style":"background: #F5F5F7; scroll-margin-top: 56px"},[["div",{"style":"max-width: 1200px; margin: 0 auto; padding: clamp(72px, 9vw, 120px) clamp(16px, 4vw, 40px)"},[["div",{"ref":"{{rvRef.ablH}}","style":"max-width: 1040px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center"},[["h2",{"class":"{{rv.ablH}}","style":"margin: 0; font-size: clamp(30px, 3.6vw, 46px); font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; color: #1D1D1F"},["Ablation studies"]],["p",{"class":"rv-d1 {{rv.ablH}}","style":"margin: 0; font-size: clamp(16px, 1.35vw, 19px); line-height: 1.6; color: #6E6E73; text-wrap: balance"},["Text-to-motion R@1 on HumanML3D and KIT-ML."]]]],["div",{"role":"group","aria-label":"Ablation study","class":"rv-d2 {{rv.ablH}}","style":"margin-top: 36px; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px"},[["sc-for",{"list":"{{studies}}","as":"t","hint-placeholder-count":"8"},[["button",{"type":"button","class":"pill press","onClick":"{{t.pick}}","aria-pressed":"{{t.pressed}}","style":"min-height: 40px; padding: 0 12px; border-radius: 999px; border: 1px solid {{t.bd}}; background: {{t.bg}}; color: {{t.fg}}; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer"},["{{t.label}}"]]]]]],["figure",{"ref":"{{rvRef.ablF}}","class":"rv-d1 {{rv.ablF}}","style":"margin: 28px 0 0; background: #FFFFFF; border-radius: 28px; padding: clamp(16px, 2.8vw, 32px); display: flex; flex-direction: column; gap: 14px"},[["figcaption",{"style":"font-size: 14px; line-height: 1.6; color: #6E6E73; text-wrap: pretty"},[["span",{"style":"font-weight: 600; color: #1D1D1F"},["Table {{st.no}}."]]," {{st.title}}"]],["div",{"class":"hscroll","style":"overflow-x: auto"},[["div",{"role":"table","aria-label":"Ablation results","style":"min-width: 600px; font-variant-numeric: tabular-nums; color: #1D1D1F"},[["div",{"role":"row","style":"display: grid; grid-template-columns: minmax(200px, 1.25fr) minmax(170px, 1fr) minmax(170px, 1fr); align-items: center; gap: 0 24px; min-height: 38px; padding: 0 14px; border-bottom: 1px solid #E5E5EA; font-size: 12.5px; font-weight: 600; color: #424245"},[["span",{"role":"columnheader","style":"display: flex; align-items: center; gap: 6px"},[["sc-if",{"value":"{{st.hasMarks}}","hint-placeholder-val":"{{true}}"},[["span",{},["Modules"]]]],["sc-if",{"value":"{{st.noMarks}}","hint-placeholder-val":"{{false}}"},[["span",{},["{{st.head}}"]]]]]],["span",{"role":"columnheader"},["HumanML3D"]],["span",{"role":"columnheader"},["KIT-ML"]]]],["sc-for",{"list":"{{abRows}}","as":"r","hint-placeholder-count":"6"},[["div",{"role":"row","style":"display: grid; grid-template-columns: minmax(200px, 1.25fr) minmax(170px, 1fr) minmax(170px, 1fr); align-items: center; gap: 0 24px; min-height: 48px; padding: 0 14px; border-radius: 12px; background: {{r.bg}}; font-size: 14px; transition: background-color 200ms ease"},[["span",{"role":"cell","style":"display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; padding: 6px 0"},[["sc-if",{"value":"{{r.hasMarks}}","hint-placeholder-val":"{{true}}"},[["sc-for",{"list":"{{r.marks}}","as":"m","hint-placeholder-count":"3"},[["span",{"style":"display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border-radius: 999px; border: 1px solid {{m.bd}}; background: {{m.bg}}; color: {{m.fg}}; font-size: 12px; font-weight: 600; text-decoration: {{m.deco}}"},["{{m.name}}"]]]]]],["sc-if",{"value":"{{r.hasLabel}}","hint-placeholder-val":"{{false}}"},[["span",{"style":"font-weight: {{r.weight}}"},["{{r.label}}"]]]]]],["span",{"role":"cell","style":"display: flex; align-items: center; gap: 12px"},[["span",{"style":"flex: 1 1 auto; position: relative; height: 10px; border-left: 1px solid #D2D2D7"},[["span",{"class":"wm-bar","style":"position: absolute; left: 0; top: 0; bottom: 0; width: {{r.hw}}%; --bd: {{r.delay}}ms; border-radius: 0 4px 4px 0; background: {{r.bar}}; transition: width 450ms var(--ease-in-out), background-color 300ms ease"},[]]]],["span",{"style":"flex: none; width: 46px; text-align: right; font-weight: {{r.weight}}"},["{{r.h1}}"]]]],["span",{"role":"cell","style":"display: flex; align-items: center; gap: 12px"},[["span",{"style":"flex: 1 1 auto; position: relative; height: 10px; border-left: 1px solid #D2D2D7"},[["span",{"class":"wm-bar","style":"position: absolute; left: 0; top: 0; bottom: 0; width: {{r.kw}}%; --bd: {{r.delay}}ms; border-radius: 0 4px 4px 0; background: {{r.bar}}; transition: width 450ms var(--ease-in-out), background-color 300ms ease"},[]]]],["span",{"style":"flex: none; width: 46px; text-align: right; font-weight: {{r.weight}}"},["{{r.k1}}"]]]]]]]]]]]],["p",{"style":"margin: 0; padding-top: 14px; border-top: 1px solid #E5E5EA; font-size: 15px; line-height: 1.65; color: #424245; text-wrap: pretty"},["{{st.take}}"]]]]]]]],["section",{"id":"visualization","ref":"{{secRefs.visualization}}","style":"scroll-margin-top: 56px"},[["div",{"style":"max-width: 1200px; margin: 0 auto; padding: clamp(72px, 9vw, 120px) clamp(16px, 4vw, 40px)"},[["div",{"ref":"{{rvRef.visH}}","style":"max-width: 1040px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center"},[["h2",{"class":"{{rv.visH}}","style":"margin: 0; font-size: clamp(30px, 3.6vw, 46px); font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; color: #1D1D1F"},["t-SNE visualization"]],["p",{"class":"rv-d1 {{rv.visH}}","style":"margin: 0; font-size: clamp(16px, 1.35vw, 19px); line-height: 1.6; color: #6E6E73; text-wrap: balance"},["Text and motion embeddings of randomly sampled pairs from the KIT-ML test set."]]]],["div",{"role":"group","aria-label":"Show embeddings","class":"rv-d2 {{rv.visH}}","style":"margin-top: 32px; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px"},[["button",{"type":"button","class":"legend-btn press","onClick":"{{toggleT}}","aria-pressed":"{{lgT.pressed}}","style":"display: inline-flex; align-items: center; gap: 9px; min-height: 42px; padding: 0 16px; border-radius: 999px; border: 1px solid {{lgT.bd}}; background: {{lgT.bg}}; color: {{lgT.fg}}; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer"},[["span",{"style":"width: 10px; height: 10px; border-radius: 999px; background: {{lang}}; opacity: {{lgT.dot}}; transition: opacity 200ms ease"},[]],"Text"]],["button",{"type":"button","class":"legend-btn press","onClick":"{{toggleM}}","aria-pressed":"{{lgM.pressed}}","style":"display: inline-flex; align-items: center; gap: 9px; min-height: 42px; padding: 0 16px; border-radius: 999px; border: 1px solid {{lgM.bd}}; background: {{lgM.bg}}; color: {{lgM.fg}}; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer"},[["span",{"style":"width: 10px; height: 10px; border-radius: 999px; background: {{motion}}; opacity: {{lgM.dot}}; transition: opacity 200ms ease"},[]],"Motion"]]]],["div",{"style":"margin-top: 28px; display: flex; flex-wrap: wrap; gap: 24px"},[["figure",{"ref":"{{rvRef.visA}}","class":"{{rv.visA}}","style":"flex: 1 1 340px; min-width: 0; margin: 0; display: flex; flex-direction: column; gap: 12px"},[["div",{"style":"background: #F5F5F7; border-radius: 28px; padding: clamp(10px, 1.8vw, 22px)"},[["svg",{"viewBox":"0 0 1000 857","role":"img","aria-label":"t-SNE of the base model: text and motion embeddings form separate regions","style":"display: block; width: 100%; height: auto; aspect-ratio: 1000 / 857"},[["path",{"d":"{{tsAT}}","style":"fill: none; stroke: {{lang}}; stroke-width: 12; stroke-linecap: round; opacity: {{tOp}}; transition: opacity 300ms ease"},[]],["path",{"d":"{{tsAM}}","style":"fill: none; stroke: {{motion}}; stroke-width: 12; stroke-linecap: round; opacity: {{mOp}}; transition: opacity 300ms ease"},[]]]]]],["figcaption",{"style":"text-align: center; font-size: 15px; font-weight: 600; color: #1D1D1F"},["(a) Base model"]]]],["figure",{"ref":"{{rvRef.visB}}","class":"rv-d1 {{rv.visB}}","style":"flex: 1 1 340px; min-width: 0; margin: 0; display: flex; flex-direction: column; gap: 12px"},[["div",{"style":"background: #F5F5F7; border-radius: 28px; padding: clamp(10px, 1.8vw, 22px)"},[["svg",{"viewBox":"0 0 1000 857","role":"img","aria-label":"t-SNE of WaMo: text and motion embeddings interleave within compact clusters","style":"display: block; width: 100%; height: auto; aspect-ratio: 1000 / 857"},[["path",{"d":"{{tsBT}}","style":"fill: none; stroke: {{lang}}; stroke-width: 12; stroke-linecap: round; opacity: {{tOp}}; transition: opacity 300ms ease"},[]],["path",{"d":"{{tsBM}}","style":"fill: none; stroke: {{motion}}; stroke-width: 12; stroke-linecap: round; opacity: {{mOp}}; transition: opacity 300ms ease"},[]]]]]],["figcaption",{"style":"text-align: center; font-size: 15px; font-weight: 600; color: #1D1D1F"},["(b) WaMo"]]]]]],["p",{"ref":"{{rvRef.visC}}","class":"rv-s rv-d1 {{rv.visC}}","style":"margin: 22px auto 0; max-width: 1040px; text-align: center; font-size: 14px; line-height: 1.6; color: #6E6E73; text-wrap: balance"},[["span",{"style":"font-weight: 600; color: #1D1D1F"},["Figure 7."]]," The base model is trained without the proposed modules. With WaMo, text and motion embeddings interleave within compact clusters."]]]]]],["section",{"id":"applications","ref":"{{secRefs.applications}}","style":"background: #F5F5F7; scroll-margin-top: 56px"},[["div",{"style":"max-width: 1200px; margin: 0 auto; padding: clamp(72px, 9vw, 120px) clamp(16px, 4vw, 40px)"},[["div",{"ref":"{{rvRef.appH}}","style":"max-width: 1040px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center"},[["h2",{"class":"{{rv.appH}}","style":"margin: 0; font-size: clamp(30px, 3.6vw, 46px); font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; color: #1D1D1F"},["Applications"]],["p",{"class":"rv-d1 {{rv.appH}}","style":"margin: 0; font-size: clamp(16px, 1.35vw, 19px); line-height: 1.6; color: #6E6E73; text-wrap: balance"},["Following MoPa, WaMo is also evaluated on zero-shot motion classification and human interaction recognition."]]]],["div",{"style":"margin-top: 44px; display: flex; flex-wrap: wrap; gap: 20px"},[["div",{"ref":"{{rvRef.appA}}","class":"{{rv.appA}}","style":"flex: 1 1 360px; min-width: 0; background: #FFFFFF; border-radius: 28px; padding: clamp(20px, 2.8vw, 32px); display: flex; flex-direction: column; gap: 14px"},[["h3",{"style":"margin: 0; font-size: 17px; font-weight: 600; line-height: 1.3; letter-spacing: -0.022em; color: #1D1D1F; text-wrap: balance"},["Zero-shot motion classification"]],["p",{"style":"margin: 0; font-size: 14px; line-height: 1.6; color: #6E6E73; text-wrap: pretty"},[["span",{"style":"font-weight: 600; color: #1D1D1F"},["Table 11."]]," BABEL 60-class benchmark, using the model trained on HumanML3D."]],["div",{"role":"table","aria-label":"Zero-shot motion classification results","style":"font-variant-numeric: tabular-nums; font-size: 14px; color: #1D1D1F"},[["div",{"role":"row","style":"display: grid; grid-template-columns: minmax(110px, 1.4fr) repeat(2, minmax(84px, 1fr)); align-items: center; min-height: 38px; border-bottom: 1px solid #E5E5EA; font-size: 12.5px; font-weight: 600; color: #424245"},[["span",{"role":"columnheader","style":"padding: 0 12px"},["Method"]],["span",{"role":"columnheader","style":"text-align: center"},["Top-1 Acc.↑"]],["span",{"role":"columnheader","style":"text-align: center"},["Top-5 Acc.↑"]]]],["div",{"role":"row","style":"display: grid; grid-template-columns: minmax(110px, 1.4fr) repeat(2, minmax(84px, 1fr)); align-items: center; min-height: 40px; border-bottom: 1px solid #F0F0F3"},[["span",{"role":"cell","style":"padding: 0 12px"},["TMR"]],["span",{"role":"cell","style":"text-align: center"},["30.13"]],["span",{"role":"cell","style":"text-align: center"},["41.52"]]]],["div",{"role":"row","style":"display: grid; grid-template-columns: minmax(110px, 1.4fr) repeat(2, minmax(84px, 1fr)); align-items: center; min-height: 40px; border-bottom: 1px solid #F0F0F3"},[["span",{"role":"cell","style":"padding: 0 12px"},["MoPa"]],["span",{"role":"cell","style":"text-align: center"},["41.33"]],["span",{"role":"cell","style":"text-align: center"},["68.97"]]]],["div",{"role":"row","style":"display: grid; grid-template-columns: minmax(110px, 1.4fr) repeat(2, minmax(84px, 1fr)); align-items: center; min-height: 42px; border-radius: 12px; background: {{motionWash}}; font-weight: 700"},[["span",{"role":"cell","style":"padding: 0 12px"},["WaMo (ours)"]],["span",{"role":"cell","style":"text-align: center"},["43.19"]],["span",{"role":"cell","style":"text-align: center"},["70.21"]]]]]]]],["div",{"ref":"{{rvRef.appB}}","class":"rv-d1 {{rv.appB}}","style":"flex: 1.4 1 460px; min-width: 0; background: #FFFFFF; border-radius: 28px; padding: clamp(20px, 2.8vw, 32px); display: flex; flex-direction: column; gap: 14px"},[["h3",{"style":"margin: 0; font-size: 17px; font-weight: 600; line-height: 1.3; letter-spacing: -0.022em; color: #1D1D1F; text-wrap: balance"},["Human interaction recognition"]],["p",{"style":"margin: 0; font-size: 14px; line-height: 1.6; color: #6E6E73; text-wrap: pretty"},[["span",{"style":"font-weight: 600; color: #1D1D1F"},["Table 12."]]," InterHuman two-person interactions."]],["div",{"class":"hscroll","style":"overflow-x: auto"},[["div",{"role":"table","aria-label":"Human interaction recognition results","style":"min-width: 460px; font-variant-numeric: tabular-nums; font-size: 14px; color: #1D1D1F"},[["div",{"role":"rowgroup","style":"display: grid; grid-template-columns: minmax(120px, 1.3fr) repeat(6, minmax(52px, 1fr)); align-items: end; border-bottom: 1px solid #E5E5EA; font-size: 12.5px; font-weight: 600; color: #424245"},[["span",{},[]],["span",{"role":"columnheader","style":"grid-column: span 3; text-align: center; padding: 4px 0 6px; margin: 0 8px; border-bottom: 1px solid #D2D2D7; color: #1D1D1F"},["Text-to-motion"]],["span",{"role":"columnheader","style":"grid-column: span 3; text-align: center; padding: 4px 0 6px; margin: 0 8px; border-bottom: 1px solid #D2D2D7; color: #1D1D1F"},["Motion-to-text"]],["span",{"role":"columnheader","style":"padding: 8px 12px"},["Method"]],["span",{"role":"columnheader","style":"padding: 8px 0; text-align: center"},["R@1↑"]],["span",{"role":"columnheader","style":"padding: 8px 0; text-align: center"},["R@5↑"]],["span",{"role":"columnheader","style":"padding: 8px 0; text-align: center"},["R@10↑"]],["span",{"role":"columnheader","style":"padding: 8px 0; text-align: center"},["R@1↑"]],["span",{"role":"columnheader","style":"padding: 8px 0; text-align: center"},["R@5↑"]],["span",{"role":"columnheader","style":"padding: 8px 0; text-align: center"},["R@10↑"]]]],["div",{"role":"row","style":"display: grid; grid-template-columns: minmax(120px, 1.3fr) repeat(6, minmax(52px, 1fr)); align-items: center; min-height: 40px; border-bottom: 1px solid #F0F0F3"},[["span",{"role":"cell","style":"padding: 0 12px"},["TMR"]],["span",{"role":"cell","style":"text-align: center"},["5.38"]],["span",{"role":"cell","style":"text-align: center"},["15.64"]],["span",{"role":"cell","style":"text-align: center"},["24.40"]],["span",{"role":"cell","style":"text-align: center"},["5.13"]],["span",{"role":"cell","style":"text-align: center"},["15.26"]],["span",{"role":"cell","style":"text-align: center"},["25.65"]]]],["div",{"role":"row","style":"display: grid; grid-template-columns: minmax(120px, 1.3fr) repeat(6, minmax(52px, 1fr)); align-items: center; min-height: 40px; border-bottom: 1px solid #F0F0F3"},[["span",{"role":"cell","style":"padding: 0 12px"},["MoPa"]],["span",{"role":"cell","style":"text-align: center"},["9.51"]],["span",{"role":"cell","style":"text-align: center"},["21.27"]],["span",{"role":"cell","style":"text-align: center"},["32.41"]],["span",{"role":"cell","style":"text-align: center"},["8.26"]],["span",{"role":"cell","style":"text-align: center"},["22.65"]],["span",{"role":"cell","style":"text-align: center"},["32.66"]]]],["div",{"role":"row","style":"display: grid; grid-template-columns: minmax(120px, 1.3fr) repeat(6, minmax(52px, 1fr)); align-items: center; min-height: 42px; border-radius: 12px; background: {{motionWash}}; font-weight: 700"},[["span",{"role":"cell","style":"padding: 0 12px"},["WaMo (ours)"]],["span",{"role":"cell","style":"text-align: center"},["13.08"]],["span",{"role":"cell","style":"text-align: center"},["25.94"]],["span",{"role":"cell","style":"text-align: center"},["37.13"]],["span",{"role":"cell","style":"text-align: center"},["12.64"]],["span",{"role":"cell","style":"text-align: center"},["25.97"]],["span",{"role":"cell","style":"text-align: center"},["36.16"]]]]]]]]]]]]]]]],["section",{"id":"citation","ref":"{{secRefs.citation}}","style":"scroll-margin-top: 56px"},[["div",{"style":"max-width: 1200px; margin: 0 auto; padding: clamp(72px, 9vw, 120px) clamp(16px, 4vw, 40px)"},[["div",{"style":"max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px"},[["h2",{"ref":"{{rvRef.citH}}","class":"{{rv.citH}}","style":"margin: 0; text-align: center; font-size: clamp(30px, 3.6vw, 46px); font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; color: #1D1D1F"},["Citation"]],["div",{"ref":"{{rvRef.citB}}","class":"rv-d1 {{rv.citB}}","style":"background: #F5F5F7; border-radius: 24px; overflow: hidden"},[["div",{"style":"display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px 10px 24px; border-bottom: 1px solid #E5E5EA"},[["span",{"style":"font-size: 13.5px; font-weight: 600; color: #424245"},["BibTeX"]],["button",{"type":"button","class":"copy press","onClick":"{{copyBib}}","style":"display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 16px; border: 1px solid #D2D2D7; border-radius: 999px; background: #FFFFFF; color: #1D1D1F; font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer"},[["sc-if",{"value":"{{copiedOk}}","hint-placeholder-val":"{{false}}"},[["svg",{"width":"15","height":"15","viewBox":"0 0 24 24","aria-hidden":"true","style":"flex: none; fill: none; stroke: #177A4C; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round"},[["path",{"d":"M5 12.5l4.5 4.5L19 7.5"},[]]]]]],["sc-if",{"value":"{{notCopied}}","hint-placeholder-val":"{{true}}"},[["svg",{"width":"15","height":"15","viewBox":"0 0 24 24","aria-hidden":"true","style":"flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round"},[["rect",{"x":"9","y":"9","width":"11","height":"11","rx":"2.5"},[]],["path",{"d":"M15 9V6.5A2.5 2.5 0 0 0 12.5 4h-6A2.5 2.5 0 0 0 4 6.5v6A2.5 2.5 0 0 0 6.5 15H9"},[]]]]]],"{{copyLabel}}"]]]],["div",{"class":"hscroll","style":"overflow-x: auto; padding: 18px 24px 22px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13.5px; line-height: 1.75; color: #1D1D1F; user-select: all"},[["div",{"style":"white-space: pre"},["@inproceedings{"]],["div",{"style":"white-space: pre"},["ren2026wamo,"]],["div",{"style":"white-space: pre"},["title={WaMo: Wavelet-Enhanced Multi-Frequency Trajectory Analysis for Fine-Grained Text-Motion Retrieval},"]],["div",{"style":"white-space: pre"},[" author={Ren, Junlong and Zhang, Gangjian and Fu, Honghao and Wu, Pengcheng and Wang, Hao},"]],["div",{"style":"white-space: pre"},["booktitle={34th ACM International Conference on Multimedia},"]],["div",{"style":"white-space: pre"},["year={2026},"]],["div",{"style":"white-space: pre"},["}"]]]]]]]]]]]],["footer",{"style":"background: #F5F5F7"},[["div",{"ref":"{{rvRef.foot}}","class":"rv-o {{rv.foot}}","style":"max-width: 1200px; margin: 0 auto; padding: 44px clamp(16px, 4vw, 40px) 52px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 28px 64px"},[["div",{"style":"flex: 1 1 520px; min-width: 0; max-width: 720px; display: flex; flex-direction: column; gap: 8px"},[["h2",{"style":"margin: 0; font-size: 14px; font-weight: 600; color: #1D1D1F"},["Acknowledgments"]],["p",{"style":"margin: 0; font-size: 13px; line-height: 1.7; color: #6E6E73; text-wrap: pretty"},["This work is supported by the National Natural Science Foundation of China (No. 62406267), Guangdong Provincial Project (No. 2024QN11X072), Guangzhou-HKUST(GZ) Joint Funding Program (No. 2025A03J3956) and Guangzhou Municipal Education Project (No. 2024312122)."]]]],["div",{"style":"flex: 0 1 auto; display: flex; flex-direction: column; font-size: 13px"},[["a",{"class":"foot-a","href":"https://arxiv.org/pdf/2508.03343","style":"display: inline-flex; align-items: center; min-height: 36px; color: #424245; font-weight: 500; text-decoration: none; transition: color 200ms ease"},["Paper on arXiv"]],["a",{"class":"foot-a","href":"https://github.com/3DAgentWorld/WaMo/","style":"display: inline-flex; align-items: center; min-height: 36px; color: #424245; font-weight: 500; text-decoration: none; transition: color 200ms ease"},["Code on GitHub"]],["span",{"style":"padding-top: 6px; font-size: 12px; color: #6E6E73"},["© 2026 the authors. Licensed under CC BY 4.0."]]]]]]]]]]];
+  var HOLE = /\{\{\s*([^}]+?)\s*\}\}/g;
+  var ONE = /^\{\{\s*([^}]+?)\s*\}\}$/;
+
+  function look(path, scope) {
+    if (path === 'true') return true;
+    if (path === 'false') return false;
+    if (path === 'null') return null;
+    if (/^-?\d+(\.\d+)?$/.test(path)) return Number(path);
+    if (/^(['"]).*\1$/.test(path)) return path.slice(1, -1);
+    var parts = path.split('.'), v = scope;
+    for (var i = 0; i < parts.length; i++) {
+      if (v == null) return undefined;
+      v = v[parts[i]];
+    }
+    return v;
+  }
+  function val(s, scope) {
+    var m = ONE.exec(s);
+    if (m) return look(m[1], scope);
+    if (s.indexOf('{{') < 0) return s;
+    return s.replace(HOLE, function (_, p) { var v = look(p, scope); return v == null ? '' : String(v); });
+  }
+  function camel(s) { return s.replace(/-([a-z])/g, function (_, c) { return c.toUpperCase(); }); }
+  function styleObj(s) {
+    var o = {};
+    String(s).split(';').forEach(function (decl) {
+      var i = decl.indexOf(':');
+      if (i < 0) return;
+      var k = decl.slice(0, i).trim(), v = decl.slice(i + 1).trim();
+      if (!k) return;
+      if (k.indexOf('--') === 0) o[k] = v;
+      else if (k.indexOf('-webkit-') === 0) o['Webkit' + camel(k.slice(7))] = v;
+      else if (k.indexOf('-moz-') === 0) o['Moz' + camel(k.slice(4))] = v;
+      else o[camel(k)] = v;
+    });
+    return o;
+  }
+  function props(attrs, scope, key) {
+    var o = { key: key };
+    for (var k in attrs) {
+      if (k.indexOf('hint-') === 0) continue;
+      var v = val(attrs[k], scope);
+      if (k === 'class') o.className = v;
+      else if (k === 'for') o.htmlFor = v;
+      else if (k === 'style') o.style = styleObj(v);
+      else if (k === 'tabindex') o.tabIndex = v;
+      else if (k === 'readonly') o.readOnly = true;
+      else if (k.indexOf('aria-') === 0 || k.indexOf('data-') === 0) o[k] = v;
+      else if (k.indexOf('-') > 0 || k.indexOf(':') > 0) o[camel(k.replace(':', '-'))] = v;
+      else o[k] = v;
+    }
+    return o;
+  }
+  function kids(list, scope, prefix) {
+    var out = [];
+    list.forEach(function (n, i) {
+      var r = node(n, scope, prefix + i);
+      if (Array.isArray(r)) out.push.apply(out, r); else if (r != null) out.push(r);
+    });
+    return out;
+  }
+  function node(n, scope, key) {
+    if (typeof n === 'string') {
+      var v = val(n, scope);
+      return v == null || v === false ? null : (typeof v === 'object' ? null : v);
+    }
+    var tag = n[0], attrs = n[1], ch = n[2];
+    if (tag === 'sc-if') return val(attrs.value, scope) ? kids(ch, scope, key + '.') : null;
+    if (tag === 'sc-for') {
+      var arr = val(attrs.list, scope) || [], as = attrs.as || 'item';
+      return h(React.Fragment, { key: key }, arr.map(function (it, i) {
+        var s = Object.create(scope); s[as] = it; s.$index = i;
+        return h(React.Fragment, { key: i }, kids(ch, s, ''));
+      }));
+    }
+    var c = kids(ch, scope, '');
+    return h.apply(null, [tag, props(attrs, scope, key)].concat(c));
+  }
+
+  window.DCLogic = class extends React.Component {
+    render() { return h(React.Fragment, null, kids(TREE, this.renderVals() || {}, '')); }
+  };
+})();
+</script>
+<script>
+class Component extends DCLogic {
+  hex(h, fb) {
+    const s = String(h == null ? '' : h).trim().replace('#', '');
+    const f = s.length === 3 ? s.split('').map((c) => c + c).join('') : s.slice(0, 6);
+    const n = parseInt(f, 16);
+    if (f.length !== 6 || isNaN(n)) return fb ? this.hex(fb) : [29, 29, 31];
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+
+  mix(a, b, t) {
+    const A = this.hex(a, '#2484A8');
+    const B = this.hex(b);
+    return '#' + A.map((v, i) => ('0' + Math.round(v + (B[i] - v) * t).toString(16)).slice(-2)).join('');
+  }
+
+  rgba(h, a) {
+    const c = this.hex(h, '#2484A8');
+    return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')';
+  }
+
+  dec(s) {
+    const out = [];
+    String(s).split(',').forEach((t) => {
+      if (t.length !== 4) return;
+      const x = parseInt(t.slice(0, 2), 36);
+      const y = parseInt(t.slice(2), 36);
+      if (!isNaN(x) && !isNaN(y)) out.push([x, y]);
+    });
+    return out;
+  }
+
+  line(s) {
+    return this.dec(s).map((p, i) => (i ? 'L' : 'M') + p[0] + ' ' + p[1]).join('');
+  }
+
+  dots(s) {
+    return this.dec(s).map((p) => 'M' + p[0] + ' ' + p[1] + 'h0').join('');
+  }
+
+  paths() {
+    if (this._paths) return this._paths;
+    const E = {
+      origL: '01i2,0jis,11km,17kz,1vkz,3ch8,3oh3,46hk,4chk,4iha,4ogr,4ufy,56dx,5cd5,5icq,5oco,60d8,66dp,6ugg,76hm,7uj6,86jn,8cjl,8uir,9cie,b5i5,etip,iais,jyje,kajc,kgj8,ksif,kyhp,lgeo,lscy,m4bb,mga1,n48r,nl8k,o38q,o99d,ofad,olbr,p3gk,p9hv,pfip,plj7,pxjv,q3jx,qrj8,rrj0',
+      origR: '01hy,0pj3,17k9,1dk9,1pj9,1via,21gr,2dcz,2o93,3061,3c3t,3i36,3o2x,3u35,403u,4650,4c6i,50df,60mw,66o5,6cp2,6ipj,6opk,70ov,7om3,80la,96m4,9nmu,9tmk,a5kx,abkg,ahkk,atlt,azm6,bhlw,btm6,bzm4,chku,cnkw,d5m6,dnmj,dzmb,ehkl,enk7,etk7,fhm4,ftmd,g5ly,gsk3,gyk3,h4kh,hglr,hsm8,igm4,iykp,j4kl,jsmb,kgms,kyne,l4n2,lam1,lgkk,lsh2,mg97,ms6c,n44f,nf35,nx28,o328,o92y,of4a,ol67,oxbj,p9i0,pfkr,plmy,proj,pxow,qfm4,qrl2,r9ko,rrks',
+      apxL: '00jh,0njf,1bid,1hib,1nii,25k0,2hks,2tl4,35l0,3nk4,4nhe,4zh9,5hhu,5nhu,5thk,5zgz,6hea,6ndl,6td4,6zcx,75cy,7hdo,8bgw,8ziv,9bjj,9hjn,atig,cbia,egin,jgiv,kmj5,lmjm,lsji,m4ip,mgh5,nack,nsah,o49l,oa9c,pa8g,pg8o,pm99,psa9,qgg6,qsie,qyj4,raju,rsjn',
+      apxR: '00lo,05lb,0nla,0tl0,1bj3,1hio,1tir,2bk1,2nki,2tkb,2zjq,35iq,3bhb,458b,4b6r,4n4a,4t3i,4z35,5539,5b3v,5h4w,5n69,7bmk,7hnt,7nor,7tpc,7zpk,85pg,8bp2,8zmb,9blm,9nlj,a5lr,anmt,atmy,azmq,bhl4,bnky,cblv,czmc,dbly,dml9,dzl6,emme,eymt,famd,fsko,fykf,gakr,gsm4,h4mj,hamf,hykh,i4ka,iake,iylx,jamh,jmme,k4l5,kgkw,l4m5,lmmn,m4nm,manm,mgn8,mmme,msl7,n4hw,nsa3,o473,oa5z,om4d,oy33,pa28,pg29,pm2q,ps3t,py5j,q47w,qaau,qskc,qymj,r4nt,rao8,rgnx,rsme',
+      d1L: '00j5,05hh,0bec,0hbs,0ncw,0tgi,0zid,15hm,1bgf,1hfz,1nga,1tgy,1zh6,2bft,2hg0,2thh,2zhu,35hw,3bhc,3nf0,3zdt,45dm,4beg,4nje,4tks,4zk1,5bfx,5hew,5nf0,5zga,65g5,6bfe,6hey,6nfl,6zi0,75ia,7bhe,7hfm,7ne8,7tee,84hp,8aig,8ghy,8sg2,8yfv,9agg,9ggh,9sg0,9yfz,aggs,b4gd,bygg,caga,csgk,dsgm,eag4,esgm,fggf,fygj,glg9,h9gl,ifg8,irgt,ixgu,j9ge,jlgq,jrgi,jxg5,k9ej,kfes,kri5,kxil,l3hn,l9g9,lffp,lrh7,lxh3,m9fk,mffq,mlgo,mrh7,mxg0,n3e8,n9ec,nlit,nrjv,nxjk,o3ih,o8gu,okbz,oqc2,p2gz,p8hu,pkgq,pqgv,pwhp,q2i4,q8h5,qegj,qkhv,qqh5,qwd0,r2bv,r8fg,reif,rkja,rqjl',
+      d1R: '00hx,05fz,0hdo,0ne6,0tfk,0zfo,15es,1bel,1hfc,1zj4,25j0,2hgi,2nfn,2tfi,2zg7,35hf,3bi8,3hhw,3tft,3zf3,4be5,4heh,4nfx,4thq,4zip,55io,5bhw,5hgd,5neg,5tdd,5ze2,65fv,6bh6,6hhf,6tgw,6zh6,7bik,7hi7,7yek,84dy,8aej,8mjo,8sjo,8yfq,94av,9a9n,9gds,9mkl,9sp1,9yny,aac3,ag99,ambl,asgw,aykg,b4ji,bafk,bgcl,bmdd,bykv,c4ld,caii,cgeu,cmdb,csed,cyg1,d4gj,dafo,dgeh,dme8,dsfu,dyiw,e4lc,eal6,egig,emf7,esd9,eyd6,fafg,fgfz,fsfq,fyge,g9ki,gfl5,gliz,grf3,gxc2,h3bz,hfhp,hlia,hxe0,i3e4,ifk7,ill9,irjk,j3dk,j9cc,jfd4,jlfe,jrid,jxkr,k3km,k9h7,kfcu,klay,krcn,kxfy,l3i6,l9i9,lfhd,llh1,lxid,m3i8,mffw,mlft,mrg2,mxev,n3d1,n9di,nlj8,nrjw,nxjh,o3ji,o8j5,okf3,oqfb,owdz,p29a,p86h,pe9u,pkgv,pqmv,pwpk,q2nz,q8ig,qeg0,qkkr,qqja,qw6d,r228,r8dk,rena,rko9,rqlb',
+      d2L: '00fx,06gs,0ifx,0oft,0ug0,10hb,16h9,1cf7,1ifn,1ogt,1ugo,20g8,2cgc,2ifx,2ogf,2ugn,3cg6,3igf,3ufv,3zgd,4bg5,4tgs,5bfv,5nge,6ng6,6zgp,7bg5,7tfz,85go,8ng2,9bge,9tg8,abgd,cmg8,cygd,j4gd,jgg6,jsgm,jyg2,kagd,kmg3,krgm,kxgs,l9fy,lxgk,m9fy,mlgi,mrgj,mxg9,n3gb,n9ft,nffv,nlh9,nxg7,o3g2,olgb,orfs,oxfy,p3gz,p9gu,pfg4,plfw,pxgk,q3gl,qlg2,qxgc,r3hy,r9bq,rfje,rlhr,rrez',
+      d2R: '00e1,06gv,0ch7,0ofs,0ufr,10gs,16gt,1cfk,1ify,1ogt,20g8,2cgj,2ifz,2ugc,3igi,3ufz,45gd,4ng7,4zgp,5bg3,5nga,5zfz,6bgq,6ng3,6tg1,6zgg,7hgh,7tfz,8hgc,8tgs,8zgk,95fj,9bf4,9nhc,9thk,9zgu,a5fr,abf6,azh7,b5gs,bbfr,bhf9,btgs,bzh7,cgfn,cmfp,cygt,d4gq,dag3,dgfs,dsgf,eags,emfp,esft,f4gj,fsg6,gggp,gmgk,gyfk,hggu,hmgt,hyfn,i4ft,iggy,imh0,iyfq,jmgj,jygo,kagf,kmfc,kxgx,l3gy,lffx,llfz,lxgo,mfg2,n3gf,n9fq,nffo,nlhe,nrh0,nxg2,o3fu,ofgn,olgk,orfg,oxfq,p3hg,pfdz,plh7,prib,q3fu,qxgd,r3l5,r928,rfpk,rll4,rrck',
+      tsAT: 'n3gw,7xdd,4ybp,hjd4,e726,42ca,bkfn,ndgo,ox67,4s9g,9olj,p79v,8qf6,1ab5,aidr,5mbp,9nie,ltg8,cx86,ft39,ktis,918o,mwh1,f7en,2ibl,e99s,hncw,faew,ghbz,1db7,f68c,o96e,ndg6,l8ir,ou9p,b8dm,jyi9,lzge,ksim,lw79,7idk,30al,7ifo,ee72,gaif,b3l8,6g8m,n45w,dp9e,do8t,pm7b,en2z,837w,80f4,ckd0,p0ag,3b8z,i2ap,7e9h,e83n,cx86,dv3h,p39c,m6gv,ol6g,n052,ez4e,fa20,nm5u,flea,42ca,cjaw,anlc,g4je,9clq,p57f,mf6b,f7ii,do8t,ov5c,d68h,8h80,c18r,mn6w,837v,71dw,nz7b,dt2f,g3hp,e726,ee72,aw96,9pl7,fier,pva7,9y8n,flea,aa7h,p877,pp5p,f22j,et3k,faew,oqaf,fb3b,ou9p,oz79,b8m8,kxie,ei2d,da9y,mf6b,jyi9,e48z,fzit,o07m,px62,pm9q,o271,92ea,e83l,a3li,nsg7,b34j,3p78,gjb8,7iai,lugg,fx95,alay,m53v,30ak,gtco,a4mk,g0jj,mr7y,m75r,338u,ltg8,gtcn,3fbn,askc,foio,fpig,ox66,8cbk,4wa9,fu9h,7ybf,9nlm,8yep,9cbu,m53v,f22r,ftj8,fa20,dv3v,4wa9,g3ib,m9hx,8qd4,71dw,oral,67e4,fier,et26,pw64,ph60,ewer,mtgr,dxas,7wcl,2abc,ov5c,aqmq,en98,avme,8aeg,o04f,fibk,p96s,7ifo,lmgx,hc3b,ok6i,9l7y,mmgj,8h80,p16v,2w9w,4t84,o04f,pe7e,dt2f,esb8,fgiw,ei2d,3w8i,pza6,mghr,p0ag,f9ar,n45w,f22r,owa0,b1jt,o973,h5bp,f62j,7kb4,67e4,9yls,918o,fuc1,8a9e,pj83,i5br,9nie,jxi1,fojf,nz7b,ok5v,qj6r,cjaw,mrgw,lo4w,e62q,e832,nb6v,767y,fzit,lhit,gjb8,abma,4t8m,8dat,pj83,8vdw,lwg0,huby,gc9i,cq8o,o973,lhi8,gjcy,pi62,pd9y,nb6v,m75r,mx5z,aqkf,gc9i,lw79,ljg7,f84g,9gej,ok5v,mxhc,f68c,8aeg,foio,aidr,f7en,hlcl,p8ak,9y8n,nh6i,a9lp,b34k,ayln,dn3t,8jfp,f7ii,exa7,ajl3,b8dm,ph6r,f24p,mw81,nm5s,a89f,pg75,po6x,hcd2,8wcg,l3i4,ewer,oz72,ndgg,8efx,lmgx,azge,1ycc,nh6i,fs24,3a8o,8a9e,338u,gai5,al3r,hc3b,h5bp,abma,fb3b,cde0,bqhs,n07x,3l9i,f9ar,my59,7iai,8z6n,dxas,bkfn,2abc,e48z,44bi,92ea,n2gr,ag5h,4c92,fx95,fu9h,4t8m,e99s,pda4,c18r,i2ap,lihg,d78h,a89f,esb8,7h8o,bqhs,8cbk,7z8v,2ibl,5mbp,o759,ag5h,alay,nah0,o69x,9sl7,aw96,f14a,cq8o,do1y,mxg9,4n6g,2l9a,ft39,8z6n,nlgl,a4mk,8yep,p1ao,7wcl,8dat,fy3f,nygp,a7k9,80f4,azge,pf6z,do1y,3p78,7kb4,lbik,ckd0,9cbu,8vdw,gfig,3fbn,fkbs,8v9z,ol88,ey4o,et3k,mu5t,6qdl,ol88,8qf6,ghbz,o69x,aml1,mn6w,anlc,al3r,exa7,n55p,aalo,j2il,p7a2,lbi1,9qm4,qj6r,foio,en2z,b4ks,aa7h,l9i9,lo4w,7a7y,8qd4,8efx,ep20,a9kv,ghi7,n55a,en98,2w9w,l8j1,my5o,fs24,9dlt,g13b,a9kv,pp74,9l7y,gkcx,3w8i,6z9c,8wcg,g4je,j2il,dp13,fm2j,mv7u,hdco,owa0,lbik,4ybp,cde0,5nae,hmim,pr5p,8v9z,4t84,b4ks,8gfo,oa79,5nae,fn2k,huby,n652,lbhx,p870,7z8v,dv3h,6z9c,7ybf,e62q,lvin,7xdd,7e9h,ayln,4n6g,b3l8,o759,o96d,pi9n,mxgl,m4fw,6qdl,1ycc,9gej,lli2,5q7y,da9y,p39c,g9j7,f94b,4c92,fijb,nlgc,lpib,ep20,ep20,lmik,nggr,4t9g,hmim,9mm4,h7d1,dp9e,44bi,5q7y,fnj3,a7k9,kzhv,7h8o,dp13,b8m9,atmc,e832,aqmq,2l9a,3l9h,7hdk',
+      tsAM: 'meef,72c1,4jcq,jm87,c54l,5gcv,jjhk,lkdv,ik5x,817c,8hkk,j4bi,ahf3,1vbf,9wfh,6gbi,c19q,mae2,cu98,i35a,jkgi,767b,lxde,e3dt,1tay,9g9e,jp98,blc8,eidp,1sbh,e1bl,l36h,l3ea,iphg,apep,g57v,ivh7,loes,ikgx,ko5c,aley,4zd0,9xfy,e68a,emhf,7yl9,62ch,iw6w,dr84,bn7y,gqac,bh31,8k7d,9qde,4zdk,kg9r,7yip,60cm,5j8v,fp4g,ct98,hh51,d3c8,m1dz,dxcd,l886,bu4s,du5b,gg8j,bk84,5dcv,d5be,8qkn,evhb,87kx,m1b2,l69f,exho,bi7w,dc6p,ee7u,au84,bba8,lw9a,8l7c,bk99,m5a7,cp2y,68a2,c34h,e388,bc9y,81kx,eke1,kbbu,b8bl,bf82,ar8h,m6b7,llb7,g84o,cu2f,blc3,kn9g,co2n,asey,is75,blbs,iegw,c23j,dtdk,lc9e,jlh5,dq7s,f4gy,gmaa,a7et,lf9k,ln9b,awfb,fy4g,8pl2,llej,d636,1cam,frcn,i5ht,moe9,ejcj,48aw,ik6h,54cv,jt8l,7ol0,ekgz,gt8i,k060,5e98,m3eq,jj96,3oaz,8zke,ewhh,ebhh,id5y,9rd2,766l,fya2,9sez,8fkd,57dd,bpe7,im6f,gp3t,f1gy,dw5c,ck4b,766k,h8hm,j2he,6wbu,bk99,kv9e,4a9u,emdx,gl2i,aaez,kwa5,b2c7,l3di,9zd5,9raw,1jas,dc6o,7fkq,bhak,7ykb,bubq,jr6s,ewc7,k880,a6fx,mee8,ks7a,dscf,638s,lndl,ar81,io6w,5wb3,5ecl,jr6r,m1af,ck2u,f0do,enhr,c23k,2j8p,kcbx,m8el,k89t,f47l,mqa7,gp3t,azf0,hrci,lg92,iu96,gb4m,6saw,499u,82k2,767b,g0cp,jsaw,caez,kp8a,bz9q,m1bi,eihl,m5as,l395,jt7k,d4bf,lyek,lqaz,co3b,g74b,mjao,5y99,hnhh,jhgx,f8c7,8uk0,3ra7,a9c0,cjez,gl8v,lred,j5a9,ekc8,ei8m,km9y,j3h4,fcc0,l39w,j6bg,mqar,k060,iy71,8qk8,egc9,kq5c,lbe0,bq4r,a1e3,kt93,laed,e3bk,cnge,grhh,agfp,ecdz,ja88,k69i,b7bm,mgad,9xf8,da35,89kq,cp4d,b8el,gwhm,a5ca,7mks,g67w,jo8d,hb5j,mdax,go8n,9ea4,jdg7,m7do,jba4,kw5o,iogl,b1c5,lqak,lwe7,jsa5,jdh9,9aaj,4md2,msah,hr4z,7yip,jrav,5i9a,hjhi,cg36,kr7a,iv96,94k2,cv2p,aiek,dhbr,gf8d,4zaz,f37m,ks6c,e7gg,6sae,a4d6,mjes,1tat,dq7u,4far,apf9,ltdr,cs3w,44ak,ejcf,g0a2,3ra8,9h9f,kx9o,b7a7,cdgc,jngt,ee7v,9ea6,ewdq,ai87,dhbp,9pd8,639n,1kaw,6kbd,ie7m,cv3u,4baz,lbdj,l0a9,89lb,ba9x,c14x,ei8l,cb2h,lrdz,bf54,2v7u,hz5g,6rae,luex,7ol7,5ad7,k09m,9qb3,aabx,ii5n,midy,8hlc,9idn,9aaj,lzak,cd2d,23am,6xb2,j9gm,4vdl,bpe9,gn8v,gqha,3paz,fube,9ya5,c8er,hd5k,cq2i,kg8b,ava5,ccer,a9em,ejdm,la9x,7ckz,ln91,8gjz,cb2y,a7c9,ka8c,aefg,jth5,kq9n,j9hf,7wkq,js7m,gvh4,bh31,9dfc,an8j,jqgf,lib0,5v9a,6sbu,jna1,gl2i,8skv,gxhd,kt6a,bhag,5vb0,j1gt,mja6,hq52,7rk8,ie5n,87k8,lpaf,648u,fwcf,2i8p,5u8j,ku5m,f4hb,ijhc,c05k,hu5t,mbaj,k28t,aweq,j8ho,4kcs,ahet,6db2,hiha,lqb9,9ya5,5ack,9cfd,b9er,kt9v,6hay,hx5w,j2ad,l986,j9gx,ju8c,649n,he4x,5v8h,a8fb,cp39,iphs,76c2,5o8w,8fkx,bd55,7jke,if7m,l36e,l89k,l3dx,lud9,ara5,4xcm,a2e5,jrgo,5h8j,dtdo,d0c6,emha,c94u,48aj,h2hf,l3dq,j5gg,gq4c,gq4d,irgh,m3ee,847c,h4h7,7rkh,frck,ds87,4iau,5i8h,eeha,83ki,jygr,al88,bw5i,bibg,8fl5,g947,7dl5,2v7u,50az,arej',
+      tsBT: 'ba33,mll2,f5cw,6vdm,nlk6,2ti0,a52y,nr6g,38hj,ke16,6ujl,ia5m,8c3s,g8cz,bv68,mzcl,6uaa,i6a7,6ocy,fh78,7zax,5ndf,av2q,mlch,g1b8,ph87,a0iw,gic0,9q26,cmjc,29an,i22u,jqck,8v1x,d16w,mc8t,h16c,gmbc,mmc6,53j8,5m8l,8iar,7a40,ifdm,gg86,al8r,ptag,5mka,g56w,fj86,gige,nd93,mjk8,h87e,hx2r,fzc8,dujq,fyb8,edie,8eid,ejbn,82b0,km13,2oby,d0i1,6hid,eake,gu6p,crks,p7a2,g782,e22a,n5k8,8jio,6zca,6o6f,erk4,hhak,5mka,l22a,ogcd,5ak3,gxf8,d8hn,c0ii,c45r,bul3,evb7,7k3r,9y2h,96j1,766i,fyb8,o67s,5qbt,8d2p,6xde,fk7j,81ia,bmmf,m8cb,8ka1,1o9z,gtb1,iabe,n5ku,j2hz,mikg,aaex,77cv,gv7e,nijz,ks2r,56j6,dpi9,4zjk,a7f8,hxh5,1mbq,dyjz,404r,co2m,i6ax,md8x,dtjx,iq5d,be41,or8f,gv80,5xjh,gac1,c7lm,hx2r,om6p,646k,7acr,63jb,dpjo,mscl,ggbz,aph0,6n32,6niu,iscs,6qkb,bi18,djjt,6ddd,m0k9,nal2,dykm,8q9x,nrav,c9mg,88il,b3im,b93y,h148,mod6,7s3l,gra8,9m2c,c1bg,8m9h,eec3,i2cj,mtbg,6adr,o8bh,6kif,ks38,fpjh,n6k7,ft76,4yji,g686,ap74,lm28,8d32,flk0,1yge,ajk7,h67h,mol1,bmlj,eoc1,k62j,248y,7v2s,nad4,cgg4,clmg,c7hu,nadq,dvfw,c1lk,dh7f,hugg,c57h,na9j,al70,6oji,ar65,68j8,2gah,7wb0,eyca,moco,ky2n,8va8,72hj,bfk1,53d8,6u2t,5wdh,8rkz,nmjm,fs6h,6iii,54ji,ekcp,bpl6,mq6f,8eaw,d3hz,fr6g,gd7u,bng1,az8m,mvd1,d9ix,7t2t,o4am,5kir,igdi,8wj0,cdip,8jis,849t,o4dc,hzbd,6q3b,g38a,8mji,eqcw,c85u,9k2u,n9l5,ekd1,o6da,g2ba,6r2d,mtjv,cnit,ngdm,gcc6,fjc1,nlk5,h5ba,e4bb,i1hg,6gc5,6idt,cokr,eoc1,ml6m,bb6q,pma9,75bo,6oiu,h148,mjce,5wj5,b8l9,p87w,8gib,m6ca,ejc3,la1y,d0ll,4tfz,6z1y,ir8w,662u,nkc1,a7f8,a5j9,7f3o,6r3m,6kkn,1pgh,m1cb,mojd,mckx,nqcf,5gj2,c96r,6gjg,kj2h,4zj7,b7az,m6cf,ntc5,n0jp,crkz,edfg,mmbz,gub8,h6bl,5pjy,bjks,7way,59k0,fref,elkb,ctja,gpe7,dyjp,fi7u,54a5,gk7c,6icy,29an,bxlh,dn8j,clim,fbfd,6h28,h88a,89jh,5nih,mqd2,a7d4,gzbt,54iu,f3d8,nf9n,ge84,nibk,emca,aal8,eojz,39he,5yjm,czlp,84ah,cflh,5g8l,e19w,8lji,fp2e,hxbv,f7br,a275,fkjq,mq6f,fyb9,bfjy,c4j4,jq2q,c3li,70dw,bm6m,az18,8pi0,cy8t,mmbt,lg2s,eubz,7rae,p688,c2i7,bgli,69j3,ly26,7s2u,hfav,ciks,bfjx,b5hi,iabe,fojh,gj7m,d2jm,55j0,52iu,gzfl,bf6g,9na7,7qb0,n6l4,nxaz,b938,91j4,ewbo,g36t,ha8a,lk23,8lgq,kl1t,d1kw,c72l,ft6g,6v36,7n9g,h26y,2mbt,ds3q,79iq,7j3s,aal8,ks17,51ij,7wa2,gd85,1tg9,69dl,d2kw,cvhh,mncy,b96e,3z9c,5h8g,i0b9,oxat,c9hv,dxjs,n39q,a2cy,n2bj,cgmq,8caz,ba6b,53aj,bq6q,ccki,dqh9,558p,ar65,6cdi,5hd1,b969,8ffd,fl6f,7ca6,frbf,gmbj,cqjs,87ik,8ziu,m01r,7a2e,gs7c,cp63,8fb2,6w2q,kdcq,ckkr,mgkp,ekj1,6ne3,iq5d,kx2x,76ay,7bdm,czlr,e2jq,f87d,5tik,fo2q,hk46,9oii,czh1,6bdd,d5lo,831y,gw7y,55j7,n4jx,g7cz,2tg4,6nci,lu29,2m8f,58jg,na9s,ks2t,kx30,7vjl,g58a,5wjk,btk9,7a3r,7vj3,891z,9ncy,bwkd,d86q,8faz,73ck',
+      tsBM: 'ck1v,80az,3c8p,dkhq,i363,3agi,a839,6hid,7q2w,9930,g67k,fp6k,69j9,ntca,cl7n,d1kw,88c4,lc1z,c1li,mjk5,8ui0,35gt,bm5i,bilb,8yjj,nb89,brgz,73dg,bi2d,8ek5,19a9,kr1j,juc3,a31b,mkcf,ncl3,h52y,2rgr,fba6,cdjb,5386,d3ix,6nk9,hgck,g3bq,ca6f,o6kc,5kk8,7a2d,lu31,cakx,qiat,7pbs,eoc1,68j8,l22y,6fah,bojl,nybx,i7av,ba62,ehjb,av27,7ga6,fx82,n1c5,d0lq,euja,fyc5,mrk6,45g6,gz6d,eba0,bfk1,bhkv,6v6y,eyen,e0jn,gn4w,m6ko,fzb7,fv82,hnfy,8d2l,1sb2,hk5z,eak4,7720,gzcv,kk1b,li2a,7wie,e1kh,isag,7za9,oma0,5sjl,mml7,6ujj,c8li,3oa9,eya4,71cy,6u2t,fsc1,793i,fpcs,keem,ckdt,hr9z,ikda,6rjh,cef7,fj86,jl8s,6b3f,g68c,mnl2,1oag,qib2,7f3o,g985,7u31,5ck2,mscb,d1ku,9w37,n1cy,ifhx,7nco,dakm,7224,c6jv,l32x,bzlg,js8p,gwc2,5tcv,dpdr,9ra4,crj4,672u,ct65,keel,epcy,mwbk,1fb3,epcw,f577,h95v,6o3p,c4lk,pjau,brlz,n4bt,bgk0,bm5q,gf48,c1j2,68k2,415a,8eav,ned7,6pka,c26h,evjy,ecj7,hncr,e9ic,cpja,bylu,e6i8,5qj7,egje,egcb,8b9o,bb69,klc3,84av,obcg,7ejg,evcz,m7d0,j5da,hf3d,cuix,myl8,fp76,7t2b,hzbc,6ddi,6q36,ay5u,hhhu,cgfn,n3c9,6mck,bkll,5mis,n78i,g36t,52ji,7q2t,evj4,2j9z,cqil,anco,b9ma,n8kv,ku2u,fn7v,n7l7,54dn,7wai,gsbd,83jr,8dib,kubs,8qfz,gv79,6qgw,adfn,5tk1,fy6i,ok74,ha5u,cpfu,bnfz,npc9,ctj3,6tdd,kz2w,ps9p,facv,li2c,67du,aw70,d99y,ezbq,7sd3,gbfx,7kft,bm72,hobj,cwjy,hc54,kh1a,ilb1,65kv,5vd7,etcy,7m6b,mxjw,8meb,56ji,o5jy,g587,nijg,54ij,dwb2,8xaw,8daw,6ldv,iwbl,7wgr,d4hz,7hdt,qg9w,bakh,muag,mtc6,mkk6,es9q,45g9,n17d,gi7h,5hka,g46t,ef1z,bh1y,b6la,a31b,fubu,f27a,fxb5,euck,a9jq,7qai,63dr,63kq,e5cm,fp82,evbc,mdkx,hb87,b782,h4dl,f9jv,9qg7,egcw,bmau,1ebk,nbd3,enbc,cpkz,dvk0,bt6v,gyc0,mqd9,a61i,7zaa,6ujj,ndbj,6wdc,bw6w,733q,h4di,h16c,7nas,dljp,p695,biaq,869r,55k2,ei9j,8g2m,8cie,eabi,b8l0,ebkd,ao25,7b73,b5cy,ceir,7n6w,g6d2,7vcv,piaz,gh6h,jxc0,e0kn,mpcx,23hd,l22f,iubd,h16e,fpct,bdjx,8kiq,f8cq,g98a,icat,6kcg,kq1m,8n2u,oabz,bkkr,neda,8a31,awle,8wiu,7ndt,g07d,ky2u,gk6j,c77v,7679,ifhx,6t81,cgin,fn84,5kiw,1v85,5yiq,odby,enc0,782w,ddgb,5gjg,begt,fm7f,6dix,kv2u,7a3x,mwjv,g5c5,mikg,bjlj,6u80,cdj9,bwam,9rit,o8d6,88k7,8cil,7pbs,mpk6,lh26,8e33,6qje,6hie,at1r,m023,be6q,55j6,58ig,mjk5,dujv,mkcm,dvk0,f1d1,el36,gibg,7n9y,eebi,6b3i,8og0,6hii,7rab,fn7v,biko,3j9q,nmca,kf2w,orb9,415a,erbz,m27b,aeby,n7bf,fp6k,h8aw,54j8,4fak,bcek,h36d,nacz,crjv,1r81,7qaf,mdkh,dcie,kg2m,7gil,2j9w,gr77,2chq,3s5h,g76t,7bd6,nxby,grbv,ezjt,cxke,fnc5,my7f,dsiq,cl6i,7kfu,8bhy,f4d5,hh4q,769f,mik8,8yji,5bk9,hnfy,ax6d,eqb9,ep40,l91e,ny8l,5ojo,mycs,n8kz,88c5,hwi5,3f9s,8e2y,gf75,2sgm,i6au,99k5,c2li,5ij7,iraq,bz86,kb2w,evju,89ak,59ja,3c8p,5nk9,cjiq,myjb,3pas,89b3,ejcb,8d3t,h8ay'
+    };
+    const P = {};
+    ['origL', 'origR', 'apxL', 'apxR', 'd1L', 'd1R', 'd2L', 'd2R'].forEach((k) => { P[k] = this.line(E[k]); });
+    ['tsAT', 'tsAM', 'tsBT', 'tsBM'].forEach((k) => { P[k] = this.dots(E[k]); });
+    this._paths = P;
+    return P;
+  }
+
+  tables() {
+    if (this._tables) return this._tables;
+    const H = [
+      ['T2M', 'CVPR’22', [1.80, 3.42, 4.79, 7.12, 12.47, 81.00, 2.92, 3.74, 6.00, 8.36, 12.95, 81.50, 63.57]],
+      ['TEMOS', 'ECCV’22', [2.12, 4.09, 5.87, 8.26, 13.52, 173.00, 3.86, 4.54, 6.94, 9.38, 14.00, 183.25, 72.58]],
+      ['MotionCLIP', 'ECCV’22', [2.33, 5.85, 8.93, 12.77, 18.14, 103.00, 5.12, 6.97, 8.35, 12.46, 19.02, 91.42, 99.94]],
+      ['MoT', 'SIGIR’23', [2.61, 4.72, 6.90, 10.66, 17.79, 60.00, 4.03, 5.07, 7.43, 11.23, 17.68, 64.25, 88.12]],
+      ['TMR', 'ICCV’23', [5.68, 10.59, 14.04, 20.34, 30.94, 28.00, 9.95, 12.44, 17.95, 23.56, 32.69, 28.50, 178.18]],
+      ['MGSI', 'MM’24', [6.61, 12.73, 17.11, 23.91, 34.74, 24.00, 10.61, 13.18, 19.75, 26.00, 36.63, 22.50, 201.27]],
+      ['MESM', 'MM’24', [7.16, 12.52, 16.70, 24.22, 35.38, 23.00, 11.19, 13.81, 19.59, 25.96, 35.93, 23.25, 202.46]],
+      ['LAVIMO', 'CVPR’24', [6.37, 11.84, 15.60, 21.95, 33.67, 24.00, 9.72, 13.33, 18.73, 25.00, 36.55, 22.50, 192.76]],
+      ['MoPa', 'CVPR’24', [10.80, 14.98, 20.00, 26.72, 38.02, 19.00, 11.25, 13.86, 19.98, 26.86, 37.40, 20.50, 219.87]],
+      ['LaMP†', 'ICLR’25', [3.65, 7.56, 10.90, 16.56, 26.26, 30.00, 4.51, 8.71, 11.76, 17.34, 27.84, 30.00, 135.09]],
+      ['WaMo (ours)', 'MM’26', [14.02, 17.58, 25.51, 32.06, 42.10, 16.00, 15.51, 16.57, 22.74, 29.40, 41.73, 17.00, 257.22]]
+    ];
+    const K = [
+      ['T2M', 'CVPR’22', [3.37, 6.99, 10.84, 16.87, 27.71, 28.00, 4.94, 6.51, 10.72, 16.14, 25.30, 28.50, 129.39]],
+      ['TEMOS', 'ECCV’22', [7.11, 13.25, 17.59, 24.10, 35.66, 24.00, 11.69, 15.30, 20.12, 26.63, 36.39, 26.50, 207.84]],
+      ['MotionCLIP', 'ECCV’22', [4.87, 9.31, 14.36, 20.09, 31.57, 26.00, 6.55, 11.28, 17.12, 25.48, 34.97, 23.00, 175.60]],
+      ['MoT', 'SIGIR’23', [6.23, 11.07, 16.54, 23.92, 37.15, 20.00, 10.56, 13.49, 20.61, 27.61, 38.04, 19.50, 205.22]],
+      ['TMR', 'ICCV’23', [7.23, 13.98, 20.36, 28.31, 40.12, 17.00, 11.20, 13.86, 20.12, 28.07, 38.55, 18.00, 221.80]],
+      ['MGSI', 'MM’24', [8.91, 16.28, 20.87, 29.64, 40.84, 16.00, 13.49, 16.41, 23.54, 30.66, 43.00, 15.50, 243.64]],
+      ['MESM', 'MM’24', [9.29, 17.05, 22.31, 29.13, 41.02, 16.00, 12.75, 16.41, 24.17, 32.59, 42.88, 15.50, 247.60]],
+      ['LAVIMO', 'CVPR’24', [10.16, 19.92, 24.61, 34.57, 49.80, 11.00, 15.43, 20.12, 26.95, 34.57, 53.32, 10.00, 289.45]],
+      ['MoPa', 'CVPR’24', [14.02, 21.08, 28.91, 34.10, 50.00, 10.50, 13.61, 17.26, 27.54, 33.33, 44.77, 13.00, 284.62]],
+      ['LaMP†', 'ICLR’25', [6.25, 12.50, 17.76, 24.86, 42.47, 13.00, 6.39, 14.49, 18.89, 27.56, 44.03, 13.00, 215.20]],
+      ['WaMo (ours)', 'MM’26', [18.31, 24.82, 34.46, 43.49, 56.75, 8.00, 19.04, 22.41, 31.11, 37.83, 54.04, 9.00, 342.26]]
+    ];
+    const FH = 14.02;
+    const FK = 18.31;
+    const STUDIES = [
+      { id: 'modules', tab: 'Components', no: 3, title: 'Main ablation studies of the proposed key modules.', take: 'Each module improves retrieval, and the full model performs best. Without TWD, TWR is also disabled, since the inverse wavelet transform builds on the decomposition.', marks: ['TWD', 'TWR', 'DMSP'], rows: [
+        { on: [0, 0, 0], h: 9.14, k: 12.77 },
+        { on: [1, 0, 0], h: 11.91, k: 15.78 },
+        { on: [0, 0, 1], h: 11.36, k: 15.23 },
+        { on: [1, 0, 1], h: 12.43, k: 16.43 },
+        { on: [1, 1, 0], h: 12.24, k: 16.99 },
+        { on: [1, 1, 1], h: FH, k: FK, ours: true }
+      ] },
+      { id: 'transform', tab: 'Frequency transform', no: 4, title: 'Ablation study on the frequency domain transform method.', head: 'Transform', take: 'SWT performs best. FFT misses local temporal dynamics, convolutions and DCT neglect low- and high-frequency components respectively, and DWT is shift-variant.', rows: [
+        { label: 'None', h: 11.36, k: 15.23 },
+        { label: 'FFT', h: 12.10, k: 15.98 },
+        { label: 'DCT', h: 12.69, k: 16.17 },
+        { label: 'Convolution', h: 12.86, k: 16.63 },
+        { label: 'DWT', h: 13.27, k: 16.73 },
+        { label: 'SWT', h: FH, k: FK, ours: true }
+      ] },
+      { id: 'level', tab: 'Decomposition level', no: 5, title: 'Ablation study on the decomposition level S.', head: 'Level S', take: 'Retrieval improves up to S = 3; deeper decomposition introduces noisy, motion-irrelevant features.', rows: [
+        { label: 'S = 1', h: 11.93, k: 15.66 },
+        { label: 'S = 2', h: 12.81, k: 16.99 },
+        { label: 'S = 3', h: FH, k: FK, ours: true },
+        { label: 'S = 4', h: 13.84, k: 18.19 }
+      ] },
+      { id: 'attention', tab: 'Attention', no: 6, title: 'Ablations on intra- or inter-frequency attention.', take: 'Intra-frequency attention alone outperforms inter-frequency attention alone, and combining both performs best.', marks: ['Intra', 'Inter'], rows: [
+        { on: [1, 0], h: 13.17, k: 17.71 },
+        { on: [0, 1], h: 12.82, k: 17.11 },
+        { on: [1, 1], h: FH, k: FK, ours: true }
+      ] },
+      { id: 'recon', tab: 'Reconstruction', no: 7, title: 'Ablations on trajectory wavelet reconstruction.', take: 'Intra- and inter-frequency reconstruction are complementary; using both performs best.', marks: ['Intra', 'Inter'], rows: [
+        { on: [0, 0], h: 12.43, k: 16.43 },
+        { on: [1, 0], h: 13.27, k: 17.47 },
+        { on: [0, 1], h: 13.11, k: 17.22 },
+        { on: [1, 1], h: FH, k: FK, ours: true }
+      ] },
+      { id: 'shuffle', tab: 'Shuffling', no: 8, title: 'Ablation study on the disordered motion sequence prediction module.', head: 'Setting', take: 'Frame-level video shuffling falls below training without shuffling, whereas DMSP improves retrieval by preserving local continuity.', rows: [
+        { label: 'Without shuffling', h: 12.24, k: 16.99 },
+        { label: 'Video shuffling', h: 11.56, k: 15.03 },
+        { label: 'DMSP', h: FH, k: FK, ours: true }
+      ] },
+      { id: 'init', tab: 'Wavelet initialization', no: 9, title: 'Impact of the wavelet initialization.', head: 'Wavelet', take: 'The db1 (Haar) wavelet performs best on both datasets, owing to its effectiveness for short and abrupt motions.', rows: [
+        { label: 'db1', h: FH, k: FK, ours: true },
+        { label: 'db2', h: 13.84, k: 18.11 },
+        { label: 'db4', h: 13.48, k: 17.95 },
+        { label: 'db8', h: 13.87, k: 18.00 },
+        { label: 'db12', h: 13.41, k: 17.47 },
+        { label: 'bior3.1', h: 13.76, k: 18.10 }
+      ] },
+      { id: 'learnable', tab: 'Learnable filters', no: 10, title: 'Ablation study on learnable wavelet filters.', head: 'Filters', take: 'Learnable wavelet filters outperform the fixed db1 wavelet on both datasets.', rows: [
+        { label: 'Fixed (db1)', h: 12.56, k: 16.37 },
+        { label: 'Learnable', h: FH, k: FK, ours: true }
+      ] }
+    ];
+    const BIB = [
+      '@inproceedings{',
+      'ren2026wamo,',
+      'title={WaMo: Wavelet-Enhanced Multi-Frequency Trajectory Analysis for Fine-Grained Text-Motion Retrieval},',
+      '  author={Ren, Junlong and Zhang, Gangjian and Fu, Honghao and Wu, Pengcheng and Wang, Hao},',
+      'booktitle={34th ACM International Conference on Multimedia},',
+      'year={2026},',
+      '}'
+    ].join('\n');
+    this._tables = { H: H, K: K, STUDIES: STUDIES, BIB: BIB };
+    return this._tables;
+  }
+
+  handlers() {
+    if (this._h) return this._h;
+    const set = (patch) => this.setState(patch);
+    this._h = {
+      scrubMove: (e) => {
+        const el = e && e.currentTarget;
+        if (!el || !el.getBoundingClientRect) return;
+        const box = el.getBoundingClientRect();
+        if (!box.width) return;
+        this._sx = Math.max(0, Math.min(1, (e.clientX - box.left) / box.width));
+        if (this._raf) return;
+        this._raf = requestAnimationFrame(() => {
+          this._raf = 0;
+          set({ scrub: this._sx });
+        });
+      },
+      scrubLeave: () => {
+        if (this._raf) {
+          cancelAnimationFrame(this._raf);
+          this._raf = 0;
+        }
+        set({ scrub: null });
+      },
+      hoverA: () => set({ hover: 'A' }),
+      hoverB: () => set({ hover: 'B' }),
+      unhover: () => set({ hover: null }),
+      unhoverRow: () => set({ row: null }),
+      blurSelf: (e) => {
+        const t = e && e.currentTarget;
+        if (t && e.detail !== 0 && typeof t.blur === 'function') t.blur();
+      },
+      pickH: () => { set({ ds: 'h', row: null }); this.rvKick('chart'); },
+      pickK: () => { set({ ds: 'k', row: null }); this.rvKick('chart'); },
+      toggleT: () => set({ hideT: !(this.state && this.state.hideT) }),
+      toggleM: () => set({ hideM: !(this.state && this.state.hideM) }),
+      copyBib: () => {
+        const done = (ok) => {
+          set({ copied: ok ? 'ok' : 'fail' });
+          clearTimeout(this._copyTimer);
+          this._copyTimer = setTimeout(() => set({ copied: null }), 2400);
+        };
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(this.tables().BIB).then(() => done(true), () => done(false));
+          } else {
+            done(false);
+          }
+        } catch (err) {
+          done(false);
+        }
+      }
+    };
+    return this._h;
+  }
+
+  spy() {
+    if (this._spy !== undefined) return this._spy;
+    this._spy = null;
+    if (typeof IntersectionObserver === 'undefined') return null;
+    const cb = () => this.spyPick();
+    const opts = { rootMargin: '-45% 0px -50% 0px', threshold: 0 };
+    // root: document makes the 45-50% band apply to this frame's own viewport (with the implicit root
+    // inside claude.ai the band is ignored). The callback only says "something crossed"; geometry decides.
+    try {
+      this._spy = new IntersectionObserver(cb, Object.assign({ root: document }, opts));
+    } catch (e) {
+      try { this._spy = new IntersectionObserver(cb, opts); } catch (e2) { this._spy = null; }
+    }
+    return this._spy;
+  }
+
+  spyPick() {
+    try {
+      const els = this._secEls || {};
+      const g = this.rvGeom();
+      const line = g.vh * 0.5 + 1;
+      let id = 'top';
+      if (!g.board) {
+        ['top', 'abstract', 'motivation', 'method', 'results', 'ablations', 'visualization', 'applications', 'citation'].forEach((k) => {
+          const el = els[k];
+          if (el && el.getBoundingClientRect().top <= line) id = k;
+        });
+      }
+      if (!this.state || this.state.active !== id) this.setState({ active: id });
+    } catch (e) {}
+  }
+
+  secRefs() {
+    if (this._secRefs) return this._secRefs;
+    this._secEls = {};
+    this._secRefs = {};
+    ['top', 'abstract', 'motivation', 'method', 'results', 'ablations', 'visualization', 'applications', 'citation'].forEach((id) => {
+      this._secRefs[id] = (el) => {
+        const io = this.spy();
+        const prev = this._secEls[id];
+        if (prev && io) io.unobserve(prev);
+        this._secEls[id] = el || null;
+        if (el && io) io.observe(el);
+        if (id === 'top') this.rvProbe(el);
+      };
+    });
+    return this._secRefs;
+  }
+
+  // ---- Scroll reveal engine -------------------------------------------------
+  // Everything is visible by default. A block is hidden ("armed", class rv-h) only after an
+  // IntersectionObserver has delivered entries for this document that agree with the frame's own
+  // geometry, only while the frame is a window-sized scroller (never the 1440x8000 canvas, Fit,
+  // export or thumbnail frame), and only if the block is wholly below the fold at that moment.
+  // The helmet repeats the gate statelessly: every hidden state sits inside
+  // @media screen and (max-height: 2399.98px), so print and board-sized frames never match it.
+  // rv[key]: 'h' armed | 'in' revealed (transition) | 'sk' shown without motion (skipped past).
+  // story[name]: 'arm' | 'play' | 'done' for the three data moments.
+
+  rvKeys() {
+    return ['absH', 'absP1', 'absP2', 'absP3', 'motH', 'motP', 'motC', 'metH', 'metF', 'metA', 'metB', 'metC', 'resH', 'resC', 'resT', 'ablH', 'ablF', 'visH', 'visA', 'visB', 'visC', 'appH', 'appA', 'appB', 'citH', 'citB', 'foot'];
+  }
+
+  rvStories() {
+    return { motiv: { key: 'motP', ms: 2800 }, chart: { key: 'resC', ms: 1300 }, abl: { key: 'ablF', ms: 1100 } };
+  }
+
+  rvStoryOf(key) {
+    return key === 'motP' ? 'motiv' : key === 'resC' ? 'chart' : key === 'ablF' ? 'abl' : null;
+  }
+
+  rvRefs() {
+    if (this._rvRefs) return this._rvRefs;
+    const R = {};
+    this.rvKeys().forEach((k) => { R[k] = (el) => this.rvTrack(k, el); });
+    this._rvRefs = R;
+    return R;
+  }
+
+  rvIO() {
+    if (this._rvIO !== undefined) return this._rvIO;
+    this._rvIO = null;
+    if (this._rvBroken || typeof IntersectionObserver === 'undefined') return null;
+    const cb = (entries) => this.rvOnEntries(entries);
+    const opts = { rootMargin: '0px 0px -10% 0px', threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1] };
+    // root: document = this frame's own viewport, so rootMargin applies even though the frame is
+    // cross-origin to claude.ai. Engines that reject a Document root fall back to the implicit root.
+    try {
+      this._rvIO = new IntersectionObserver(cb, Object.assign({ root: document }, opts));
+    } catch (e) {
+      try { this._rvIO = new IntersectionObserver(cb, opts); } catch (e2) { this._rvIO = null; }
+    }
+    return this._rvIO;
+  }
+
+  rvObserve(el, on) {
+    const io = this._rvIO;
+    if (!io || !el) return;
+    try {
+      if (on) io.observe(el);
+      else io.unobserve(el);
+    } catch (e) {}
+  }
+
+  rvTrack(key, el) {
+    const els = this._rvEls || (this._rvEls = {});
+    const prev = els[key] || null;
+    if (prev === el) return;
+    this.rvIO();
+    if (prev) this.rvObserve(prev, false);
+    els[key] = el || null;
+    if (!el) return;
+    (this._rvKey || (this._rvKey = new WeakMap())).set(el, key);
+    if (!this.rvFinished(key, this.state || {})) this.rvObserve(el, true);
+  }
+
+  rvProbe(el) {
+    this.rvIO();
+    if (this._rvProbeEl) this.rvObserve(this._rvProbeEl, false);
+    this._rvProbeEl = el || null;
+    if (el) this.rvObserve(el, true);
+  }
+
+  rvReduced() {
+    try {
+      return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    } catch (e) {
+      return false;
+    }
+  }
+
+  rvGeom() {
+    const vh = window.innerHeight || 0;
+    const de = document.documentElement;
+    const dh = Math.max(de ? de.scrollHeight : 0, document.body ? document.body.scrollHeight : 0);
+    const scrolls = vh > 0 && dh > 0 && vh < dh * 0.6;
+    // board = the frame shows most of the page (canvas, Fit, export, thumbnail are 1440x8000).
+    return { vh: vh, live: scrolls && vh < 2400, board: !scrolls };
+  }
+
+  rvAgrees(entries, vh) {
+    let yes = 0;
+    for (let i = 0; i < entries.length; i++) {
+      const en = entries[i];
+      const r = en.boundingClientRect;
+      if (!r || !(r.width > 0 || r.height > 0)) continue;
+      if (r.top < vh * 0.85 && r.bottom > vh * 0.05) {
+        if (!en.isIntersecting) return -1;
+        yes++;
+      } else if ((r.top > vh + 2 || r.bottom < -2) && en.isIntersecting) {
+        return -1;
+      }
+    }
+    return yes;
+  }
+
+  rvReady(r, vh, k) {
+    // While the reader scrolls, a story waits until its figure is fully in view below the 57px sticky
+    // header (or fills that band); once they stop, a share k of it in view is enough.
+    const hh = 57;
+    if (!r || !(r.height > 0) || !(vh > hh)) return false;
+    const vis = Math.min(r.bottom, vh) - Math.max(r.top, hh);
+    return vis >= Math.min(r.height, vh - hh) * (k || 0.96) - 1;
+  }
+
+  rvKick(n) {
+    // A reader using a figure's controls is looking at it: play its story now instead of leaving it waiting.
+    try {
+      const s = this.state || {};
+      if (s.rvLive !== true || !s.story || s.story[n] !== 'arm') return;
+      const patch = {};
+      this.rvPlayInto(patch, [n]);
+      this.rvCommit(patch);
+    } catch (err) {
+      this.rvFailSafe();
+    }
+  }
+
+  rvFinished(key, s) {
+    const v = s.rv ? s.rv[key] : undefined;
+    if (v !== 'in' && v !== 'sk') return false;
+    const n = this.rvStoryOf(key);
+    return !n || (!!s.story && (s.story[n] === 'play' || s.story[n] === 'done'));
+  }
+
+  rvEndPlays(ST) {
+    if (!ST || !Object.keys(ST).some((n) => ST[n] === 'play')) return null;
+    const next = Object.assign({}, ST);
+    Object.keys(next).forEach((n) => { if (next[n] === 'play') next[n] = 'done'; });
+    return next;
+  }
+
+  rvStaticPatch(s) {
+    const patch = { rvLive: false };
+    const story = this.rvEndPlays(s.story);
+    if (story) patch.story = story;
+    return patch;
+  }
+
+  rvDecide(entries, s) {
+    const g = this.rvGeom();
+    const stay = () => (s.rvLive === false ? {} : this.rvStaticPatch(s));
+    if (!g.live || this._rvBroken) return stay();
+    const agree = this.rvAgrees(entries, g.vh);
+    if (agree < 0 || (!this._rvProven && agree < 1)) return stay();
+    this._rvProven = true;
+    const R = Object.assign({}, s.rv || {});
+    const ST = Object.assign({}, s.story || {});
+    const els = this._rvEls || {};
+    const S = this.rvStories();
+    const reduce = this.rvReduced();
+    Object.keys(els).forEach((k) => {
+      const el = els[k];
+      if (!el || R[k] === 'in' || R[k] === 'sk') return;
+      R[k] = el.getBoundingClientRect().top >= g.vh ? 'h' : 'in';
+    });
+    Object.keys(S).forEach((n) => {
+      const el = els[S[n].key];
+      if (!el || ST[n] === 'play' || ST[n] === 'done') return;
+      const r = el.getBoundingClientRect();
+      ST[n] = !reduce && (r.top >= g.vh || r.bottom <= 0) ? 'arm' : 'done';
+    });
+    return { rvLive: true, rv: R, story: ST };
+  }
+
+  rvOnEntries(entries) {
+    try {
+      const s = this.state || {};
+      let patch = {};
+      if (s.rvLive !== true || this._rvRedecide) {
+        this._rvRedecide = false;
+        patch = this.rvDecide(entries, s);
+      }
+      const live = patch.rvLive === true || (patch.rvLive === undefined && s.rvLive === true);
+      if (live) {
+        const vh = window.innerHeight || 0;
+        const R = patch.rv || Object.assign({}, s.rv || {});
+        const ST = patch.story || Object.assign({}, s.story || {});
+        const reduce = this.rvReduced();
+        let dirty = false;
+        for (let i = 0; i < entries.length; i++) {
+          const en = entries[i];
+          const k = this._rvKey ? this._rvKey.get(en.target) : null;
+          if (!k) continue;
+          const r = en.boundingClientRect;
+          if (R[k] === undefined) {
+            R[k] = r.top >= vh ? 'h' : 'in';
+            dirty = true;
+          } else if (R[k] === 'h' && en.isIntersecting && r.top < vh) {
+            // Entering from the bottom: rise in. Already under the header (instant jump, scrolling up): just show it.
+            R[k] = r.top < 57 ? 'sk' : 'in';
+            dirty = true;
+          }
+          const n = this.rvStoryOf(k);
+          if (n && ST[n] === undefined) {
+            ST[n] = !reduce && (r.top >= vh || r.bottom <= 0) ? 'arm' : 'done';
+            dirty = true;
+          }
+          if (n && ST[n] === 'arm' && en.isIntersecting && this.rvReady(r, vh)) this.rvDwell(n);
+        }
+        if (dirty) {
+          patch.rv = R;
+          patch.story = ST;
+        }
+      }
+      this.rvCommit(patch);
+    } catch (err) {
+      this.rvFailSafe();
+    }
+  }
+
+  rvCommit(patch) {
+    if (patch && Object.keys(patch).length) this.setState(patch);
+    this.rvSync();
+  }
+
+  rvSync() {
+    const s = this.state || {};
+    const els = this._rvEls || {};
+    let waiting = false;
+    Object.keys(els).forEach((k) => {
+      const el = els[k];
+      if (!el) return;
+      if (this.rvFinished(k, s)) this.rvObserve(el, false);
+      else waiting = true;
+    });
+    if (this._rvProbeEl) this.rvObserve(this._rvProbeEl, s.rvLive !== true);
+    this.rvWatch(s.rvLive === true && waiting);
+  }
+
+  rvWatch(on) {
+    // Scroll-idle safety net, attached only while something is still armed in live mode.
+    if (on && !this._rvScroll) {
+      this._rvScroll = () => {
+        clearTimeout(this._rvIdleT);
+        this._rvIdleT = setTimeout(() => this.rvIdle(), 160);
+      };
+      window.addEventListener('scroll', this._rvScroll, { passive: true });
+    } else if (!on && this._rvScroll) {
+      window.removeEventListener('scroll', this._rvScroll, { passive: true });
+      this._rvScroll = null;
+      clearTimeout(this._rvIdleT);
+    }
+  }
+
+  rvIdle() {
+    try {
+      const s = this.state || {};
+      if (s.rvLive !== true) return;
+      const vh = window.innerHeight || 0;
+      const els = this._rvEls || {};
+      const R = Object.assign({}, s.rv || {});
+      const ST = s.story || {};
+      const play = [];
+      let dirty = false;
+      Object.keys(els).forEach((k) => {
+        const el = els[k];
+        if (!el) return;
+        const n = this.rvStoryOf(k);
+        const wantR = R[k] === 'h';
+        const wantS = !!n && ST[n] === 'arm';
+        if (!wantR && !wantS) return;
+        const r = el.getBoundingClientRect();
+        if (wantR && (r.width > 0 || r.height > 0)) {
+          if (r.bottom <= 57) {
+            R[k] = 'sk';
+            dirty = true;
+          } else if (r.top < vh) {
+            R[k] = 'in';
+            dirty = true;
+          }
+        }
+        if (wantS && this.rvReady(r, vh, 0.6)) play.push(n);
+      });
+      const patch = dirty ? { rv: R } : {};
+      if (play.length) this.rvPlayInto(patch, play);
+      this.rvCommit(patch);
+    } catch (err) {
+      this.rvFailSafe();
+    }
+  }
+
+  rvDwell(n) {
+    const T = this._rvDwellT || (this._rvDwellT = {});
+    if (T[n]) return;
+    T[n] = setTimeout(() => {
+      T[n] = 0;
+      try {
+        const s = this.state || {};
+        const el = (this._rvEls || {})[this.rvStories()[n].key];
+        if (s.rvLive !== true || !s.story || s.story[n] !== 'arm' || !el) return;
+        if (!this.rvReady(el.getBoundingClientRect(), window.innerHeight || 0)) return;
+        const patch = {};
+        this.rvPlayInto(patch, [n]);
+        this.rvCommit(patch);
+      } catch (err) {
+        this.rvFailSafe();
+      }
+    }, 200);
+  }
+
+  rvPlayInto(patch, names) {
+    const s = this.state || {};
+    const S = this.rvStories();
+    const ST = Object.assign({}, s.story || {}, patch.story || {});
+    const R = Object.assign({}, s.rv || {}, patch.rv || {});
+    const T = this._rvDoneT || (this._rvDoneT = {});
+    names.forEach((n) => {
+      if (ST[n] !== 'arm') return;
+      ST[n] = 'play';
+      if (R[S[n].key] === 'h') R[S[n].key] = 'in';
+      clearTimeout(T[n]);
+      T[n] = setTimeout(() => {
+        T[n] = 0;
+        try {
+          const st = this.state || {};
+          if (st.story && st.story[n] === 'play') this.setState({ story: Object.assign({}, st.story, { [n]: 'done' }) });
+          this.rvSync();
+        } catch (err) {
+          this.rvFailSafe();
+        }
+      }, S[n].ms);
+    });
+    patch.story = ST;
+    patch.rv = R;
+  }
+
+  rvOnResize() {
+    try {
+      if (this._rvBroken) return;
+      const s = this.state || {};
+      if (!this.rvGeom().live) {
+        if (s.rvLive !== false) this.rvCommit(this.rvStaticPatch(s));
+        return;
+      }
+      if (s.rvLive !== true) {
+        // Window-sized again: ask for fresh entries (probe + every unfinished block) and decide in that callback.
+        this._rvRedecide = true;
+        const els = this._rvEls || {};
+        const again = Object.keys(els).filter((k) => els[k] && !this.rvFinished(k, s)).map((k) => els[k]);
+        if (this._rvProbeEl) again.push(this._rvProbeEl);
+        again.forEach((el) => {
+          this.rvObserve(el, false);
+          this.rvObserve(el, true);
+        });
+      }
+    } catch (err) {
+      this.rvFailSafe();
+    }
+  }
+
+  rvFailSafe() {
+    this._rvBroken = true;
+    try { if (this._rvIO) this._rvIO.disconnect(); } catch (e) {}
+    this._rvIO = null;
+    try { this.rvWatch(false); } catch (e) {}
+    const s = this.state || {};
+    if (s.rvLive !== false) this.setState(this.rvStaticPatch(s));
+  }
+
+  componentDidMount() {
+    this._rvResize = () => {
+      this.rvOnResize();
+      if (this._spy) this.spyPick();
+    };
+    window.addEventListener('resize', this._rvResize);
+    // A hot reload keeps the old state but not its timers: finish any story that was playing.
+    const story = this.rvEndPlays((this.state || {}).story);
+    if (story) this.setState({ story: story });
+  }
+
+  componentWillUnmount() {
+    if (this._spy) this._spy.disconnect();
+    if (this._rvIO) this._rvIO.disconnect();
+    this._rvIO = null;
+    if (this._rvResize) window.removeEventListener('resize', this._rvResize);
+    this.rvWatch(false);
+    [this._rvDwellT, this._rvDoneT].forEach((T) => { if (T) Object.keys(T).forEach((n) => clearTimeout(T[n])); });
+    if (this._raf) cancelAnimationFrame(this._raf);
+    clearTimeout(this._copyTimer);
+  }
+
+  renderVals() {
+    const s = this.state || {};
+    const h = this.handlers();
+    const P = this.paths();
+    const T = this.tables();
+    const INK = '#1D1D1F';
+    const motion = this.props.motionAccent ?? '#2484A8';
+    const lang = this.props.textAccent ?? '#D9732F';
+    const motionInk = this.mix(motion, INK, 0.3);
+    const wash = (a) => this.rgba(motion, a);
+
+    const NAV = [['abstract', 'Abstract'], ['motivation', 'Motivation'], ['method', 'Method'], ['results', 'Results'], ['ablations', 'Ablations'], ['visualization', 'Visualization'], ['applications', 'Applications'], ['citation', 'Citation']];
+    const navItems = NAV.map((n) => {
+      const on = s.active === n[0];
+      return { href: '#' + n[0], label: n[1], fg: on ? INK : '#424245', bg: on ? '#E8E8ED' : 'transparent', current: on ? 'location' : 'false' };
+    });
+
+    const scrub = typeof s.scrub === 'number' ? s.scrub : null;
+    let focus = s.hover || null;
+    if (scrub !== null) focus = scrub >= 0.2727 && scrub <= 0.8283 ? 'A' : scrub >= 0.8816 ? 'B' : null;
+    const idle = focus === null;
+    const win = (on) => ({ bg: on ? wash(0.11) : wash(0.04), edge: on ? wash(0.55) : wash(0.16) });
+    const chip = (on) => ({ bg: on ? INK : '#FFFFFF', fg: on ? '#FFFFFF' : INK, bd: on ? INK : '#D2D2D7' });
+    const ring = (on) => (on ? motionInk : idle ? this.rgba(motionInk, 0.35) : this.rgba(motionInk, 0.1));
+    const phrase = (on) => ({ bg: on ? wash(0.14) : 'transparent' });
+    const live = s.rvLive === true;
+    const RVS = s.rv || {};
+    const STY = s.story || {};
+    const rv = {};
+    this.rvKeys().forEach((k) => { rv[k] = live && RVS[k] === 'h' ? 'rv-h' : live && RVS[k] === 'in' ? 'rv-in' : ''; });
+    const stc = (n) => (live && STY[n] === 'arm' ? ' st-arm' : live && STY[n] === 'play' ? ' st-play' : '');
+    rv.motP += stc('motiv');
+    rv.resC += stc('chart');
+    rv.ablF += stc('abl');
+    const fx = live && STY.motiv === 'play'
+      ? { clip: 'inset(0 0 0 0)', sweep: 'wm-sweep 2.6s linear', head: 'wm-head 2.6s linear', fa: 'wm-fa 2.6s linear', fb: 'wm-fb 2.6s linear', pa: 'wm-pa 2.6s linear', pb: 'wm-pb 2.6s linear' }
+      : { clip: 'inset(0 0 0 0)', sweep: 'none', head: 'none', fa: 'none', fb: 'none', pa: 'none', pb: 'none' };
+
+    const isH = s.ds !== 'k';
+    const rows = (isH ? T.H : T.K).map((r) => ({ name: r[0], venue: r[1], v: r[2], ours: r[0] === 'WaMo (ours)' }));
+    const best = [];
+    const second = [];
+    for (let j = 0; j < 13; j++) {
+      const lower = j === 5 || j === 11;
+      const u = rows.map((r) => r.v[j]).filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => (lower ? a - b : b - a));
+      best.push(u[0]);
+      second.push(u[1]);
+    }
+    const maxR = Math.max.apply(null, rows.map((r) => r.v[12]));
+    const bars = rows.map((r, i) => ({
+      name: r.ours ? 'WaMo' : r.name,
+      venue: r.venue,
+      val: r.v[12].toFixed(2),
+      w: (r.v[12] / maxR * 100).toFixed(2),
+      delay: String(i * 45),
+      color: r.ours ? motion : '#C7C7CC',
+      weight: r.ours ? 700 : 500,
+      rowBg: i === s.row ? '#FFFFFF' : 'transparent',
+      aria: (r.ours ? 'WaMo' : r.name) + ', Rsum ' + r.v[12].toFixed(2),
+      hover: () => this.setState({ row: i })
+    }));
+    const hr = typeof s.row === 'number' && rows[s.row] ? rows[s.row] : rows[rows.length - 1];
+    const rd = { name: hr.ours ? 'WaMo' : hr.name, rsum: hr.v[12].toFixed(2), t2m: hr.v[0].toFixed(2), m2t: hr.v[6].toFixed(2) };
+    const tableRows = rows.map((r) => ({
+      name: r.name,
+      venue: r.venue,
+      bg: r.ours ? wash(0.1) : 'transparent',
+      weight: r.ours ? 700 : 500,
+      cells: r.v.map((x, j) => ({ v: x.toFixed(2), weight: x === best[j] ? 700 : 400, deco: x === second[j] ? 'underline' : 'none' }))
+    }));
+    const seg = (on) => ({ pressed: on ? 'true' : 'false', bg: on ? '#FFFFFF' : 'transparent', fg: on ? INK : '#6E6E73', sh: on ? '0 1px 2px rgba(0,0,0,0.08), 0 4px 12px -6px rgba(0,0,0,0.18)' : 'none' });
+
+    const st = T.STUDIES.filter((x) => x.id === (s.study || 'modules'))[0] || T.STUDIES[0];
+    const hMax = Math.max.apply(null, st.rows.map((r) => r.h));
+    const kMax = Math.max.apply(null, st.rows.map((r) => r.k));
+    const abRows = st.rows.map((r, i) => ({
+      hasMarks: !!st.marks,
+      marks: (st.marks || []).map((m, j) => {
+        const on = r.on[j] === 1;
+        return { name: m, bg: on ? wash(0.12) : 'transparent', fg: on ? motionInk : '#6E6E73', bd: on ? wash(0.35) : '#D2D2D7', deco: on ? 'none' : 'line-through' };
+      }),
+      hasLabel: !!r.label,
+      label: r.label || '',
+      bg: r.ours ? wash(0.1) : 'transparent',
+      weight: r.ours ? 700 : 500,
+      bar: r.ours ? motion : '#C7C7CC',
+      hw: (r.h / hMax * 100).toFixed(1),
+      kw: (r.k / kMax * 100).toFixed(1),
+      delay: String(i * 45),
+      h1: r.h.toFixed(2),
+      k1: r.k.toFixed(2)
+    }));
+    const studies = T.STUDIES.map((x) => {
+      const on = x.id === st.id;
+      return { label: x.tab, pressed: on ? 'true' : 'false', bg: on ? INK : '#FFFFFF', fg: on ? '#FFFFFF' : '#424245', bd: on ? INK : 'transparent', pick: () => { this.setState({ study: x.id }); this.rvKick('abl'); } };
+    });
+
+    const tOn = !s.hideT;
+    const mOn = !s.hideM;
+    const lg = (on) => ({ pressed: on ? 'true' : 'false', bd: on ? '#D2D2D7' : '#E5E5EA', bg: on ? '#FFFFFF' : 'transparent', fg: on ? INK : '#6E6E73', dot: on ? '1' : '0.35' });
+    const copied = s.copied;
+
+    return {
+      motion: motion,
+      lang: lang,
+      motionInk: motionInk,
+      motionWash: wash(0.1),
+      navItems: navItems,
+      blurSelf: h.blurSelf,
+      secRefs: this.secRefs(),
+      rv: rv,
+      rvRef: this.rvRefs(),
+      fx: fx,
+      pOrigL: P.origL,
+      pOrigR: P.origR,
+      pApxL: P.apxL,
+      pApxR: P.apxR,
+      pD1L: P.d1L,
+      pD1R: P.d1R,
+      pD2L: P.d2L,
+      pD2R: P.d2R,
+      winA: win(focus === 'A'),
+      winB: win(focus === 'B'),
+      chipA: chip(focus === 'A'),
+      chipB: chip(focus === 'B'),
+      ringA: ring(focus === 'A'),
+      ringB: ring(focus === 'B'),
+      phA: phrase(focus === 'A'),
+      phB: phrase(focus === 'B'),
+      sc: { x: scrub === null ? '0' : (scrub * 100).toFixed(2), op: scrub === null ? '0' : '1' },
+      readout: scrub === null ? 'Hover to scan frames' : 'Frame ' + Math.round(scrub * 167) + ' / 167',
+      readoutColor: scrub === null ? '#6E6E73' : INK,
+      scrubMove: h.scrubMove,
+      scrubLeave: h.scrubLeave,
+      hoverA: h.hoverA,
+      hoverB: h.hoverB,
+      unhover: h.unhover,
+      segH: seg(isH),
+      segK: seg(!isH),
+      pickH: h.pickH,
+      pickK: h.pickK,
+      dsName: isH ? 'HumanML3D' : 'KIT-ML',
+      tableNo: isH ? 'Table 1' : 'Table 2',
+      bars: bars,
+      unhoverRow: h.unhoverRow,
+      rd: rd,
+      tableRows: tableRows,
+      studies: studies,
+      st: { no: st.no, title: st.title, take: st.take, head: st.head || 'Setting', hasMarks: !!st.marks, noMarks: !st.marks },
+      abRows: abRows,
+      tsAT: P.tsAT,
+      tsAM: P.tsAM,
+      tsBT: P.tsBT,
+      tsBM: P.tsBM,
+      tOp: tOn ? '0.85' : '0.06',
+      mOp: mOn ? '0.85' : '0.06',
+      lgT: lg(tOn),
+      lgM: lg(mOn),
+      toggleT: h.toggleT,
+      toggleM: h.toggleM,
+      copyBib: h.copyBib,
+      copiedOk: copied === 'ok',
+      notCopied: copied !== 'ok',
+      copyLabel: copied === 'ok' ? 'Copied' : copied === 'fail' ? 'Select the text to copy' : 'Copy'
+    };
+  }
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Component, {}));
+</script>
+</body>
+</html>
