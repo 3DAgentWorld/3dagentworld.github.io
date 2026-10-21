@@ -1489,3 +1489,12 @@ h1 span {
     transition-duration: 1ms !important;
   }
 }
+
+.venue {
+  margin: 12px 0 20px;
+  color: var(--accent, #2563eb);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
