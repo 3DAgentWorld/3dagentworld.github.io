@@ -80,3 +80,7 @@ body.figure-open{overflow:hidden}
 #enlarged-figure{display:block;margin-inline:auto;width:100%;max-width:none;max-height:none;height:auto;object-fit:contain}
 
 @media(max-width:600px){.dialog-toolbar>span{font-size:12px}.dialog-actions{gap:6px}#zoom-figure,#close-figure{padding:7px 10px;font-size:12px}.dialog-image-area{padding:8px}.demo-chapters b{font-size:10px}.demo-chapters{gap:8px}}
+
+/* Let these descriptions use the full content width; retain mobile wrapping. */
+#multi-step,#revisit>.section-heading{max-width:none}
+#multi-step>p:last-child,#revisit>.section-heading>p:last-child{max-width:none}
