@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="UniGS-SLAM: Monocular Gaussian SLAM with Enhanced Geometry and Open-Vocabulary Semantics. Research project page.">
+  <meta name="author" content="Xingyuan Ding, Sicheng Yu, Kaiyong Zhao, Hao Wang">
+  <meta name="theme-color" content="#ffffff">
+  <title>UniGS-SLAM | Project Page</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script src="site-config.js" defer></script>
+  <script src="script.js" defer></script>
+  <script src="comparison-data.js" defer></script>
+  <script src="comparison.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="hero" id="top">
+  <div class="container">
+    <p class="project-name">UniGS-SLAM</p>
+    <!-- EDIT: official paper title -->
+    <h1>Monocular Gaussian SLAM<br class="desktop-break"> with Enhanced Geometry and<br class="desktop-break"> Open-Vocabulary Semantics</h1>
+    <div id="authors" class="authors" aria-label="Authors">
+      <span class="author">Xingyuan Ding<sup>1,*</sup></span>
+      <span class="author">Sicheng Yu<sup>2,*</sup></span>
+      <span class="author">Kaiyong Zhao<sup>3</sup></span>
+      <span class="author">Hao Wang<sup>2,†</sup></span>
+    </div>
+    <div class="affiliations" aria-label="Affiliations">
+      <p><sup>1</sup> Shanghai Jiao Tong University</p>
+      <p><sup>2</sup> The Hong Kong University of Science and Technology (Guangzhou)</p>
+      <p><sup>3</sup> XGRIDS</p>
+    </div>
+    <p class="author-notes"><span>* Equal contribution.</span><span>† Corresponding author.</span></p>
+    <div class="publication-links" aria-label="Research resources">
+      <span class="resource unavailable" data-resource="paper"><span class="resource-icon" aria-hidden="true">↗</span> Paper <span class="resource-status">Not public</span></span>
+      <span class="resource unavailable" data-resource="arxiv">arXiv <span class="resource-status">Link pending</span></span>
+      <span class="resource unavailable" data-resource="code"><span class="resource-icon" aria-hidden="true">&lt;/&gt;</span> Code <span class="resource-status">Link pending</span></span>
+    </div>
+    <!-- EDIT: navigation labels and section anchors -->
+    <nav class="section-nav" aria-label="Page sections">
+      <a href="#abstract">Abstract</a><a href="#framework">Framework</a><a href="#tracking">Tracking</a><a href="#rendering">Rendering</a><a href="#geometry">Geometry</a><a href="#semantics">Semantics</a><a href="#efficiency">Efficiency</a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+  <section class="teaser container" aria-label="UniGS-SLAM teaser">
+    <figure>
+      <a class="figure-link" href="assets/teaser.webp" target="_blank" rel="noopener" aria-label="Open full-resolution UniGS-SLAM teaser"><img src="assets/teaser.webp" width="1540" height="793" alt="Manuscript Figure 1: Gaussian map, geometric mesh and semantic voxels; quality and runtime plots; scene understanding examples." fetchpriority="high"></a>
+      <figcaption><strong>Geometry, appearance, and open-vocabulary semantics from RGB alone.</strong> UniGS-SLAM maintains a Gaussian reconstruction and a spatially decoupled semantic voxel map, with semantic evidence revised as geometry evolves.</figcaption>
+    </figure>
+  </section>
+  <section class="section abstract-section" id="abstract">
+    <div class="container narrow"><h2>Abstract</h2>
+      <p>Monocular semantic SLAM aims to reconstruct scene geometry and build semantic maps from RGB observations. Existing Gaussian-based methods often attach semantic labels or features to evolving Gaussian primitives, making semantic fusion difficult to maintain and increasing reconstruction overhead. Hybrid Gaussian–voxel representations provide more stable semantic support, but often rely on RGB-D input or known poses and do not revise historical semantic evidence after geometry updates.</p>
+      <p>We present <strong>UniGS-SLAM</strong>, an RGB-only framework that decouples open-vocabulary semantics from Gaussian reconstruction while preserving bidirectional interaction. Foundation priors enhance monocular depth and pose estimation, while semantic observations are fused into an independent sparse voxel map with observation provenance, enabling historical contributions to be revised as reconstruction evolves. The fused semantics further guide Gaussian filtering and local surface refinement.</p>
+      <p>Experiments on Replica, ScanNet, and KITTI-360 show leading tracking, rendering, and geometric reconstruction performance among representative RGB-only methods, together with strong open-set semantic mapping on Replica and ScanNet. We also achieve a 2.37× reconstruction speedup over the fastest compared semantic SLAM baseline.</p>
+    </div>
+  </section>
+  <section class="section" id="framework">
+    <div class="container"><h2>Framework</h2>
+      <figure><a class="figure-link" href="assets/framework.webp" target="_blank" rel="noopener" aria-label="Open full-resolution framework"><img src="assets/framework.webp" alt="UniGS-SLAM pipeline: foundation geometry enhancement, spatially decoupled reconstruction, semantic fusion and revision, and semantic-guided geometry refinement." loading="lazy"></a>
+      <figcaption class="framework-caption"><strong>Overview of UniGS-SLAM.</strong> Our framework integrates three components: <strong>(1) Geometry-enhanced monocular SLAM</strong> uses foundation-model priors and confidence-aware fusion for reliable reconstruction; <strong>(2) Spatially decoupled open-vocabulary semantic mapping</strong> maintains an independent sparse voxel map and revises historical evidence after geometry updates; <strong>(3) Semantic-guided Gaussian geometry refinement</strong> uses fused semantics to guide floater filtering and local surface refinement.</figcaption></figure>
+    </div>
+  </section>
+  <!-- EDIT: Tracking tabs. Table 1 combines Replica and ScanNet; Table 3 is KITTI-360. -->
+  <section class="section" id="tracking"><div class="container"><h2>Tracking Results</h2>
+    <div class="dataset-tabs" role="tablist" aria-label="Tracking datasets">
+      <button type="button" id="tab-indoor" role="tab" aria-selected="true" aria-controls="panel-indoor" tabindex="0">Replica / ScanNet</button>
+      <button type="button" id="tab-outdoor" role="tab" aria-selected="false" aria-controls="panel-outdoor" tabindex="-1">KITTI-360</button>
+    </div>
+    <div class="tracking-panel" id="panel-indoor" role="tabpanel" aria-labelledby="tab-indoor" tabindex="0">
+      <figure><a class="figure-link" href="assets/tracking-table.webp" target="_blank" rel="noopener" aria-label="Open Table 1"><img src="assets/tracking-table.webp" alt="Tracking and rendering on Replica and ScanNet; RGB-only and RGB-D methods, as reported in manuscript Table 1." loading="lazy"></a></figure>
+    </div>
+    <div class="tracking-panel" id="panel-outdoor" role="tabpanel" aria-labelledby="tab-outdoor" tabindex="0" hidden>
+      <figure class="outdoor-figure"><a class="figure-link" href="assets/outdoor-table.webp" target="_blank" rel="noopener" aria-label="Open Table 3"><img src="assets/outdoor-table.webp" alt="Tracking and rendering on four KITTI-360 static segments; ATE in meters, as reported in Table 3." loading="lazy"></a></figure>
+    </div>
+  </div></section>
+  <!-- EDIT: Rendering images. Replace src and href together when changing a figure. -->
+  <section class="section" id="rendering"><div class="container comparison-container"><h2>Rendering Results</h2>
+    <div class="video-showcase">
+      <div class="video-selector" role="group" aria-label="Replica RGB reconstruction videos">
+        <button type="button" aria-pressed="true" data-video-src="demos/replica_variants/room_0_rgb_2d_comparison.mp4" data-video-poster="demos/replica_variants/previews/room_0_rgb_2d_comparison_poster.jpg" data-video-caption="Replica room_0 · 20 seconds">room_0</button>
+        <button type="button" aria-pressed="false" data-video-src="demos/replica_variants/room_1_rgb_2d_comparison.mp4" data-video-poster="demos/replica_variants/previews/room_1_rgb_2d_comparison_poster.jpg" data-video-caption="Replica room_1 · 20 seconds">room_1</button>
+        <button type="button" aria-pressed="false" data-video-src="demos/replica_variants/office_2_rgb_2d_comparison.mp4" data-video-poster="demos/replica_variants/previews/office_2_rgb_2d_comparison_poster.jpg" data-video-caption="Replica office_2 · 20 seconds">office_2</button>
+      </div>
+      <figure class="video-figure">
+        <video id="rgb-reconstruction" controls playsinline muted loop preload="none" width="1920" height="600" poster="demos/replica_variants/previews/room_0_rgb_2d_comparison_poster.jpg" aria-label="Replica input RGB and reconstructed RGB comparison" aria-describedby="rgb-video-caption rgb-video-note">
+          <source src="demos/replica_variants/room_0_rgb_2d_comparison.mp4" type="video/mp4">
+          Your browser does not support embedded video. <a href="demos/replica_variants/room_0_rgb_2d_comparison.mp4">Open the reconstruction video</a>.
+        </video>
+        <figcaption id="rgb-video-caption">Replica room_0 · 20 seconds</figcaption>
+      </figure>
+      <p class="video-note" id="rgb-video-note">Input RGB (left) and reconstructed RGB (right), rendered from the final Gaussian map at the corresponding estimated camera poses.</p>
+      <noscript><p class="video-note">More scenes: <a href="demos/replica_variants/room_1_rgb_2d_comparison.mp4">room_1</a> · <a href="demos/replica_variants/office_2_rgb_2d_comparison.mp4">office_2</a></p></noscript>
+    </div>
+    <!-- EDIT: interactive gallery data are in comparison-data.js. Original figures remain below. -->
+    <div class="comparison-demo" data-comparison="rendering" hidden></div>
+    <details class="paper-figures" open><summary>Paper figures</summary>
+    <figure><a class="figure-link" href="assets/rendering.webp" target="_blank" rel="noopener" aria-label="Open rendering comparisons"><img src="assets/rendering.webp" alt="Figure 3: FreeOcc, ARTDECO, HI-SLAM2, Ours, and ground-truth rendering comparisons on ScanNet and KITTI-360, with magnified detail regions." loading="lazy"></a></figure>
+    <figure><a class="figure-link" href="assets/rendering-appendix.webp" target="_blank" rel="noopener" aria-label="Open additional rendering comparisons"><img src="assets/rendering-appendix.webp" alt="Appendix Figure 9: additional RGB rendering comparisons on ScanNet and KITTI-360, with enlarged detail regions; FreeOcc, ARTDECO, HI-SLAM2, Ours, and Ground Truth." loading="lazy"></a></figure>
+    <p class="result-caption">RGB rendering comparisons on ScanNet and KITTI-360.</p>
+    </details>
+  </div></section>
+  <!-- EDIT: main and appendix mesh figures, followed directly by quantitative results. -->
+  <section class="section" id="geometry"><div class="container comparison-container"><h2>Geometric Reconstruction</h2>
+    <div class="video-showcase">
+      <div class="geometry-videos">
+        <figure class="video-figure">
+          <video controls playsinline muted loop preload="none" width="1152" height="720" poster="demos/replica_variants/previews/room_0_rgb_3d_poster.jpg" aria-label="Replica room_0 3D Gaussian reconstruction with camera trajectory" aria-describedby="geometry-video-note">
+            <source src="demos/replica_variants/room_0_rgb_3d_trajectory.mp4" type="video/mp4">
+            <a href="demos/replica_variants/room_0_rgb_3d_trajectory.mp4">Open the room_0 reconstruction video</a>.
+          </video>
+          <figcaption>Replica room_0 · 3D reconstruction</figcaption>
+        </figure>
+        <figure class="video-figure">
+          <video controls playsinline muted loop preload="none" width="1152" height="720" poster="demos/replica_variants/previews/office_2_rgb_3d_poster.jpg" aria-label="Replica office_2 3D Gaussian reconstruction with camera trajectory" aria-describedby="geometry-video-note">
+            <source src="demos/replica_variants/office_2_rgb_3d_trajectory.mp4" type="video/mp4">
+            <a href="demos/replica_variants/office_2_rgb_3d_trajectory.mp4">Open the office_2 reconstruction video</a>.
+          </video>
+          <figcaption>Replica office_2 · 3D reconstruction</figcaption>
+        </figure>
+      </div>
+      <p class="video-note" id="geometry-video-note">Progressive visibility replay of the final Gaussian maps with estimated camera trajectories, followed by a short orbit of each scene.</p>
+    </div>
+    <div class="comparison-demo" data-comparison="geometry" hidden></div>
+    <details class="paper-figures" open><summary>Paper figures</summary>
+    <figure><a class="figure-link" href="assets/geometry.webp" target="_blank" rel="noopener" aria-label="Open mesh comparisons"><img src="assets/geometry.webp" alt="Figure 4: mesh comparisons between FreeOcc, Splat-SLAM, HI-SLAM2, Ours, and ground truth on Replica and ScanNet." loading="lazy"></a></figure>
+    <figure><a class="figure-link" href="assets/geometry-appendix.webp" target="_blank" rel="noopener" aria-label="Open additional mesh comparisons"><img src="assets/geometry-appendix.webp" alt="Appendix Figure 7: additional mesh comparisons for FreeOcc, Splat-SLAM, HI-SLAM2, Ours, and Ground Truth." loading="lazy"></a></figure>
+    <p class="result-caption">Mesh comparisons on Replica and ScanNet.</p>
+    </details>
+    <figure class="medium-figure"><a class="figure-link" href="assets/geometry-table.webp" target="_blank" rel="noopener" aria-label="Open Table 2"><img src="assets/geometry-table.webp" alt="Table 2: geometric reconstruction on Replica and ScanNet using accuracy, L1 depth error, and F-score. Ours F-score: 89.84 on Replica, 52.86 on ScanNet." loading="lazy"></a></figure>
+  </div></section>
+  <section class="section" id="semantics"><div class="container"><h2>Semantic Mapping</h2>
+    <figure><a class="figure-link" href="assets/semantics.webp" target="_blank" rel="noopener" aria-label="Open semantic mapping results"><img src="assets/semantics.webp" alt="Figure 5: RGB, depth, closed-set semantics, open-set semantics, and ground truth on Replica." loading="lazy"></a></figure>
+    <div class="semantic-tables">
+      <figure><a class="figure-link" href="assets/closed-set-table.webp" target="_blank" rel="noopener" aria-label="Open Table 4"><img src="assets/closed-set-table.webp" alt="Table 4: closed-set 2D segmentation on four Replica scenes, mIoU in percent. Ours average: 95.92." loading="lazy"></a><figcaption>Closed-set 2D segmentation (mIoU, %), using ground-truth semantic supervision with RGB-only reconstruction.</figcaption></figure>
+      <figure><a class="figure-link" href="assets/open-set-table.webp" target="_blank" rel="noopener" aria-label="Open Table 5"><img src="assets/open-set-table.webp" alt="Table 5: open-set 3D semantic segmentation on a 0–1 scale. Ours mIoU: Replica 0.38, ScanNet 0.50." loading="lazy"></a><figcaption>Open-set 3D segmentation (0–1 scale), following the RADIO-ViPE protocol without background categories.</figcaption></figure>
+    </div>
+  </div></section>
+  <section class="section" id="efficiency"><div class="container"><h2>Efficiency</h2>
+    <p class="intro">UniGS-SLAM reconstructs Replica scenes in <strong>20.40 minutes</strong>, achieving a <strong>2.37× speedup</strong> over the fastest compared semantic SLAM baseline.</p>
+    <figure class="small-figure"><a class="figure-link" href="assets/efficiency-table.webp" target="_blank" rel="noopener" aria-label="Open Table 9"><img src="assets/efficiency-table.webp" alt="Table 9: reconstruction times in minutes. SNI-SLAM 48.32, SGS-SLAM 118.70, SemGauss-SLAM 132.79, GS3LAM 172.40, Open-set SLAM 90.10, Ours 20.40." loading="lazy"></a><figcaption>Reconstruction time on Replica. Timed on RTX A6000; Open-set SLAM is a literature-derived estimate on RTX 3090.</figcaption></figure>
+  </div></section>
+  <section class="section citation-section" id="citation" hidden><div class="container narrow"><h2>Citation</h2><p id="citation-pending" class="centered">Citation information will be added when a public manuscript identifier is available.</p><pre id="citation-text" hidden></pre></div></section>
+</main>
+</body>
+</html>
