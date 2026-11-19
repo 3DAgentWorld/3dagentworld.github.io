@@ -84,3 +84,13 @@ body.figure-open{overflow:hidden}
 /* Let these descriptions use the full content width; retain mobile wrapping. */
 #multi-step,#revisit>.section-heading{max-width:none}
 #multi-step>p:last-child,#revisit>.section-heading>p:last-child{max-width:none}
+.world-update-detail {
+  max-width: 900px;
+  padding: 4px 0 12px;
+  color: var(--muted);
+}
+.world-update-detail strong { color: var(--ink); }
+.citation-section .section-heading > .citation-note:last-child:not(.eyebrow) {
+  margin-top: 0;
+  font-size: 14px;
+}
