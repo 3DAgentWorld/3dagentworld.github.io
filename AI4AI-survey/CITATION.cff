@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this survey, please cite the article."
+title: "AI for AI survey literature collection"
+type: dataset
+authors: &survey-authors
+  - family-names: Ye
+    given-names: Deheng
+  - family-names: Zhang
+    given-names: Zheng
+  - family-names: Wang
+    given-names: Hao
+  - family-names: Miao
+    given-names: Chunyan
+repository-code: https://github.com/3DAgentWorld/AI4AI-survey
+preferred-citation:
+  type: article
+  title: "A Survey on AI for AI: When the Improver Becomes the Improvee"
+  authors: *survey-authors
+  journal: Preprints.org
+  year: 2026
+  doi: 10.20944/preprints202609.0591.v2
+  url: https://doi.org/10.20944/preprints202609.0591.v2
